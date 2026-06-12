@@ -21,7 +21,7 @@ export default function SystemHealth() {
           Production readiness audit
         </h2>
         <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
-          Confirms whether AlphaOS is running on live infrastructure, where fallback is still active, and whether embeddings plus RAG are demo-safe.
+          Confirms whether AlphaOS is running on live infrastructure, where fallback is still active, and whether embeddings plus RAG are production-safe.
         </p>
       </div>
 

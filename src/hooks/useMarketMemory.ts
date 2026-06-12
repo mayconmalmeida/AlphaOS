@@ -8,7 +8,10 @@ import type { MarketSnapshot, SimilarSnapshot, SnapshotComparison } from "@/serv
 export function useMarketMemory() {
   const [search, setSearch] = useState("")
   const [snapshots, setSnapshots] = useState<MarketSnapshot[]>([])
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null
+    return window.sessionStorage.getItem("alphaos.market-memory.selected")
+  })
   const [compareId, setCompareId] = useState<string | null>(null)
 
   const [selected, setSelected] = useState<MarketSnapshot | null>(null)
@@ -62,6 +65,12 @@ export function useMarketMemory() {
   useEffect(() => {
     loadSelected(selectedId)
   }, [selectedId, loadSelected])
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    if (!selectedId) return
+    window.sessionStorage.setItem("alphaos.market-memory.selected", selectedId)
+  }, [selectedId])
 
   useEffect(() => {
     async function loadCompare() {

@@ -1,10 +1,11 @@
 import { useMemo } from "react"
 import { useLocation } from "react-router-dom"
-import { Command, Moon, Sun } from "lucide-react"
+import { Command, Moon, Search, Sun } from "lucide-react"
 
+import { IntelligenceStatusBadge } from "@/components/app/IntelligenceStatusBadge"
 import { LanguageSwitcher } from "@/components/app/LanguageSwitcher"
+import { useGlobalSearch } from "@/components/app/GlobalSearchProvider"
 import { useTheme } from "@/hooks/useTheme"
-import { useDemoMode } from "@/hooks/useDemoMode"
 import { useI18n } from "@/i18n/I18nProvider"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -23,7 +24,7 @@ const TITLES: Record<string, { titleKey: string; title: string; kickerKey?: stri
 export function Topbar() {
   const { pathname } = useLocation()
   const { isDark, toggleTheme } = useTheme()
-  const demoMode = useDemoMode()
+  const globalSearch = useGlobalSearch()
   const { t } = useI18n()
 
   const meta = useMemo(() => {
@@ -64,18 +65,20 @@ export function Topbar() {
 
       <div className="flex items-center gap-2">
         <LanguageSwitcher />
-        <Badge variant={demoMode.enabled ? "default" : "outline"}>
-          {demoMode.enabled
-            ? t("common.demoMode", "Demo Mode")
-            : t("common.liveReady", "Live-Ready")}
-        </Badge>
-        <div className="hidden items-center gap-2 rounded-md border bg-card/50 px-3 py-2 text-xs text-muted-foreground md:flex">
-          <Command className="h-3.5 w-3.5" />
-          <span>{t("common.searchSoon", "Search (soon)")}</span>
-          <span className="ml-2 rounded border px-1.5 py-0.5 text-[10px]">
-            Ctrl K
+        <IntelligenceStatusBadge />
+        <Button
+          type="button"
+          variant="outline"
+          className="hidden h-8 items-center gap-2 px-3 md:flex"
+          onClick={globalSearch.open}
+        >
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <span className="text-xs">{t("common.search", "Search")}</span>
+          <span className="ml-2 flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] text-muted-foreground">
+            <Command className="h-3 w-3" />
+            K
           </span>
-        </div>
+        </Button>
         <Button
           variant="outline"
           size="icon"

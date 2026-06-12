@@ -143,7 +143,7 @@ export default function Dashboard() {
                   <div className="rounded-lg border bg-background/40 p-3">
                     <div className="flex flex-wrap gap-2">
                       <Badge variant={data.cmcStatus.sentiment.source === "live" ? "default" : "secondary"}>
-                        {data.cmcStatus.sentiment.source === "live" ? "Live CMC Data" : "Demo Mode"}
+                        {data.cmcStatus.sentiment.source === "live" ? "Live Intelligence" : "Fallback Intelligence"}
                       </Badge>
                       <Badge variant="outline">
                         {data.cmcStatus.sentiment.source === "live" ? "Market Pulse" : "Fallback data"}
@@ -211,7 +211,7 @@ export default function Dashboard() {
         <Card className="bg-card/40 lg:col-span-4">
           <CardHeader>
             <CardTitle>Rankings</CardTitle>
-            <CardDescription>Emerging vs losing (mock).</CardDescription>
+            <CardDescription>Emerging vs losing narratives based on the current snapshot.</CardDescription>
           </CardHeader>
           <CardContent>
             {narrativesLoading ? (
@@ -233,16 +233,16 @@ export default function Dashboard() {
 
       <Card className="bg-card/40">
         <CardHeader>
-          <CardTitle>Final Demo Flow</CardTitle>
+          <CardTitle>Recommended Flow</CardTitle>
           <CardDescription>
-            Caminho recomendado para demo de hackathon e apresentação institucional.
+            Suggested navigation for a first-time user to understand AlphaOS end-to-end.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {[
             { label: "1. Dashboard", to: "/dashboard" },
             { label: "2. Hypothesis", to: "/hypotheses" },
-            { label: "3. Evidence", to: "/hypotheses/214" },
+            { label: "3. Evidence", to: "/hypotheses" },
             { label: "4. Strategy", to: "/strategy-lab" },
             { label: "5. Critic", to: "/strategy-lab" },
             { label: "6. Report", to: "/research" },

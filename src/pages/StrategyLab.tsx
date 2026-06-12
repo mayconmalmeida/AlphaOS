@@ -24,6 +24,11 @@ function fmtPct(value: number) {
   return `${Math.round(value * 100)}%`
 }
 
+function displayPipelineStatus(value: string) {
+  if (value === "mock") return "simulated"
+  return value
+}
+
 export default function StrategyLab() {
   const {
     search,
@@ -230,7 +235,7 @@ export default function StrategyLab() {
                           : "secondary"
                     }
                   >
-                    {s.status}
+                    {displayPipelineStatus(s.status)}
                   </Badge>
                   {typeof s.count === "number" ? (
                     <Badge variant="secondary">{s.count}</Badge>
@@ -278,7 +283,7 @@ export default function StrategyLab() {
                         <div className="min-w-0">
                           <div className="truncate text-sm">{row.spec.strategyName}</div>
                           <div className="text-xs text-muted-foreground">
-                            {row.status} · {row.pipelineStage} · {row.spec.timeHorizon}
+                            {displayPipelineStatus(row.status)} · {displayPipelineStatus(row.pipelineStage)} · {row.spec.timeHorizon}
                           </div>
                         </div>
                         <Badge variant="outline">Score {row.score}</Badge>
@@ -311,8 +316,8 @@ export default function StrategyLab() {
                             {strategy.spec.strategyName}
                           </div>
                           <div className="mt-2 flex flex-wrap gap-2">
-                            <Badge>{strategy.status}</Badge>
-                            <Badge variant="secondary">{strategy.pipelineStage}</Badge>
+                            <Badge>{displayPipelineStatus(strategy.status)}</Badge>
+                            <Badge variant="secondary">{displayPipelineStatus(strategy.pipelineStage)}</Badge>
                             <Badge variant="outline">Score {strategy.score}</Badge>
                           </div>
                         </div>

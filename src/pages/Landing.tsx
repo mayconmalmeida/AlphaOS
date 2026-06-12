@@ -46,7 +46,7 @@ export default function Landing() {
             <div className="flex flex-wrap items-center gap-2">
               <Badge>Premium</Badge>
               <Badge variant="secondary">Explainable research</Badge>
-              <Badge variant="secondary">Mock-first</Badge>
+              <Badge variant="secondary">CoinMarketCap Intelligence</Badge>
             </div>
 
             <h1 className="mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">

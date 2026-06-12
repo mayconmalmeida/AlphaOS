@@ -337,7 +337,7 @@ export default function MarketMemory() {
                       {similar[0].method === "vector" ? "Vector Search" : "Heuristic Fallback"}
                     </Badge>
                     <Badge variant="outline">
-                      {selected.sourceMode === "live" ? "Live" : "Fallback/Demo"}
+                      {selected.sourceMode === "live" ? "Live" : "Fallback"}
                     </Badge>
                   </div>
                 ) : (
@@ -345,6 +345,11 @@ export default function MarketMemory() {
                     No comparable snapshots found yet. Ingest and embed more snapshots to enable vector similarity.
                   </div>
                 )}
+                {similar[0]?.method === "heuristic" ? (
+                  <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
+                    Vector similarity is unavailable because snapshot embeddings are missing or running in fallback. Generate embeddings to enable pgvector similarity.
+                  </div>
+                ) : null}
                 {similar.map((row) => (
                   <div key={row.snapshot.id} className="rounded-xl border bg-background/35 p-4">
                     <div className="flex items-start justify-between gap-3">

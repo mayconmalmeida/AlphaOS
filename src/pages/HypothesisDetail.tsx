@@ -130,7 +130,7 @@ export default function HypothesisDetail() {
           Voltar
         </Link>
         <Badge variant="secondary">
-          {data?.origin === "generated" ? "Generated" : "Demo Mode"}
+          {data?.origin === "generated" ? "Generated" : "Fallback Intelligence"}
         </Badge>
       </div>
 
@@ -175,6 +175,7 @@ export default function HypothesisDetail() {
                   <Badge>Confidence {data.confidence}%</Badge>
                   {alphaScore ? <AlphaScoreBadge score={alphaScore} /> : null}
                   <Badge variant="secondary">Risk {data.riskScore}</Badge>
+                  <Badge variant="outline">Evidence {data.evidence.length}</Badge>
                   <Badge variant="secondary">{data.status}</Badge>
                   <Badge variant="outline">{data.expectedHorizon}</Badge>
                   <Badge variant="outline">{data.marketRegime}</Badge>

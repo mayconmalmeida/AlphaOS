@@ -14,8 +14,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { useDemoMode } from "@/hooks/useDemoMode"
+import { IntelligenceStatusBadge } from "@/components/app/IntelligenceStatusBadge"
 import { useI18n } from "@/i18n/I18nProvider"
 
 type NavItem = {
@@ -37,7 +36,6 @@ const NAV: Array<NavItem & { key: string }> = [
 ]
 
 export function Sidebar() {
-  const demoMode = useDemoMode()
   const { t } = useI18n()
 
   return (
@@ -83,17 +81,18 @@ export function Sidebar() {
 
       <div className="px-5 pb-5">
         <div className="rounded-xl border bg-card/60 p-4 shadow-glass-sm">
-          <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <History className="h-3.5 w-3.5" />
-              <span>{t("common.demoMode", "Demo Mode")}</span>
+              <span>{t("shell.intelligenceStatus", "Intelligence Status")}</span>
             </div>
-            <Badge variant={demoMode.enabled ? "default" : "outline"}>
-              {demoMode.enabled ? t("common.on", "On") : t("common.off", "Off")}
-            </Badge>
+            <IntelligenceStatusBadge compact />
           </div>
           <div className="mt-2 text-sm leading-snug text-foreground/90">
-            {t("shell.demoDescription", "Production-minded UI with resilient fallback, provenance, and guided demo flow.")}
+            {t(
+              "shell.intelligenceDescription",
+              "Powered by CoinMarketCap Intelligence with explicit fallback and provenance when live connectivity is unavailable."
+            )}
           </div>
         </div>
       </div>

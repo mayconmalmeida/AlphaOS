@@ -32,7 +32,7 @@ function createResilientProvider(): CmcProvider {
           source: "fallback",
           endpoint: "supabase-edge-proxy",
           lastSync: null,
-          message: "Supabase Edge Proxy is unavailable. AlphaOS is running in Demo Mode with fallback data.",
+          message: "Supabase Edge Proxy is unavailable. AlphaOS is using fallback intelligence until live connectivity is restored.",
           retryCount: 0,
         })
       }

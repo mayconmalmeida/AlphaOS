@@ -73,22 +73,22 @@ export default function Settings() {
 
         <Card className="bg-card/40">
           <CardHeader>
-            <CardTitle>Demo Mode</CardTitle>
-            <CardDescription>Modo de demonstração persistente para apresentação e submission.</CardDescription>
+            <CardTitle>Fallback Controls</CardTitle>
+            <CardDescription>Controle explícito de fallback para cenários offline ou indisponibilidade de integrações.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-              Demo mode deixa o produto previsível para hackathon, mantendo amostras, fallback mock e disclaimer institucional.
+              Use fallback quando a infraestrutura live não estiver disponível. AlphaOS mantém proveniência e sinaliza claramente quando dados são live vs fallback.
             </div>
             <div className="flex items-center justify-between gap-4 rounded-xl border bg-background/35 p-4">
               <div>
                 <div className="text-sm font-medium">Estado atual</div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  {demoMode.enabled ? "Dados previsíveis para demo" : "Modo live-ready com fallback"}
+                  {demoMode.enabled ? "Fallback forçado" : "Live intelligence quando disponível"}
                 </div>
               </div>
               <Button variant="outline" onClick={demoMode.toggle}>
-                {demoMode.enabled ? "Desativar demo" : "Ativar demo"}
+                {demoMode.enabled ? "Desativar fallback" : "Ativar fallback"}
               </Button>
             </div>
             <Button
@@ -208,8 +208,9 @@ export default function Settings() {
               ANON_KEY {status.supabaseAnonKeyConfigured ? "ok" : "missing"}
             </Badge>
             <Badge variant={status.edgeFunctionReady ? "default" : "outline"}>
-              Edge Function {status.edgeFunctionReady ? "ready" : "mock fallback"}
+              Edge Function {status.edgeFunctionReady ? "ready" : "fallback"}
             </Badge>
+
           </div>
 
           <div className="flex flex-wrap gap-2">
