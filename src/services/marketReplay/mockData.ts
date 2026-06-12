@@ -1,0 +1,170 @@
+import type { ReplayScenario } from "@/services/marketReplay/types"
+
+export const mockReplayScenarios: ReplayScenario[] = [
+  {
+    id: "march-2024-ai-rotation",
+    title: "Replay March 2024",
+    dateRange: "01 Mar 2024 - 14 Mar 2024",
+    durationDays: 14,
+    thesis:
+      "Narrativas de AI infrastructure aceleram enquanto liquidez rota de beta especulativo para infra e produtividade.",
+    context:
+      "Mercado em regime construtivo, com expansão gradual de volume e melhora de framing nas notícias.",
+    frames: [
+      {
+        day: 1,
+        timestampLabel: "Day 1",
+        narrativeLeader: "AI Infrastructure",
+        narrativeStrength: 58,
+        sentiment: 52,
+        marketBreadth: 49,
+        volumeTrend: "Volume neutro, início de expansão",
+        rotation: "Capital ainda distribuído entre meme, L2 e AI",
+        notableAssets: ["BTC", "ETH", "RNDR"],
+      },
+      {
+        day: 3,
+        timestampLabel: "Day 3",
+        narrativeLeader: "AI Infrastructure",
+        narrativeStrength: 66,
+        sentiment: 57,
+        marketBreadth: 54,
+        volumeTrend: "Volume sobe acima da média recente",
+        rotation: "Fluxo começa a sair de memes para AI beta",
+        notableAssets: ["RNDR", "TAO", "FET"],
+      },
+      {
+        day: 5,
+        timestampLabel: "Day 5",
+        narrativeLeader: "AI Infrastructure",
+        narrativeStrength: 73,
+        sentiment: 61,
+        marketBreadth: 59,
+        volumeTrend: "Confirmação de expansão com follow-through",
+        rotation: "L2 desacelera e infra passa a liderar",
+        notableAssets: ["TAO", "RNDR", "LINK"],
+      },
+      {
+        day: 8,
+        timestampLabel: "Day 8",
+        narrativeLeader: "AI Infrastructure",
+        narrativeStrength: 79,
+        sentiment: 67,
+        marketBreadth: 63,
+        volumeTrend: "Volume forte, porém mais seletivo",
+        rotation: "Capital concentra em líderes narrativos",
+        notableAssets: ["TAO", "FET", "LINK"],
+      },
+      {
+        day: 11,
+        timestampLabel: "Day 11",
+        narrativeLeader: "AI Infrastructure",
+        narrativeStrength: 83,
+        sentiment: 71,
+        marketBreadth: 60,
+        volumeTrend: "Sinal de exaustão leve nas caudas",
+        rotation: "Rotação interna: beta alto para nomes de qualidade",
+        notableAssets: ["TAO", "LINK", "ETH"],
+      },
+      {
+        day: 14,
+        timestampLabel: "Day 14",
+        narrativeLeader: "AI Infrastructure",
+        narrativeStrength: 76,
+        sentiment: 64,
+        marketBreadth: 56,
+        volumeTrend: "Volume desacelera após pico",
+        rotation: "Mercado realiza parcialmente e consolida ganhos",
+        notableAssets: ["ETH", "LINK", "BTC"],
+      },
+    ],
+    events: [
+      {
+        id: "ev-1",
+        day: 1,
+        timestampLabel: "Day 1",
+        title: "AI começa a dominar manchetes",
+        description: "Mudança de framing em notícias e redes prioriza infraestrutura e produtividade.",
+        impact: "medium",
+        category: "narrative",
+      },
+      {
+        id: "ev-2",
+        day: 4,
+        timestampLabel: "Day 4",
+        title: "Rotação Memecoins -> AI",
+        description: "Fluxo especulativo reduz exposição em memes e aumenta beta narrativo em AI.",
+        impact: "high",
+        category: "rotation",
+      },
+      {
+        id: "ev-3",
+        day: 7,
+        timestampLabel: "Day 7",
+        title: "Sentimento melhora com volume",
+        description: "Participação do mercado amplia e headlines reforçam continuidade do tema.",
+        impact: "medium",
+        category: "sentiment",
+      },
+      {
+        id: "ev-4",
+        day: 10,
+        timestampLabel: "Day 10",
+        title: "Qualidade passa a liderar",
+        description: "Mercado reduz risco em nomes frágeis e concentra liquidez nos líderes.",
+        impact: "medium",
+        category: "volume",
+      },
+      {
+        id: "ev-5",
+        day: 13,
+        timestampLabel: "Day 13",
+        title: "Desaceleração de breadth",
+        description: "Menor dispersão positiva indica necessidade de realização parcial.",
+        impact: "low",
+        category: "macro",
+      },
+    ],
+    outcomes: [
+      { label: "Narrative Peak", value: "83", tone: "positive" },
+      { label: "Best Rotation", value: "Memes -> AI Infra", tone: "positive" },
+      { label: "Risk State", value: "Concentration Rising", tone: "neutral" },
+      { label: "Close", value: "Trend intact, breadth softer", tone: "neutral" },
+    ],
+    followThrough: [
+      {
+        horizon: "30d",
+        whatHappenedNext:
+          "AI infrastructure remained the winning narrative while quality outperformed higher-beta tails.",
+        marketEvolution:
+          "Leadership stayed concentrated, returns persisted, and market breadth softened moderately.",
+        winningNarratives: ["AI Infrastructure", "Quality", "Productivity"],
+        losingNarratives: ["Memecoins", "High-beta tails"],
+      },
+      {
+        horizon: "60d",
+        whatHappenedNext:
+          "Leadership broadened into selected majors, but narrative intensity normalized from peak levels.",
+        marketEvolution:
+          "Rotation matured from discovery into selective follow-through with lower asymmetry.",
+        winningNarratives: ["Infrastructure", "Majors with utility"],
+        losingNarratives: ["Late beta chasers", "Thin-liquidity names"],
+      },
+      {
+        horizon: "90d",
+        whatHappenedNext:
+          "The original thesis remained directionally correct, but fresh alpha shifted from narrative acceleration to execution quality.",
+        marketEvolution:
+          "Market regime stayed constructive, yet concentration risk required more disciplined position sizing.",
+        winningNarratives: ["Execution quality", "Institutional liquidity"],
+        losingNarratives: ["Narrative-only momentum"],
+      },
+    ],
+    lessons: [
+      "Narrativa forte com breadth moderado ainda sustenta continuidade se líderes mantiverem volume.",
+      "Rotação interna de beta para qualidade costuma preceder desaceleração, não reversão imediata.",
+      "Realização parcial perto do pico de força narrativa melhora assimetria para reentrada.",
+    ],
+  },
+]
+
