@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { buildGuidedJourneyHref } from "@/lib/guidedJourney"
 import { buildAlphaScore } from "@/services/alphaScoreService"
 import type { HypothesisDetail } from "@/services/hypotheses"
 import { useHypothesisGeneration } from "@/hooks/useHypothesisGeneration"
@@ -37,22 +38,37 @@ export default function Hypotheses() {
             Hypothesis Center
           </div>
           <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
-            Hipóteses explicáveis
+            Explainable market hypotheses
           </h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            AlphaOS gera hipóteses de mercado com evidências. Não são sinais, nem recomendação.
+            AlphaOS generates market hypotheses backed by evidence. These are research views, not
+            signals or recommendations.
           </p>
         </div>
-        <Button onClick={handleGenerate} disabled={generating}>
-          <Sparkles className="h-4 w-4" />
-          {generating ? "Gerando…" : "Generate Hypothesis"}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild disabled={data.length === 0}>
+            <Link
+              to={buildGuidedJourneyHref({
+                step: 1,
+                hypothesisId: data.find((item) => item.status !== "closed")?.id ?? data[0]?.id ?? null,
+              })}
+              className="flex items-center gap-2"
+            >
+              Explore Today&apos;s Best Opportunity
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button onClick={handleGenerate} disabled={generating}>
+            <Sparkles className="h-4 w-4" />
+            {generating ? "Generating..." : "Generate Hypothesis"}
+          </Button>
+        </div>
       </div>
 
       {generateError ? (
         <Card className="bg-card/40">
           <CardContent className="p-5">
-            <div className="text-sm font-medium">Falha ao gerar hipótese</div>
+            <div className="text-sm font-medium">Failed to generate hypothesis</div>
             <div className="mt-1 text-sm text-muted-foreground">
               {generateError.message}
             </div>
@@ -67,7 +83,7 @@ export default function Hypotheses() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por hipótese, narrativa, regime…"
+              placeholder="Search by hypothesis, narrative, or regime..."
               className="pl-9"
             />
           </div>
@@ -76,13 +92,13 @@ export default function Hypotheses() {
             onChange={(e) => setStatus(e.target.value)}
             className="h-9 rounded-md border border-input bg-background/40 px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <option value="all">Todos os status</option>
+            <option value="all">All statuses</option>
             <option value="open">Open</option>
             <option value="watch">Watch</option>
             <option value="closed">Closed</option>
           </select>
           <Button variant="outline" onClick={retry}>
-            Atualizar
+            Refresh
           </Button>
         </CardContent>
       </Card>
@@ -98,17 +114,17 @@ export default function Hypotheses() {
         ) : error ? (
           <Card className="bg-card/40 lg:col-span-2">
             <CardContent className="p-5">
-              <div className="text-sm font-medium">Falha ao carregar hipóteses</div>
+              <div className="text-sm font-medium">Failed to load hypotheses</div>
               <div className="mt-1 text-sm text-muted-foreground">{error.message}</div>
               <Button variant="outline" className="mt-3" onClick={retry}>
-                Tentar novamente
+                Retry
               </Button>
             </CardContent>
           </Card>
         ) : data.length === 0 ? (
           <Card className="bg-card/40 lg:col-span-2">
             <CardContent className="p-5 text-sm text-muted-foreground">
-              Nenhuma hipótese encontrada com os filtros atuais.
+              No hypotheses match the current filters.
             </CardContent>
           </Card>
         ) : (
@@ -142,7 +158,7 @@ export default function Hypotheses() {
                   <Badge variant="secondary">Risk {h.riskScore}</Badge>
                   <Badge variant="secondary">{h.status}</Badge>
                   <Badge variant="outline">{h.expectedHorizon}</Badge>
-                  <Badge variant="outline">{h.evidenceCount} evidências</Badge>
+                  <Badge variant="outline">{h.evidenceCount} evidence items</Badge>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {h.relatedNarratives.map((item) => (
@@ -159,9 +175,21 @@ export default function Hypotheses() {
                   to={`/hypotheses/${h.id}`}
                   className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
                 >
-                  Abrir evidências
+                  Open evidence
                   <ChevronRight className="h-4 w-4" />
                 </Link>
+                <Button asChild size="sm">
+                  <Link
+                    to={buildGuidedJourneyHref({
+                      step: 1,
+                      hypothesisId: h.id,
+                    })}
+                    className="flex items-center gap-2"
+                  >
+                    Explore Today&apos;s Best Opportunity
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
               )

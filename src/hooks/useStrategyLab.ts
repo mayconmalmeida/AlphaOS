@@ -100,7 +100,7 @@ export function useStrategyLab() {
   const generateStrategies = useCallback(async () => {
     if (!selectedHypothesisId) {
       setGenerationError({
-        message: "Selecione uma hipótese antes de gerar estratégias.",
+        message: "Select a hypothesis before generating strategies.",
         code: "STRATEGY_HYPOTHESIS_REQUIRED",
       })
       return

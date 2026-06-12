@@ -31,7 +31,7 @@ export function createQuotesService(deps: {
         return ok(mapped)
       } catch (e) {
         return err(
-          e instanceof Error ? e.message : "Falha ao carregar quotes",
+          e instanceof Error ? e.message : "Failed to load quotes",
           "CMC_QUOTES"
         )
       }

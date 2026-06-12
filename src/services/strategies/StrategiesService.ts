@@ -153,9 +153,9 @@ function buildFallbackStrategies(
     ["BTC", "ETH", ...hypothesis.relatedAssets].filter((item, idx, arr) => arr.indexOf(item) === idx),
   ]
   const constraints = [
-    "Exposição máxima de 35% por ativo",
-    "Revisão obrigatória se drawdown exceder o budget",
-    "Sem alocação fora de ativos com liquidez suficiente",
+    "Maximum 35% exposure per asset",
+    "Mandatory review if drawdown exceeds the budget",
+    "No allocation outside sufficiently liquid assets",
   ]
 
   return Array.from({ length: variationCount }).map((_, index) => {
@@ -173,23 +173,23 @@ function buildFallbackStrategies(
 
     return {
       strategy_name: `${verbs[index % verbs.length]} ${focusNarrative} v${index + 1}`,
-      objective: `Capturar a tese "${hypothesis.title}" com disciplina de risco e regras testáveis.`,
+      objective: `Capture the thesis "${hypothesis.title}" with disciplined risk control and testable rules.`,
       universe,
       entry_rules: [
-        `Ativar apenas se o regime permanecer em ${hypothesis.marketRegime}.`,
-        `Exigir confirmação de pelo menos 2 evidências centrais da hipótese.`,
-        `Entrar somente com continuidade de força narrativa e liquidez.`,
+        `Activate only if the regime remains in ${hypothesis.marketRegime}.`,
+        "Require confirmation from at least two core evidence points.",
+        "Enter only when narrative strength and liquidity remain intact.",
       ],
       exit_rules: [
-        "Reduzir quando a evidência principal perder relevância.",
-        "Encerrar se uma invalidating condition for acionada.",
-        "Desalocar se o benchmark superar a estratégia com menor drawdown.",
+        "Reduce exposure when the primary evidence loses relevance.",
+        "Exit if an invalidating condition is triggered.",
+        "Deallocate if the benchmark outperforms with lower drawdown.",
       ],
       position_sizing: sizingModes[index % sizingModes.length],
       rebalance_frequency: rebalanceModes[index % rebalanceModes.length],
       risk_controls: [
         ...constraints,
-        `Budget de risco alinhado ao risk score ${hypothesis.riskScore}.`,
+        `Risk budget aligned with risk score ${hypothesis.riskScore}.`,
       ],
       stop_conditions: hypothesis.invalidatingConditions.slice(0, 3),
       benchmark: universe.includes("BTC") ? "BTC + ETH blend" : "Equal-weight majors basket",
@@ -358,7 +358,7 @@ export function createStrategiesService(): StrategiesService {
       const all = await getAllCandidates()
       const left = all.find((item) => item.id === ids[0])
       const right = all.find((item) => item.id === ids[1])
-      if (!left || !right) return err("Estratégia não encontrada", "STRATEGY_NOT_FOUND")
+      if (!left || !right) return err("Strategy not found", "STRATEGY_NOT_FOUND")
       return ok({ left, right })
     },
 
@@ -371,9 +371,9 @@ export function createStrategiesService(): StrategiesService {
 
       const hypothesis = hypothesisRes.data
       const riskConstraints = input.riskConstraints ?? [
-        "Não executar trades reais",
-        "Manter drawdown dentro do budget da hipótese",
-        "Aplicar filtros de liquidez e regime",
+        "Do not execute live trades",
+        "Keep drawdown inside the hypothesis risk budget",
+        "Apply liquidity and regime filters",
       ]
 
       const prompt = buildPrompt({

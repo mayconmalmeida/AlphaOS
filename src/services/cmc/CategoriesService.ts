@@ -28,7 +28,7 @@ export function createCategoriesService(deps: {
         return ok(mapped)
       } catch (e) {
         return err(
-          e instanceof Error ? e.message : "Falha ao carregar categories",
+          e instanceof Error ? e.message : "Failed to load categories",
           "CMC_CATEGORIES"
         )
       }

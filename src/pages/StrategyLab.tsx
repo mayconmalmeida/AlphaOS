@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import {
   AlertTriangle,
   CheckCircle2,
@@ -7,9 +8,11 @@ import {
   Sparkles,
   XCircle,
 } from "lucide-react"
+import { useLocation } from "react-router-dom"
 
 import { AlphaScoreBadge } from "@/components/alpha/AlphaScoreBadge"
 import { ProvenancePanel } from "@/components/evidence/ProvenancePanel"
+import { GuidedJourneyBanner } from "@/components/journey/GuidedJourneyBanner"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -17,6 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { useCriticReport } from "@/hooks/useCriticReport"
 import { useStrategyLab } from "@/hooks/useStrategyLab"
+import { parseGuidedJourney } from "@/lib/guidedJourney"
 import { buildAlphaScore } from "@/services/alphaScoreService"
 import { buildProvenanceSummary } from "@/services/evidence/evidenceGraph"
 
@@ -30,6 +34,13 @@ function displayPipelineStatus(value: string) {
 }
 
 export default function StrategyLab() {
+  const location = useLocation()
+  const journey = parseGuidedJourney(location.search)
+  const [showHypothesisDetails, setShowHypothesisDetails] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
+  const [showPipelineDetails, setShowPipelineDetails] = useState(false)
+  const [showRankedCandidates, setShowRankedCandidates] = useState(false)
+  const [showComparison, setShowComparison] = useState(false)
   const {
     search,
     setSearch,
@@ -52,6 +63,13 @@ export default function StrategyLab() {
     generateStrategies,
     retry,
   } = useStrategyLab()
+
+  useEffect(() => {
+    if (!journey.active) return
+    if (!journey.hypothesisId) return
+    if (selectedHypothesisId === journey.hypothesisId) return
+    setSelectedHypothesisId(journey.hypothesisId)
+  }, [journey.active, journey.hypothesisId, selectedHypothesisId, setSelectedHypothesisId])
   const selectedStrategy = comparison?.left ?? topRanked[0] ?? null
   const activeAlphaScore = activeHypothesis
     ? buildAlphaScore({
@@ -111,15 +129,18 @@ export default function StrategyLab() {
     <div className="space-y-6">
       <div>
         <div className="text-xs uppercase tracking-wider text-muted-foreground">
-          Strategy Evolution Lab
+          Strategy Lab
         </div>
         <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
-          Pipeline visual de evolução
+          Turn hypotheses into testable strategies
         </h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Gere variações backtestáveis a partir de uma hipótese selecionada. Pesquisa e simulação apenas.
+          Generate backtestable strategy variations from a selected hypothesis. Research and
+          simulation only.
         </p>
       </div>
+
+      {journey.active ? <GuidedJourneyBanner hypothesisId={journey.hypothesisId} /> : null}
 
       <Card className="bg-card/40">
         <CardContent className="grid gap-3 p-5 md:grid-cols-[220px_1fr_auto]">
@@ -128,7 +149,7 @@ export default function StrategyLab() {
             onChange={(e) => setSelectedHypothesisId(e.target.value)}
             className="h-9 rounded-md border border-input bg-background/40 px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <option value="">Selecione uma hipótese</option>
+            <option value="">Select a hypothesis</option>
             {hypotheses.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.title}
@@ -138,30 +159,45 @@ export default function StrategyLab() {
           <div className="rounded-xl border bg-background/35 p-4">
             {activeHypothesis ? (
               <>
-                <div className="flex flex-wrap gap-2">
-                  <Badge>{activeHypothesis.status}</Badge>
-                  <Badge variant="secondary">
-                    Confidence {activeHypothesis.confidence}%
-                  </Badge>
-                  {activeAlphaScore ? <AlphaScoreBadge score={activeAlphaScore} compact /> : null}
-                  <Badge variant="outline">{activeHypothesis.marketRegime}</Badge>
-                </div>
-                <div className="mt-3 font-display text-base font-semibold tracking-tight">
+                <div className="font-display text-base font-semibold tracking-tight">
                   {activeHypothesis.title}
                 </div>
                 <div className="mt-1 text-sm text-muted-foreground">
-                  {activeHypothesis.description}
+                  {activeHypothesis.whyNow}
                 </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-3 px-0"
+                  onClick={() => setShowHypothesisDetails((value) => !value)}
+                >
+                  {showHypothesisDetails ? "Hide details" : "View details"}
+                </Button>
+                {showHypothesisDetails ? (
+                  <>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Badge>{activeHypothesis.status}</Badge>
+                      <Badge variant="secondary">
+                        Confidence {activeHypothesis.confidence}%
+                      </Badge>
+                      {activeAlphaScore ? <AlphaScoreBadge score={activeAlphaScore} compact /> : null}
+                      <Badge variant="outline">{activeHypothesis.marketRegime}</Badge>
+                    </div>
+                    <div className="mt-3 text-sm text-muted-foreground">
+                      {activeHypothesis.description}
+                    </div>
+                  </>
+                ) : null}
               </>
             ) : (
               <div className="text-sm text-muted-foreground">
-                Escolha uma hipótese para gerar estratégias backtestáveis.
+                Choose a hypothesis to generate backtestable strategies.
               </div>
             )}
           </div>
           <Button onClick={generateStrategies} disabled={!selectedHypothesisId || generating}>
             <Sparkles className="h-4 w-4" />
-            {generating ? "Gerando…" : "Generate Strategies"}
+            {generating ? "Generating..." : "Generate Strategies"}
           </Button>
         </CardContent>
       </Card>
@@ -169,7 +205,7 @@ export default function StrategyLab() {
       {generationError ? (
         <Card className="bg-card/40">
           <CardContent className="p-5">
-            <div className="text-sm font-medium">Falha ao gerar estratégias</div>
+            <div className="text-sm font-medium">Failed to generate strategies</div>
             <div className="mt-1 text-sm text-muted-foreground">
               {generationError.message}
             </div>
@@ -178,75 +214,99 @@ export default function StrategyLab() {
       ) : null}
 
       <Card className="bg-card/40">
-        <CardContent className="grid gap-3 p-5 md:grid-cols-[1fr_180px_auto]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por estratégia, benchmark, ativo…"
-              className="pl-9"
-            />
-          </div>
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="h-9 rounded-md border border-input bg-background/40 px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <option value="all">Todos os status</option>
-            <option value="approved">Approved</option>
-            <option value="warning">Warning</option>
-            <option value="candidate">Candidate</option>
-          </select>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={retry}>
-              Atualizar
-            </Button>
-            <Button onClick={exportJson} className="gap-2">
-              <Download className="h-4 w-4" />
-              Export JSON
+        <CardContent className="space-y-4 p-5">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="text-sm font-medium">Candidate workspace</div>
+              <div className="mt-1 text-sm text-muted-foreground">
+                {candidates.length} strategy variations available for ranking, review, and export.
+              </div>
+            </div>
+            <Button variant="outline" onClick={() => setShowFilters((value) => !value)}>
+              {showFilters ? "Hide filters" : "Filters & export"}
             </Button>
           </div>
+          {showFilters ? (
+            <div className="grid gap-3 md:grid-cols-[1fr_180px_auto]">
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search by strategy, benchmark, or asset..."
+                  className="pl-9"
+                />
+              </div>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="h-9 rounded-md border border-input bg-background/40 px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="all">All statuses</option>
+                <option value="approved">Approved</option>
+                <option value="warning">Warning</option>
+                <option value="candidate">Candidate</option>
+              </select>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={retry}>
+                  Refresh
+                </Button>
+                <Button onClick={exportJson} className="gap-2">
+                  <Download className="h-4 w-4" />
+                  Export JSON
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="outline">
+                Approved {candidates.filter((item) => item.status === "approved").length}
+              </Badge>
+              <Badge variant="outline">
+                Warning {candidates.filter((item) => item.status === "warning").length}
+              </Badge>
+              <Badge variant="outline">
+                Candidate {candidates.filter((item) => item.status === "candidate").length}
+              </Badge>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       <Card className="bg-card/40">
         <CardHeader>
-          <CardTitle>Pipeline</CardTitle>
+          <CardTitle>Strategy pipeline</CardTitle>
           <CardDescription>
-            Hypothesis → Generate → Backtest → Critic → Approved
+            Keep the first screen simple and expand operational detail only when needed.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 md:grid-cols-5">
-            {pipeline.map((s) => (
-              <div key={s.label} className="rounded-xl border bg-background/35 p-4">
-                <div className="text-xs text-muted-foreground">Step</div>
-                <div className="mt-1 font-display text-base font-semibold tracking-tight">
-                  {s.label}
-                </div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <Badge
-                    variant={
-                      s.status === "ready"
-                        ? "default"
-                        : s.status === "active"
-                          ? "outline"
-                          : "secondary"
-                    }
-                  >
-                    {displayPipelineStatus(s.status)}
-                  </Badge>
-                  {typeof s.count === "number" ? (
-                    <Badge variant="secondary">{s.count}</Badge>
-                  ) : null}
-                </div>
-              </div>
-            ))}
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="outline">Hypotheses {hypotheses.length}</Badge>
+            <Badge variant="outline">Active candidates {candidates.length}</Badge>
+            <Badge variant="secondary">Top score {topRanked[0]?.score ?? "N/A"}</Badge>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowPipelineDetails((value) => !value)}
+            >
+              {showPipelineDetails ? "Hide pipeline details" : "View pipeline details"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowRankedCandidates((value) => !value)}
+            >
+              {showRankedCandidates ? "Hide ranked candidates" : "Show ranked candidates"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowComparison((value) => !value)}
+            >
+              {showComparison ? "Hide comparison" : "Show comparison"}
+            </Button>
           </div>
-
-          <Separator className="my-6" />
-
           {loading ? (
             <div className="grid gap-4 lg:grid-cols-2">
               <div className="h-[280px] animate-pulse rounded-xl border bg-background/30" />
@@ -254,117 +314,154 @@ export default function StrategyLab() {
             </div>
           ) : error ? (
             <div className="rounded-xl border bg-background/35 p-5">
-              <div className="text-sm font-medium">Falha ao carregar estratégias</div>
+              <div className="text-sm font-medium">Failed to load strategies</div>
               <div className="mt-1 text-sm text-muted-foreground">{error.message}</div>
               <Button variant="outline" className="mt-3" onClick={retry}>
-                Tentar novamente
+                Retry
               </Button>
             </div>
           ) : (
-            <div className="grid gap-4 lg:grid-cols-2">
-              <div className="rounded-xl border bg-background/35 p-5">
-                <div className="text-sm font-medium">Top Ranked</div>
-                <div className="mt-3 space-y-2">
-                  {topRanked.length > 0 ? (
-                    topRanked.map((row) => (
-                      <button
-                        key={row.id}
-                        type="button"
-                        onClick={() =>
-                          setSelectedIds((prev) => [
-                            row.id,
-                            prev?.[1] && prev[1] !== row.id
-                              ? prev[1]
-                              : topRanked[1]?.id ?? row.id,
-                          ])
-                        }
-                        className="flex w-full items-center justify-between rounded-lg border bg-card/50 px-3 py-3 text-left transition-colors hover:bg-card/70"
-                      >
-                        <div className="min-w-0">
-                          <div className="truncate text-sm">{row.spec.strategyName}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {displayPipelineStatus(row.status)} · {displayPipelineStatus(row.pipelineStage)} · {row.spec.timeHorizon}
-                          </div>
-                        </div>
-                        <Badge variant="outline">Score {row.score}</Badge>
-                      </button>
-                    ))
-                  ) : (
-                    <div className="rounded-lg border bg-card/50 p-3 text-sm text-muted-foreground">
-                      Gere estratégias para a hipótese selecionada para preencher o ranking.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="rounded-xl border bg-background/35 p-5">
-                <div className="text-sm font-medium">Comparação</div>
-                {comparison ? (
-                  <>
-                    <div className="mt-3 grid gap-3 md:grid-cols-2">
-                      {[comparison.left, comparison.right].map((strategy) => (
-                        <div
-                          key={strategy.id}
-                          className={[
-                            "rounded-xl border bg-card/50 p-4",
-                            selectedIds?.includes(strategy.id)
-                              ? "border-primary/40"
-                              : "border-border",
-                          ].join(" ")}
+            <>
+              {showPipelineDetails ? (
+                <div className="grid gap-3 md:grid-cols-5">
+                  {pipeline.map((s) => (
+                    <div key={s.label} className="rounded-xl border bg-background/35 p-4">
+                      <div className="text-xs text-muted-foreground">Step</div>
+                      <div className="mt-1 font-display text-base font-semibold tracking-tight">
+                        {s.label}
+                      </div>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <Badge
+                          variant={
+                            s.status === "ready"
+                              ? "default"
+                              : s.status === "active"
+                                ? "outline"
+                                : "secondary"
+                          }
                         >
-                          <div className="font-display text-base font-semibold tracking-tight">
-                            {strategy.spec.strategyName}
-                          </div>
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            <Badge>{displayPipelineStatus(strategy.status)}</Badge>
-                            <Badge variant="secondary">{displayPipelineStatus(strategy.pipelineStage)}</Badge>
-                            <Badge variant="outline">Score {strategy.score}</Badge>
-                          </div>
-                        </div>
-                      ))}
+                          {displayPipelineStatus(s.status)}
+                        </Badge>
+                        {typeof s.count === "number" ? (
+                          <Badge variant="secondary">{s.count}</Badge>
+                        ) : null}
+                      </div>
                     </div>
+                  ))}
+                </div>
+              ) : null}
 
-                    <div className="mt-4 grid gap-2 md:grid-cols-2">
-                      {[
-                        {
-                          k: "Total Return",
-                          a: fmtPct(comparison.left.metrics.totalReturn),
-                          b: fmtPct(comparison.right.metrics.totalReturn),
-                        },
-                        {
-                          k: "Max Drawdown",
-                          a: fmtPct(comparison.left.metrics.maxDrawdown),
-                          b: fmtPct(comparison.right.metrics.maxDrawdown),
-                        },
-                        {
-                          k: "Win Rate",
-                          a: fmtPct(comparison.left.metrics.winRate),
-                          b: fmtPct(comparison.right.metrics.winRate),
-                        },
-                        {
-                          k: "Profit Factor",
-                          a: comparison.left.metrics.profitFactor.toFixed(2),
-                          b: comparison.right.metrics.profitFactor.toFixed(2),
-                        },
-                      ].map((m) => (
-                        <div key={m.k} className="rounded-lg border bg-card/50 p-3">
-                          <div className="text-xs text-muted-foreground">{m.k}</div>
-                          <div className="mt-1 flex items-center justify-between gap-3 text-sm">
-                            <span>{m.a}</span>
-                            <span className="text-muted-foreground">vs</span>
-                            <span>{m.b}</span>
-                          </div>
+              {(showRankedCandidates || showComparison) ? <Separator /> : null}
+
+              <div className="grid gap-4 lg:grid-cols-2">
+                {showRankedCandidates ? (
+                  <div className="rounded-xl border bg-background/35 p-5">
+                    <div className="text-sm font-medium">Ranked candidates</div>
+                    <div className="mt-3 space-y-2">
+                      {topRanked.length > 0 ? (
+                        topRanked.map((row) => (
+                          <button
+                            key={row.id}
+                            type="button"
+                            onClick={() =>
+                              setSelectedIds((prev) => [
+                                row.id,
+                                prev?.[1] && prev[1] !== row.id
+                                  ? prev[1]
+                                  : topRanked[1]?.id ?? row.id,
+                              ])
+                            }
+                            className="flex w-full items-center justify-between rounded-lg border bg-card/50 px-3 py-3 text-left transition-colors hover:bg-card/70"
+                          >
+                            <div className="min-w-0">
+                              <div className="truncate text-sm">{row.spec.strategyName}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {displayPipelineStatus(row.status)} · {displayPipelineStatus(row.pipelineStage)} · {row.spec.timeHorizon}
+                              </div>
+                            </div>
+                            <Badge variant="outline">Score {row.score}</Badge>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="rounded-lg border bg-card/50 p-3 text-sm text-muted-foreground">
+                          Generate strategies for the selected hypothesis to populate the ranking.
                         </div>
-                      ))}
+                      )}
                     </div>
-                  </>
-                ) : (
-                  <div className="mt-3 text-sm text-muted-foreground">
-                    Selecione duas estratégias para comparar.
                   </div>
-                )}
+                ) : null}
+
+                {showComparison ? (
+                  <div className="rounded-xl border bg-background/35 p-5">
+                    <div className="text-sm font-medium">Comparison</div>
+                    {comparison ? (
+                      <>
+                        <div className="mt-3 grid gap-3 md:grid-cols-2">
+                          {[comparison.left, comparison.right].map((strategy) => (
+                            <div
+                              key={strategy.id}
+                              className={[
+                                "rounded-xl border bg-card/50 p-4",
+                                selectedIds?.includes(strategy.id)
+                                  ? "border-primary/40"
+                                  : "border-border",
+                              ].join(" ")}
+                            >
+                              <div className="font-display text-base font-semibold tracking-tight">
+                                {strategy.spec.strategyName}
+                              </div>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                <Badge>{displayPipelineStatus(strategy.status)}</Badge>
+                                <Badge variant="secondary">{displayPipelineStatus(strategy.pipelineStage)}</Badge>
+                                <Badge variant="outline">Score {strategy.score}</Badge>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="mt-4 grid gap-2 md:grid-cols-2">
+                          {[
+                            {
+                              k: "Total Return",
+                              a: fmtPct(comparison.left.metrics.totalReturn),
+                              b: fmtPct(comparison.right.metrics.totalReturn),
+                            },
+                            {
+                              k: "Max Drawdown",
+                              a: fmtPct(comparison.left.metrics.maxDrawdown),
+                              b: fmtPct(comparison.right.metrics.maxDrawdown),
+                            },
+                            {
+                              k: "Win Rate",
+                              a: fmtPct(comparison.left.metrics.winRate),
+                              b: fmtPct(comparison.right.metrics.winRate),
+                            },
+                            {
+                              k: "Profit Factor",
+                              a: comparison.left.metrics.profitFactor.toFixed(2),
+                              b: comparison.right.metrics.profitFactor.toFixed(2),
+                            },
+                          ].map((m) => (
+                            <div key={m.k} className="rounded-lg border bg-card/50 p-3">
+                              <div className="text-xs text-muted-foreground">{m.k}</div>
+                              <div className="mt-1 flex items-center justify-between gap-3 text-sm">
+                                <span>{m.a}</span>
+                                <span className="text-muted-foreground">vs</span>
+                                <span>{m.b}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="mt-3 text-sm text-muted-foreground">
+                        Select two strategies to compare.
+                      </div>
+                    )}
+                  </div>
+                ) : null}
               </div>
-            </div>
+            </>
           )}
         </CardContent>
       </Card>
@@ -373,7 +470,7 @@ export default function StrategyLab() {
         <Card className="bg-card/40 lg:col-span-5">
           <CardHeader>
             <CardTitle>Selected Strategy</CardTitle>
-            <CardDescription>Spec pronta para export e evolução futura.</CardDescription>
+            <CardDescription>Strategy specification ready for review, export, and iteration.</CardDescription>
           </CardHeader>
           <CardContent>
             {selectedStrategy ? (
@@ -429,7 +526,7 @@ export default function StrategyLab() {
               </div>
             ) : (
               <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-                Nenhuma estratégia disponível para a hipótese selecionada.
+                No strategies are available for the selected hypothesis.
               </div>
             )}
           </CardContent>
@@ -439,7 +536,7 @@ export default function StrategyLab() {
           <CardHeader>
             <CardTitle>All Variations</CardTitle>
             <CardDescription>
-              Estratégias ordenadas por score para comparação e export.
+              Strategies ranked by score for comparison and export.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -474,7 +571,7 @@ export default function StrategyLab() {
                           {item.spec.benchmark}
                         </div>
                       </div>
-                      <div>{item.status}</div>
+                      <div>{displayPipelineStatus(item.status)}</div>
                       <div>{item.score}</div>
                       <div>{fmtPct(item.metrics.totalReturn)}</div>
                       <div>{fmtPct(item.metrics.maxDrawdown)}</div>
@@ -483,7 +580,7 @@ export default function StrategyLab() {
                   ))
                 ) : (
                   <div className="px-3 py-4 text-sm text-muted-foreground">
-                    Sem variações geradas para esta hipótese.
+                    No variations have been generated for this hypothesis.
                   </div>
                 )}
               </div>
@@ -499,7 +596,7 @@ export default function StrategyLab() {
             Critic Report
           </CardTitle>
           <CardDescription>
-            Painel tipo auditoria para overfitting, liquidez, dependência narrativa e concentração.
+            Buyer-facing risk review covering overfitting, liquidity, concentration, and narrative dependence.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -507,10 +604,10 @@ export default function StrategyLab() {
             <div className="h-[320px] animate-pulse rounded-xl border bg-background/30" />
           ) : criticError ? (
             <div className="rounded-xl border bg-background/35 p-5">
-              <div className="text-sm font-medium">Falha ao carregar relatório</div>
+              <div className="text-sm font-medium">Failed to load report</div>
               <div className="mt-1 text-sm text-muted-foreground">{criticError.message}</div>
               <Button variant="outline" className="mt-3" onClick={criticRetry}>
-                Tentar novamente
+                Retry
               </Button>
             </div>
           ) : criticReport ? (

@@ -17,7 +17,7 @@ export default function ResearchReportShare() {
   useEffect(() => {
     async function load() {
       if (!id) {
-        setError({ message: "Relatório inválido", code: "RESEARCH_REPORT_INVALID" })
+        setError({ message: "Invalid report", code: "RESEARCH_REPORT_INVALID" })
         setLoading(false)
         return
       }
@@ -52,7 +52,7 @@ export default function ResearchReportShare() {
           {error.message}
         </div>
         <Button asChild variant="outline">
-          <Link to="/research">Voltar ao Research Center</Link>
+          <Link to="/research">Back to Research Center</Link>
         </Button>
       </div>
     )
@@ -64,7 +64,7 @@ export default function ResearchReportShare() {
     <div className="mx-auto max-w-5xl space-y-4 p-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <Button asChild variant="outline">
-          <Link to="/research">Voltar ao Research Center</Link>
+          <Link to="/research">Back to Research Center</Link>
         </Button>
         <Button onClick={() => window.print()} className="gap-2">
           <Printer className="h-4 w-4" />

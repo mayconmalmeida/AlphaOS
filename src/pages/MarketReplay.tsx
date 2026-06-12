@@ -1,9 +1,12 @@
 import { FastForward, Pause, Play, RotateCcw, Sparkles, TimerReset } from "lucide-react"
+import { useLocation } from "react-router-dom"
 
+import { GuidedJourneyBanner } from "@/components/journey/GuidedJourneyBanner"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useMarketReplay } from "@/hooks/useMarketReplay"
+import { parseGuidedJourney } from "@/lib/guidedJourney"
 
 function toneClass(tone: "positive" | "neutral" | "negative") {
   if (tone === "positive") return "text-primary"
@@ -12,6 +15,8 @@ function toneClass(tone: "positive" | "neutral" | "negative") {
 }
 
 export default function MarketReplay() {
+  const location = useLocation()
+  const journey = parseGuidedJourney(location.search)
   const {
     scenario,
     currentFrame,
@@ -37,18 +42,20 @@ export default function MarketReplay() {
           Market Replay
         </div>
         <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
-          Netflix para inteligência de mercado
+          Replay how market narratives unfolded
         </h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Player temporal com contexto, rotação, sinais e lições do cenário.
+          Step through past market regimes with context, capital rotation, signals, and lessons.
         </p>
       </div>
+
+      {journey.active ? <GuidedJourneyBanner hypothesisId={journey.hypothesisId} /> : null}
 
       <Card className="bg-card/40">
         <CardHeader>
           <CardTitle>{scenario?.title ?? "Market Replay"}</CardTitle>
           <CardDescription>
-            {scenario?.dateRange ?? "Carregando cenário..."}
+            {scenario?.dateRange ?? "Loading scenario..."}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -60,10 +67,10 @@ export default function MarketReplay() {
             </div>
           ) : error ? (
             <div className="rounded-xl border bg-background/35 p-5">
-              <div className="text-sm font-medium">Falha ao carregar replay</div>
+              <div className="text-sm font-medium">Failed to load replay</div>
               <div className="mt-1 text-sm text-muted-foreground">{error.message}</div>
               <Button variant="outline" className="mt-3" onClick={retry}>
-                Tentar novamente
+                Retry
               </Button>
             </div>
           ) : scenario && currentFrame ? (
@@ -107,7 +114,7 @@ export default function MarketReplay() {
                   <div>
                     <div className="text-sm font-medium">Timeline Scrubber</div>
                     <div className="mt-1 text-xs text-muted-foreground">
-                      Navegue pelos frames e observe a mudança de narrativa e rotação.
+                      Move through each frame to see narrative and capital rotation evolve.
                     </div>
                   </div>
                   <div className="text-sm text-muted-foreground">{currentFrame.timestampLabel}</div>
@@ -212,7 +219,7 @@ export default function MarketReplay() {
                 <Card className="bg-background/20 lg:col-span-7">
                   <CardHeader>
                     <CardTitle>Events Timeline</CardTitle>
-                    <CardDescription>Eventos já revelados até o frame atual.</CardDescription>
+                    <CardDescription>Events revealed up to the current frame.</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {visibleEvents.map((row) => (
@@ -244,7 +251,7 @@ export default function MarketReplay() {
                       <Sparkles className="h-4 w-4 text-primary" />
                       Lessons
                     </CardTitle>
-                    <CardDescription>O que aprender com o replay.</CardDescription>
+                    <CardDescription>Key lessons from this replay.</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {scenario.lessons.map((lesson) => (

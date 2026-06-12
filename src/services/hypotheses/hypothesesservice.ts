@@ -138,9 +138,9 @@ function buildFallbackOutput(params: {
 }): HypothesisGenerationOutput {
   const primary = params.topNarratives[0] ?? "Market Structure"
   return {
-    title: `${primary}: assimetria em fase de repricing`,
+    title: `${primary}: repricing asymmetry emerging`,
     description:
-      "Hipótese gerada via fallback: sinais indicam rotação de atenção e compressão de dispersão, com potencial de repricing em ativos líderes do tema. Validar com continuidade de volume e headlines.",
+      "Fallback hypothesis: signals point to attention rotating into the theme with tighter dispersion, creating repricing potential in category leaders. Confirm with sustained volume and continued headlines.",
     confidence: 62,
     risk_score: 48,
     expected_horizon: "30–60 Days",
@@ -153,16 +153,16 @@ function buildFallbackOutput(params: {
         source_name: "Narrative strength/velocity",
         relevance_score: 0.62,
         reasoning:
-          "Narrativas dominantes com velocidade consistente costumam anteceder repricing, mas exigem confirmação por liquidez.",
+          "Dominant narratives with persistent velocity often precede repricing, but still need liquidity confirmation.",
       },
     ],
     invalidating_conditions: [
-      "Quebra de volume/participação nos líderes do tema",
-      "Reversão de sentimento (fear/greed) com aumento de volatilidade",
-      "Headline negativa que muda o framing do mercado",
+      "Volume and participation break down in the theme leaders",
+      "Sentiment reverses while volatility rises",
+      "A negative headline changes the market framing",
     ],
     why_now:
-      "O conjunto de sinais aponta continuidade do tema com rotação para qualidade; o risco aumenta se o mercado entrar em regime de alta volatilidade.",
+      "The signal set points to continued thematic strength with rotation into quality; risk rises quickly if the market shifts into a higher-volatility regime.",
     status: "open",
   }
 }
@@ -249,10 +249,10 @@ function buildHypothesisDetail(params: {
       rotationScore: Math.round(n.rotationScore),
       interpretation:
         n.velocity > 70
-          ? "Aceleração alta; risco aumenta se a dispersão do mercado piorar."
+          ? "High acceleration; risk rises if market dispersion starts to deteriorate."
           : n.velocity > 55
-            ? "Aceleração moderada; exige confirmação por volume e continuidade de headlines."
-            : "Aceleração baixa; hipótese depende de novos catalisadores.",
+            ? "Moderate acceleration; requires confirmation from volume and continued headlines."
+            : "Lower acceleration; the thesis depends on fresh catalysts.",
     })),
     historicalAnalogues: params.analogues.map((a) => ({
       id: a.id,
@@ -319,12 +319,13 @@ export function createHypothesesService(): HypothesesService {
     async getById(id) {
       const stored = await hypothesesRepository.getById(id)
       const data = stored ?? (await getAllHypotheses()).find((item) => item.id === id)
-      if (!data) return err("Hipótese não encontrada", "HYPOTHESIS_NOT_FOUND")
+      if (!data) return err("Hypothesis not found", "HYPOTHESIS_NOT_FOUND")
       return ok(data)
     },
 
     async generate(params) {
-      const focus = params?.focus?.trim() || "Gerar uma hipótese explicável a partir do snapshot atual"
+      const focus =
+        params?.focus?.trim() || "Generate an explainable hypothesis from the current snapshot"
       const symbols = ["BTC", "ETH", "SOL", "BNB", "XRP", "DOGE"]
 
       const [snapshotsRes, sentimentRes, narrativesRes, categoriesRes, newsRes, quotesRes, technicalsRes] =
@@ -344,7 +345,7 @@ export function createHypothesesService(): HypothesesService {
 
       const latestSnapshot = snapshotsRes.data[0] ?? null
       if (!latestSnapshot) {
-        return err("Snapshot indisponível para gerar hipótese", "HYPOTHESIS_SNAPSHOT_UNAVAILABLE")
+        return err("No snapshot is available to generate a hypothesis", "HYPOTHESIS_SNAPSHOT_UNAVAILABLE")
       }
 
       const similarRes = await marketMemoryService.findSimilarSnapshots(latestSnapshot.id)

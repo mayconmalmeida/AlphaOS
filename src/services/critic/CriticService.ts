@@ -112,55 +112,55 @@ function buildDeterministicReport(strategy: StrategyCandidate): CriticReport {
       "overfitting",
       "Overfitting Risk",
       overfitting,
-      "Estratégias com retorno muito alto e poucas observações podem esconder sobreajuste."
+      "Strategies with very high returns and limited observations can hide overfitting."
     ),
     buildCheck(
       "liquidity",
       "Liquidity Risk",
       liquidity,
-      "Universos mais líquidos e drawdown controlado melhoram a executabilidade."
+      "More liquid universes and controlled drawdowns improve real-world executability."
     ),
     buildCheck(
       "drawdown",
       "Drawdown Risk",
       drawdownRisk,
-      "Drawdowns altos reduzem a robustez e aumentam a chance de quebra operacional."
+      "High drawdowns reduce robustness and increase operational fragility."
     ),
     buildCheck(
       "narrative",
       "Narrative Dependency",
       narrativeDependency,
-      "Quanto mais concentrada em uma narrativa, maior o risco de reversão por mudança de atenção."
+      "The more concentrated the strategy is in one narrative, the greater the risk of reversal when attention shifts."
     ),
     buildCheck(
       "market",
       "Market Regime Dependency",
       marketDependency,
-      "Dependência de regime aparece quando a estratégia degrada rápido fora do cenário base."
+      "Regime dependency appears when the strategy degrades quickly outside its base scenario."
     ),
     buildCheck(
       "sample",
       "Sample Size",
       sampleSize,
-      "Mais trades e maior diversidade temporal reduzem fragilidade estatística."
+      "More trades and broader time diversity reduce statistical fragility."
     ),
     buildCheck(
       "concentration",
       "Risk Concentration",
       concentration,
-      "Poucos ativos elevam o risco de concentração e tornam a hipótese menos resiliente."
+      "Too few assets increase concentration risk and make the thesis less resilient."
     ),
     buildCheck(
       "clarity",
       "Rule Clarity",
       ruleClarity,
-      "Regras excessivas e ambíguas dificultam execução consistente e aumentam espaço para viés."
+      "Overly complex or ambiguous rules make consistent execution harder and create room for bias."
     ),
     buildCheck(
       "reliability",
       "Backtest Reliability",
       backtestReliability,
-      "Backtests com poucos trades e pouca diversidade de universo tendem a ser menos confiáveis."
+      "Backtests with too few trades and limited universe diversity tend to be less reliable."
     ),
   ]
 
@@ -177,16 +177,16 @@ function buildDeterministicReport(strategy: StrategyCandidate): CriticReport {
 
   const warnings = checks
     .filter((item) => item.status === "warning")
-    .map((item) => `${item.label}: revisar exposição e robustez.`)
+    .map((item) => `${item.label}: review exposure and robustness.`)
 
   const failureReasons = checks
     .filter((item) => item.status === "failed")
-    .map((item) => `${item.label}: abaixo do threshold institucional.`)
+    .map((item) => `${item.label}: below the institutional quality threshold.`)
 
   const recommendedAdjustments = [
-    "Aumentar diversidade do universo para reduzir concentração.",
-    "Revalidar a estratégia em janelas adicionais de mercado.",
-    "Aplicar filtros extras de liquidez e regime antes da aprovação final.",
+    "Increase universe diversity to reduce concentration.",
+    "Revalidate the strategy across additional market windows.",
+    "Apply stronger liquidity and regime filters before final approval.",
   ]
 
   return {

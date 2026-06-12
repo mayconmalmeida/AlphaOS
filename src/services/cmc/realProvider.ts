@@ -31,7 +31,7 @@ type CmcProxyResponse<T> = {
 async function invokeProxy<T>(body: CmcProxyRequest): Promise<T> {
   const supabase = getSupabaseClient()
   if (!supabase) {
-    throw new Error("Supabase não configurado para CoinMarketCap real data.")
+    throw new Error("Supabase is not configured for live CoinMarketCap data.")
   }
 
   const { data, error } = await supabase.functions.invoke<CmcProxyResponse<T>>(
@@ -50,7 +50,7 @@ async function invokeProxy<T>(body: CmcProxyRequest): Promise<T> {
   }
 
   if (!data?.data) {
-    throw new Error("Resposta inválida do proxy CoinMarketCap.")
+    throw new Error("Invalid response from the CoinMarketCap proxy.")
   }
 
   return data.data

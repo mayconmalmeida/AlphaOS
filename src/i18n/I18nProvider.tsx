@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
 
+import { demoBuild } from "@/config/demoBuild"
 import { loadMessages } from "@/i18n/catalog"
 import type { SupportedLocale, TranslationTree } from "@/i18n/types"
 import { DEFAULT_LOCALE, getStoredLocale, setStoredLocale } from "@/lib/locale"
@@ -27,12 +28,14 @@ function lookupMessage(messages: TranslationTree, key: string): string | null {
 }
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<SupportedLocale>(DEFAULT_LOCALE)
+  const [locale, setLocaleState] = useState<SupportedLocale>(
+    demoBuild.englishOnly ? demoBuild.locale : DEFAULT_LOCALE
+  )
   const [messages, setMessages] = useState<TranslationTree>({})
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    setLocaleState(getStoredLocale())
+    setLocaleState(demoBuild.englishOnly ? demoBuild.locale : getStoredLocale())
   }, [])
 
   useEffect(() => {
@@ -49,6 +52,10 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   }, [locale])
 
   const setLocale = useCallback((next: SupportedLocale) => {
+    if (demoBuild.englishOnly) {
+      setLocaleState(demoBuild.locale)
+      return
+    }
     setStoredLocale(next)
     setLocaleState(next)
   }, [])

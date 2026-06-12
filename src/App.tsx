@@ -4,6 +4,7 @@ import { AppShell } from "@/components/app/AppShell"
 import { I18nProvider } from "@/i18n/I18nProvider"
 import Dashboard from "@/pages/Dashboard"
 import CmcCoverage from "@/pages/CmcCoverage"
+import GuidedJourney from "@/pages/GuidedJourney"
 import Hypotheses from "@/pages/Hypotheses"
 import HypothesisDetail from "@/pages/HypothesisDetail"
 import Landing from "@/pages/Landing"
@@ -22,6 +23,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/landing" replace />} />
           <Route path="/landing" element={<Landing />} />
+          <Route path="/journey" element={<GuidedJourney />} />
           <Route path="/research/reports/:id" element={<ResearchReportShare />} />
 
           <Route element={<AppShell />}>

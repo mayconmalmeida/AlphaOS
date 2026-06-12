@@ -10,37 +10,37 @@ export const mockResearchReports: ResearchReport[] = [
     author: "AlphaOS Research Desk",
     tags: ["AI", "Infrastructure", "Rotation"],
     executiveSummary:
-      "AI infrastructure mantém liderança narrativa, sustentada por rotação de capital, melhora de sentimento e concentração em ativos de maior qualidade.",
+      "AI infrastructure remains the leading narrative, supported by capital rotation, improving sentiment, and concentration in higher-quality assets.",
     sections: [
       {
         id: "summary",
         title: "Executive Summary",
         body:
-          "O fluxo de mercado migra de beta especulativo para infraestrutura, sugerindo continuidade temática com menor dispersão positiva.",
+          "Market flow is migrating from speculative beta into infrastructure, suggesting thematic continuation with lower positive dispersion.",
       },
       {
         id: "evidence",
         title: "Evidence",
         body:
-          "Força narrativa persistente, expansão de volume nos líderes, aceleração de headlines e similaridade histórica com fases anteriores de consolidação de tese.",
+          "Persistent narrative strength, volume expansion in category leaders, accelerating headlines, and historical similarity to prior thesis-consolidation phases.",
       },
       {
         id: "narratives",
         title: "Narratives",
         body:
-          "AI e infraestrutura seguem dominando atenção, enquanto temas secundários perdem profundidade e fluxo marginal.",
+          "AI and infrastructure continue to dominate attention while secondary themes lose depth and marginal flow.",
       },
       {
         id: "opportunities",
         title: "Opportunities",
         body:
-          "Buscar ativos líderes com liquidez robusta e sensibilidade direta à tese principal, evitando caudas frágeis com baixa sustentação de volume.",
+          "Focus on category leaders with robust liquidity and direct sensitivity to the core thesis while avoiding fragile long-tail names with weak volume support.",
       },
       {
         id: "risks",
         title: "Risks",
         body:
-          "Concentração excessiva, perda de breadth e fadiga narrativa podem reduzir a assimetria e exigir realização parcial.",
+          "Excessive concentration, weaker breadth, and narrative fatigue can compress asymmetry and justify partial profit-taking.",
       },
     ],
   },
@@ -53,37 +53,37 @@ export const mockResearchReports: ResearchReport[] = [
     author: "AlphaOS Research Desk",
     tags: ["Regime", "Liquidity", "Risk"],
     executiveSummary:
-      "O mercado opera em expansão construtiva, porém com sinais iniciais de concentração e seletividade crescente na alocação.",
+      "The market remains in a constructive expansion, but early signs of concentration and growing selectivity are appearing in allocation decisions.",
     sections: [
       {
         id: "summary",
         title: "Executive Summary",
         body:
-          "A leitura dominante é de bull expansion com rotação interna e menor participação fora dos líderes narrativos.",
+          "The dominant read remains bull expansion with internal rotation and lower participation outside narrative leaders.",
       },
       {
         id: "evidence",
         title: "Evidence",
         body:
-          "Sentimento melhora gradualmente, volume confirma continuidade e breadth estabiliza sem novo impulso amplo.",
+          "Sentiment is improving gradually, volume confirms continuation, and breadth is stabilizing without a fresh broad impulse.",
       },
       {
         id: "narratives",
         title: "Narratives",
         body:
-          "Narrativas fortes permanecem concentradas em poucos clusters, reforçando seletividade institucional.",
+          "Strong narratives remain concentrated in a few clusters, reinforcing an increasingly selective institutional market.",
       },
       {
         id: "opportunities",
         title: "Opportunities",
         body:
-          "Oportunidade mais clara está em capturar continuidade nos clusters com maior qualidade de execução e liquidez.",
+          "The clearest opportunity is capturing continuation in clusters with the strongest execution quality and liquidity.",
       },
       {
         id: "risks",
         title: "Risks",
         body:
-          "Mudança abrupta de regime ou realização dos líderes pode contaminar ativos correlacionados mais rapidamente que o esperado.",
+          "An abrupt regime change or sharp profit-taking in leaders could hit correlated assets faster than expected.",
       },
     ],
   },
@@ -96,37 +96,37 @@ export const mockResearchReports: ResearchReport[] = [
     author: "AlphaOS Research Desk",
     tags: ["Altcoins", "Cycle", "Breadth"],
     executiveSummary:
-      "A leitura de ciclo sugere continuidade seletiva, mas com necessidade maior de disciplina em entradas e controle de risco.",
+      "The cycle still supports selective continuation, but it now demands tighter entry discipline and stronger risk control.",
     sections: [
       {
         id: "summary",
         title: "Executive Summary",
         body:
-          "O ciclo altcoin avança de forma menos homogênea, com compressão de oportunidades fora dos temas líderes.",
+          "The altcoin cycle is advancing less uniformly, with fewer high-quality opportunities outside the leading themes.",
       },
       {
         id: "evidence",
         title: "Evidence",
         body:
-          "Aumento de dispersão entre vencedores e perdedores, queda de tração em segmentos marginais e maior dependência de narrativa.",
+          "Wider dispersion between winners and losers, weakening traction in marginal segments, and greater dependence on narrative support.",
       },
       {
         id: "narratives",
         title: "Narratives",
         body:
-          "O mercado passa a premiar coerência temática e liquidez, em vez de expansão ampla de beta.",
+          "The market is rewarding thematic coherence and liquidity rather than broad beta expansion.",
       },
       {
         id: "opportunities",
         title: "Opportunities",
         body:
-          "Posicionamento tático em ativos que combinam força relativa, tese clara e evidência narrativa sustentável.",
+          "Tactical positioning works best in assets that combine relative strength, a clear thesis, and durable narrative evidence.",
       },
       {
         id: "risks",
         title: "Risks",
         body:
-          "Sobreposição entre concentração temática e menor breadth eleva o risco de reversões rápidas em ativos frágeis.",
+          "The overlap between thematic concentration and weaker breadth raises the risk of fast reversals in fragile assets.",
       },
     ],
   },

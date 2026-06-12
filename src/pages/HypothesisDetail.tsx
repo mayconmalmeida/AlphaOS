@@ -1,15 +1,18 @@
-import { Link, useParams } from "react-router-dom"
+import { useEffect } from "react"
+import { Link, useLocation, useParams } from "react-router-dom"
 import { ChevronLeft, ShieldAlert, Sparkles, TrendingUp } from "lucide-react"
 
 import { AlphaScoreBadge } from "@/components/alpha/AlphaScoreBadge"
 import { AlphaScoreBreakdown } from "@/components/alpha/AlphaScoreBreakdown"
 import { EvidenceGraph } from "@/components/evidence/EvidenceGraph"
 import { ProvenancePanel } from "@/components/evidence/ProvenancePanel"
+import { GuidedJourneyBanner } from "@/components/journey/GuidedJourneyBanner"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useHypothesisDetail } from "@/hooks/useHypothesisDetail"
+import { parseGuidedJourney } from "@/lib/guidedJourney"
 import { buildAlphaScore } from "@/services/alphaScoreService"
 import {
   buildHypothesisEvidenceGraph,
@@ -18,6 +21,8 @@ import {
 
 export default function HypothesisDetail() {
   const { id } = useParams()
+  const location = useLocation()
+  const journey = parseGuidedJourney(location.search)
   const { data, loading, error, retry } = useHypothesisDetail(id)
   const alphaScore = data ? buildAlphaScore(data) : null
   const evidenceGraph = data ? buildHypothesisEvidenceGraph(data) : null
@@ -119,6 +124,25 @@ export default function HypothesisDetail() {
       })
     : null
 
+  useEffect(() => {
+    if (!journey.active) return
+    if (!journey.step) return
+
+    const targetId =
+      journey.step === 2
+        ? "journey-why-now"
+        : journey.step === 3
+          ? "journey-evidence-graph"
+          : journey.step === 4
+            ? "journey-historical-analogue"
+            : null
+
+    if (!targetId) return
+    const el = document.getElementById(targetId)
+    if (!el) return
+    el.scrollIntoView({ behavior: "smooth", block: "start" })
+  }, [journey.active, journey.step])
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
@@ -127,12 +151,14 @@ export default function HypothesisDetail() {
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft className="h-4 w-4" />
-          Voltar
+          Back
         </Link>
         <Badge variant="secondary">
           {data?.origin === "generated" ? "Generated" : "Fallback Intelligence"}
         </Badge>
       </div>
+
+      {journey.active ? <GuidedJourneyBanner hypothesisId={data?.id ?? journey.hypothesisId} /> : null}
 
       {loading ? (
         <div className="grid gap-4">
@@ -143,10 +169,10 @@ export default function HypothesisDetail() {
       ) : error ? (
         <Card className="bg-card/40">
           <CardContent className="p-5">
-            <div className="text-sm font-medium">Falha ao carregar hipótese</div>
+            <div className="text-sm font-medium">Failed to load hypothesis</div>
             <div className="mt-1 text-sm text-muted-foreground">{error.message}</div>
             <Button variant="outline" className="mt-3" onClick={retry}>
-              Tentar novamente
+              Retry
             </Button>
           </CardContent>
         </Card>
@@ -168,7 +194,9 @@ export default function HypothesisDetail() {
             <Card className="bg-card/40 lg:col-span-8">
               <CardHeader>
                 <CardTitle>Thesis</CardTitle>
-                <CardDescription>Hipótese, regime e motivo da assimetria.</CardDescription>
+                <CardDescription>
+                  Core thesis, market regime, and why the opportunity exists now.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex flex-wrap gap-2">
@@ -180,7 +208,7 @@ export default function HypothesisDetail() {
                   <Badge variant="outline">{data.expectedHorizon}</Badge>
                   <Badge variant="outline">{data.marketRegime}</Badge>
                 </div>
-                <div className="rounded-xl border bg-background/35 p-4">
+                <div id="journey-why-now" className="rounded-xl border bg-background/35 p-4">
                   <div className="text-xs text-muted-foreground">Why now</div>
                   <div className="mt-1 text-sm text-foreground/90">{data.whyNow}</div>
                 </div>
@@ -205,7 +233,7 @@ export default function HypothesisDetail() {
                   <ShieldAlert className="h-4 w-4 text-primary" />
                   Invalidating Conditions
                 </CardTitle>
-                <CardDescription>O que quebra a hipótese.</CardDescription>
+                <CardDescription>What would make this thesis wrong.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {data.invalidatingConditions.map((item) => (
@@ -219,11 +247,19 @@ export default function HypothesisDetail() {
 
           {alphaScore ? <AlphaScoreBreakdown result={alphaScore} /> : null}
 
+          {evidenceGraph ? (
+            <div id="journey-evidence-graph">
+              <EvidenceGraph nodes={evidenceGraph.nodes} edges={evidenceGraph.edges} />
+            </div>
+          ) : null}
+
           <div className="grid gap-4 lg:grid-cols-12">
             <Card className="bg-card/40 lg:col-span-7">
               <CardHeader>
                 <CardTitle>Supporting Evidence</CardTitle>
-                <CardDescription>Cada evidência tem confiança, impacto e reasoning.</CardDescription>
+                <CardDescription>
+                  Each evidence item shows confidence, impact, and traceable reasoning.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {data.evidence.map((e) => (
@@ -251,7 +287,9 @@ export default function HypothesisDetail() {
                   <TrendingUp className="h-4 w-4 text-primary" />
                   Narrative Signals
                 </CardTitle>
-                <CardDescription>Força, velocidade, growth e rotação.</CardDescription>
+                <CardDescription>
+                  Strength, velocity, growth, and rotation behind the thesis.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {data.narrativeSignals.map((signal) => (
@@ -285,13 +323,15 @@ export default function HypothesisDetail() {
             </Card>
           </div>
 
-          <Card className="bg-card/40">
+          <Card id="journey-historical-analogue" className="bg-card/40">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
                 Historical Analogues
               </CardTitle>
-              <CardDescription>Contexto histórico e “what happened next”.</CardDescription>
+              <CardDescription>
+                Historical context and what happened next in comparable setups.
+              </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 lg:grid-cols-2">
               {data.historicalAnalogues.map((item) => (
@@ -308,7 +348,7 @@ export default function HypothesisDetail() {
                     <Badge variant="secondary">{Math.round(item.similarity * 100)}%</Badge>
                   </div>
                   <Separator className="my-3" />
-                  <div className="text-xs text-muted-foreground">Contexto</div>
+                  <div className="text-xs text-muted-foreground">Context</div>
                   <div className="mt-1 text-sm text-foreground/90">{item.context}</div>
                   <div className="mt-4 text-xs text-muted-foreground">What happened next</div>
                   <div className="mt-1 text-sm text-foreground/90">
@@ -318,10 +358,6 @@ export default function HypothesisDetail() {
               ))}
             </CardContent>
           </Card>
-
-          {evidenceGraph ? (
-            <EvidenceGraph nodes={evidenceGraph.nodes} edges={evidenceGraph.edges} />
-          ) : null}
 
           {provenance ? <ProvenancePanel summary={provenance} /> : null}
         </>

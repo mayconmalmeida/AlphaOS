@@ -28,7 +28,7 @@ export function createNarrativesService(deps: {
       return ok(mapped)
     } catch (e) {
       return err(
-        e instanceof Error ? e.message : "Falha ao carregar narrativas",
+        e instanceof Error ? e.message : "Failed to load narratives",
         "CMC_NARRATIVES"
       )
     }

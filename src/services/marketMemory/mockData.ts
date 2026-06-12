@@ -6,7 +6,7 @@ export const mockSnapshots: MarketSnapshot[] = [
     date: "2023-01-14",
     title: "AI Expansion (Early Wave)",
     summary:
-      "A narrativa de IA surge como reprecificação de infra. Liquidez se concentra em nomes líderes e o mercado aceita múltiplos mais altos.",
+      "The AI narrative emerges as an infrastructure repricing story. Liquidity concentrates in leaders and the market accepts higher multiples.",
     marketPulse: {
       btcDominance: 44.8,
       fearGreed: 48,
@@ -23,9 +23,9 @@ export const mockSnapshots: MarketSnapshot[] = [
     ],
     context: {
       historicalContext:
-        "O mercado vinha de um período de compressão de risco. A primeira onda de narrativa cria um novo regime de atenção com baixa dispersão.",
+        "The market was coming out of a risk-compression phase. The first narrative wave created a new attention regime with low dispersion.",
       whatHappenedNext:
-        "Nas semanas seguintes, a narrativa se expandiu para infra e toolchains. A rotação favoreceu líderes e penalizou cauda longa.",
+        "In the following weeks, the narrative expanded into infrastructure and toolchains. Rotation favored leaders and punished the long tail.",
     },
   },
   {
@@ -33,7 +33,7 @@ export const mockSnapshots: MarketSnapshot[] = [
     date: "2024-03-18",
     title: "Liquidity Rotation (Memecoins → AI)",
     summary:
-      "Alta beta começa a perder força. O fluxo migra para narrativas de produtividade. Sentimento melhora com queda de volatilidade.",
+      "High-beta speculation starts losing momentum. Flow rotates into productivity narratives and sentiment improves as volatility cools.",
     marketPulse: {
       btcDominance: 50.6,
       fearGreed: 67,
@@ -50,9 +50,9 @@ export const mockSnapshots: MarketSnapshot[] = [
     ],
     context: {
       historicalContext:
-        "Fase de expansão com sinais de saturação em alta beta. A rotação sugere busca por qualidade e narrativas sustentáveis.",
+        "Expansion phase with signs of high-beta saturation. Rotation suggests a search for quality and more durable narratives.",
       whatHappenedNext:
-        "A rotação reforçou um segundo ciclo de infra. Projetos com receitas/uso real tiveram repricing, enquanto memes retrairam.",
+        "Rotation reinforced a second infrastructure cycle. Projects with real usage and revenue quality repriced higher while memecoins retraced.",
     },
   },
   {
@@ -60,7 +60,7 @@ export const mockSnapshots: MarketSnapshot[] = [
     date: "2025-09-06",
     title: "Risk-Off (Volatility Shock)",
     summary:
-      "O mercado corta risco com aceleração de volatilidade. O foco migra para BTC e defensivos. Narrativas perdem força.",
+      "The market cuts risk as volatility accelerates. Focus shifts to BTC and defensive positioning while narratives lose strength.",
     marketPulse: {
       btcDominance: 57.9,
       fearGreed: 31,
@@ -77,9 +77,9 @@ export const mockSnapshots: MarketSnapshot[] = [
     ],
     context: {
       historicalContext:
-        "Shock exógeno amplia spreads e derruba apetite por cauda longa. O mercado privilegia liquidez e clareza de fluxo.",
+        "An exogenous shock widens spreads and crushes appetite for the long tail. The market starts prioritizing liquidity and clarity of flow.",
       whatHappenedNext:
-        "A recuperação foi liderada por BTC. Narrativas retornaram lentamente após estabilização do volume e redução do ruído de notícias.",
+        "The recovery was led by BTC. Narratives returned gradually only after volume stabilized and headline noise faded.",
     },
   },
   {
@@ -87,7 +87,7 @@ export const mockSnapshots: MarketSnapshot[] = [
     date: "2026-06-11",
     title: "Current Market (Narrative-Driven Expansion)",
     summary:
-      "O mercado precifica um ciclo de infra e produtividade. A atenção se consolida em poucas narrativas. Há assimetria em setups de qualidade.",
+      "The market is pricing an infrastructure and productivity cycle. Attention is concentrating in a handful of narratives, leaving asymmetry in higher-quality setups.",
     marketPulse: {
       btcDominance: 53.2,
       fearGreed: 62,
@@ -104,9 +104,9 @@ export const mockSnapshots: MarketSnapshot[] = [
     ],
     context: {
       historicalContext:
-        "A estrutura lembra períodos iniciais de expansão de narrativa com liquidez crescente. A dispersão está contida e o consenso ainda não capturou o ‘why now’.",
+        "The structure resembles early narrative-expansion periods with rising liquidity. Dispersion remains contained and consensus has not fully priced the why-now yet.",
       whatHappenedNext:
-        "Em fases semelhantes, a continuidade depende de manutenção do volume e de eventos de validação (parcerias, adoção, métricas). A invalidação tende a vir de choque de volatilidade ou dispersão abrupta.",
+        "In comparable phases, continuation depends on volume holding up and validation events such as partnerships, adoption, or metrics. Invalidations usually come from volatility shocks or abrupt dispersion.",
     },
   },
 ]

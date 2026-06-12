@@ -18,10 +18,11 @@ export default function SystemHealth() {
           System Health
         </div>
         <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
-          Production readiness audit
+          Monitor live readiness across the stack
         </h2>
         <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
-          Confirms whether AlphaOS is running on live infrastructure, where fallback is still active, and whether embeddings plus RAG are production-safe.
+          Verify whether AlphaOS is running on live infrastructure, where fallback is still active,
+          and whether embeddings plus RAG are ready for a customer-facing demo.
         </p>
       </div>
 
@@ -124,7 +125,7 @@ export default function SystemHealth() {
               <input
                 value={semanticSearch.query}
                 onChange={(e) => semanticSearch.setQuery(e.target.value)}
-                placeholder="Search market memory..."
+                placeholder="Search market memory and research..."
                 className="h-9 rounded-md border border-input bg-background/40 px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
               <select
@@ -174,7 +175,7 @@ export default function SystemHealth() {
             <div className="space-y-3">
               {semanticSearch.results.length === 0 ? (
                 <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-                  Run Search Test to verify retrieval, relevance scoring, and document availability.
+                  Run a retrieval test to verify semantic search, relevance scoring, and document availability.
                 </div>
               ) : (
                 semanticSearch.results.map((result) => (

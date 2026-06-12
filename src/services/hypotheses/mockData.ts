@@ -6,7 +6,7 @@ export const mockHypotheses: HypothesisDetail[] = [
     origin: "mock",
     title: "AI Infrastructure Expansion",
     description:
-      "A assimetria está na infraestrutura de IA: demanda por compute, toolchains e middleware acelera enquanto o consenso ainda precifica ‘apenas narrativa’.",
+      "The asymmetry sits in AI infrastructure: demand for compute, toolchains, and middleware is accelerating while the market still prices it as narrative-only.",
     confidence: 91,
     riskScore: 34,
     expectedHorizon: "45 Days",
@@ -16,11 +16,11 @@ export const mockHypotheses: HypothesisDetail[] = [
     relatedAssets: ["BTC", "ETH", "SOL"],
     evidenceCount: 9,
     whyNow:
-      "Velocidade de narrativa se mantém alta com dispersão contida e sinais de rotação para qualidade. O mercado ainda está cedo no framing de infra como ‘produtividade’, não ‘hype’.",
+      "Narrative velocity remains high, dispersion is contained, and capital is rotating toward quality. The market is still early in framing infrastructure as productivity rather than hype.",
     invalidatingConditions: [
-      "Aumento abrupto de volatilidade + queda sustentada de volume",
-      "Dispersão de narrativa (rotação para alta beta) sem confirmação de infra",
-      "Eventos negativos de adoção/métricas em nomes líderes",
+      "Abrupt volatility expansion with sustained volume deterioration",
+      "Narrative dispersion back into high beta without infrastructure confirmation",
+      "Negative adoption or usage metrics from leading names",
     ],
     narrativeSignals: [
       {
@@ -30,7 +30,7 @@ export const mockHypotheses: HypothesisDetail[] = [
         growth: 61,
         rotationScore: 68,
         interpretation:
-          "Narrativa dominante com aceleração estável. Bom para hipóteses de continuidade, desde que volume não quebre.",
+          "Dominant narrative with stable acceleration. Supports continuation if volume remains intact.",
       },
       {
         name: "Infrastructure",
@@ -39,7 +39,7 @@ export const mockHypotheses: HypothesisDetail[] = [
         growth: 54,
         rotationScore: 61,
         interpretation:
-          "Rotação para infra sugere busca por ‘qualidade’ após saturação em alta beta.",
+          "Rotation into infrastructure suggests a search for quality after high-beta saturation.",
       },
     ],
     historicalAnalogues: [
@@ -48,18 +48,18 @@ export const mockHypotheses: HypothesisDetail[] = [
         label: "2023 AI Expansion",
         similarity: 0.92,
         context:
-          "Primeira onda de infra com consenso incompleto e liquidez concentrada em líderes.",
+          "First infrastructure wave with incomplete consensus and liquidity concentrated in category leaders.",
         whatHappenedNext:
-          "A rotação reforçou toolchains e infra. A cauda longa performou pior após a fase inicial.",
+          "Rotation reinforced toolchains and infrastructure while the long tail underperformed after the initial phase.",
       },
       {
         id: "a2",
         label: "Mar/2024 Liquidity Rotation",
         similarity: 0.88,
         context:
-          "Memes perderam tração e o mercado reprecificou narrativas de produtividade.",
+          "Memecoins lost traction and the market repriced productivity narratives.",
         whatHappenedNext:
-          "Infra sustentou performance por semanas até choque de volatilidade.",
+          "Infrastructure sustained leadership for weeks until volatility shocked the regime.",
       },
     ],
     evidence: [
@@ -71,7 +71,7 @@ export const mockHypotheses: HypothesisDetail[] = [
         confidence: 0.82,
         impactScore: 0.78,
         reasoning:
-          "Padrão de rotação e aceleração de volume semelhante ao início de ciclos de infraestrutura.",
+          "Rotation and volume acceleration closely resemble the early phase of prior infrastructure cycles.",
       },
       {
         id: "e2",
@@ -81,7 +81,7 @@ export const mockHypotheses: HypothesisDetail[] = [
         confidence: 0.86,
         impactScore: 0.65,
         reasoning:
-          "Velocidade sustentada com baixa dispersão tende a preceder repricing em infra.",
+          "Sustained velocity with low dispersion tends to precede repricing in infrastructure leaders.",
       },
       {
         id: "e3",
@@ -91,7 +91,7 @@ export const mockHypotheses: HypothesisDetail[] = [
         confidence: 0.74,
         impactScore: 0.58,
         reasoning:
-          "Resumo de notícias indica mudança de framing para infraestrutura e produtividade.",
+          "News flow suggests a clear framing shift toward infrastructure and productivity.",
       },
       {
         id: "e4",
@@ -101,7 +101,7 @@ export const mockHypotheses: HypothesisDetail[] = [
         confidence: 0.70,
         impactScore: 0.52,
         reasoning:
-          "Volume concentra e se expande em nomes líderes, sugerindo demanda real em vez de dispersão.",
+          "Volume is concentrating and expanding in leaders, suggesting real demand rather than indiscriminate speculation.",
       },
       {
         id: "e5",
@@ -111,7 +111,7 @@ export const mockHypotheses: HypothesisDetail[] = [
         confidence: 0.66,
         impactScore: 0.44,
         reasoning:
-          "Notícias reforçam continuidade do tema, mas precisam ser confirmadas por métricas de uso.",
+          "News flow supports thematic continuity, but still needs confirmation from usage metrics.",
       },
     ],
   },
@@ -120,7 +120,7 @@ export const mockHypotheses: HypothesisDetail[] = [
     origin: "mock",
     title: "RWA Narrative Acceleration",
     description:
-      "RWA ganha força com manchetes de clareza regulatória; assimetria está em projetos com distribuição e casos de uso reais.",
+      "RWA is gaining momentum through regulatory clarity headlines; the asymmetry sits in projects with real distribution and practical use cases.",
     confidence: 78,
     riskScore: 38,
     expectedHorizon: "60–90 Days",
@@ -130,10 +130,10 @@ export const mockHypotheses: HypothesisDetail[] = [
     relatedAssets: ["ETH"],
     evidenceCount: 7,
     whyNow:
-      "Força de narrativa sobe com baixa fricção de notícias. O risco é sobre-extensão sem volume sustentado.",
+      "Narrative strength is rising with low headline friction. The main risk is overextension without sustained volume.",
     invalidatingConditions: [
-      "Headline reversa de regulação",
-      "Queda de força/velocidade após pico de notícias",
+      "A negative regulatory headline reversal",
+      "A sharp drop in strength or velocity after the news peak",
     ],
     narrativeSignals: [
       {
@@ -143,7 +143,7 @@ export const mockHypotheses: HypothesisDetail[] = [
         growth: 52,
         rotationScore: 49,
         interpretation:
-          "Narrativa em aceleração, mas exige confirmação de volume e continuidade de headlines.",
+          "The narrative is accelerating, but still needs confirmation from volume and continued headlines.",
       },
     ],
     historicalAnalogues: [
@@ -152,9 +152,9 @@ export const mockHypotheses: HypothesisDetail[] = [
         label: "Ciclos anteriores de headlines",
         similarity: 0.81,
         context:
-          "Narrativas impulsionadas por notícias podem reverter rápido se não houver fundamento de adoção.",
+          "Headline-driven narratives can reverse quickly when adoption fundamentals are missing.",
         whatHappenedNext:
-          "Após o pico, o mercado seleciona vencedores; a cauda longa tende a retrair.",
+          "After the peak, the market usually selects a few winners while the long tail contracts.",
       },
     ],
     evidence: [
@@ -166,7 +166,7 @@ export const mockHypotheses: HypothesisDetail[] = [
         confidence: 0.72,
         impactScore: 0.62,
         reasoning:
-          "Notícias aumentam o mindshare. Precisam ser filtradas por qualidade/execução.",
+          "Headlines are increasing mindshare, but still need to be filtered through execution quality.",
       },
       {
         id: "e7",
@@ -176,7 +176,7 @@ export const mockHypotheses: HypothesisDetail[] = [
         confidence: 0.69,
         impactScore: 0.51,
         reasoning:
-          "Crescimento consistente sugere transição de ‘tema’ para ‘trade’ — ainda frágil.",
+          "Consistent growth suggests a shift from theme to trade, but the setup remains fragile.",
       },
     ],
   },
@@ -185,7 +185,7 @@ export const mockHypotheses: HypothesisDetail[] = [
     origin: "mock",
     title: "Liquidity Rotation: L2 → Infra",
     description:
-      "A rotação sai de beta para infra. O foco é capturar continuidade com controle de risco em drawdowns.",
+      "Liquidity is rotating out of beta and into infrastructure. The goal is to capture continuation while keeping drawdowns controlled.",
     confidence: 83,
     riskScore: 41,
     expectedHorizon: "30–60 Days",
@@ -195,8 +195,8 @@ export const mockHypotheses: HypothesisDetail[] = [
     relatedAssets: ["ETH", "SOL"],
     evidenceCount: 6,
     whyNow:
-      "A dispersão reduz e o mercado tende a premiar ‘qualidade’ após fases de excesso.",
-    invalidatingConditions: ["Reversão abrupta para alta beta", "Queda de volume em infra"],
+      "Dispersion is tightening and the market is starting to reward quality after an extended excess phase.",
+    invalidatingConditions: ["Abrupt reversal back into high beta", "Volume deterioration across infrastructure leaders"],
     narrativeSignals: [
       {
         name: "Infrastructure",
@@ -205,7 +205,7 @@ export const mockHypotheses: HypothesisDetail[] = [
         growth: 54,
         rotationScore: 61,
         interpretation:
-          "Infra se beneficia da rotação. Exige timing: entrar tarde aumenta risco.",
+          "Infrastructure is benefiting from the rotation, but late entry materially increases risk.",
       },
       {
         name: "Layer 2",
@@ -214,18 +214,18 @@ export const mockHypotheses: HypothesisDetail[] = [
         growth: 44,
         rotationScore: 46,
         interpretation:
-          "L2 perde prioridade relativa. Pode voltar em ondas de liquidez, mas agora é secundário.",
+          "Layer 2 is losing relative priority. It can recover in later liquidity waves, but it is secondary for now.",
       },
     ],
     historicalAnalogues: [
       {
         id: "a4",
-        label: "Rotação pós-excesso",
+        label: "Post-excess rotation",
         similarity: 0.76,
         context:
-          "Após ciclos de beta, o capital migra para narrativas com ‘uso’ e receita percebida.",
+          "After high-beta cycles, capital often migrates toward narratives tied to usage and perceived revenue quality.",
         whatHappenedNext:
-          "O movimento tende a durar até o próximo pico de euforia/volatilidade.",
+          "The move usually lasts until the next volatility or euphoria spike resets the regime.",
       },
     ],
     evidence: [
@@ -237,7 +237,7 @@ export const mockHypotheses: HypothesisDetail[] = [
         confidence: 0.73,
         impactScore: 0.56,
         reasoning:
-          "Fluxo sai de narrativas saturadas e se concentra em infra, típico de rotação de qualidade.",
+          "Flow is leaving saturated narratives and concentrating in infrastructure, which is typical of quality rotation.",
       },
     ],
   },

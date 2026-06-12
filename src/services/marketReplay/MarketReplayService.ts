@@ -15,7 +15,7 @@ export function createMarketReplayService(): MarketReplayService {
     },
     async getScenarioById(id) {
       const scenario = mockReplayScenarios.find((item) => item.id === id)
-      if (!scenario) return err("Replay não encontrado", "REPLAY_NOT_FOUND")
+      if (!scenario) return err("Replay not found", "REPLAY_NOT_FOUND")
       return ok(scenario)
     },
   }

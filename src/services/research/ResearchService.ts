@@ -91,66 +91,66 @@ function buildFallbackReport(params: {
     {
       id: "regime",
       title: "Market Regime",
-      body: `Regime base: ${params.marketRegime}\n\nSinais: foco em continuidade com seletividade crescente.`,
+      body: `Base regime: ${params.marketRegime}\n\nSignal: focus on continuation with rising selectivity.`,
     },
     {
       id: "narratives",
       title: "Narrative Intelligence",
       body:
         params.topNarratives.length > 0
-          ? `Narrativas dominantes:\n- ${params.topNarratives.join("\n- ")}`
-          : "Narrativas dominantes indisponíveis nesta execução.",
+          ? `Leading narratives:\n- ${params.topNarratives.join("\n- ")}`
+          : "Leading narratives are unavailable in this run.",
     },
     {
       id: "evidence",
       title: "Supporting Evidence",
       body:
         params.evidenceSummary.length > 0
-          ? `Evidências principais:\n- ${params.evidenceSummary.join("\n- ")}`
-          : "Evidências indisponíveis nesta execução.",
+          ? `Primary evidence:\n- ${params.evidenceSummary.join("\n- ")}`
+          : "Evidence is unavailable in this run.",
     },
     {
       id: "analogue",
       title: "Historical Analogues",
       body:
         params.analogues.length > 0
-          ? `Analogias e precedentes:\n- ${params.analogues.join("\n- ")}`
-          : "Analogias indisponíveis nesta execução.",
+          ? `Analogues and precedents:\n- ${params.analogues.join("\n- ")}`
+          : "Historical analogues are unavailable in this run.",
     },
     {
       id: "hypothesis",
       title: "Alpha Hypothesis",
-      body: `Tese:\n${params.hypothesisTitle}\n\nPor que agora: a hipótese mantém assimetria enquanto o consenso ainda é incompleto.`,
+      body: `Thesis:\n${params.hypothesisTitle}\n\nWhy now: the hypothesis still offers asymmetry while market consensus remains incomplete.`,
     },
     {
       id: "strategies",
       title: "Strategy Candidates",
       body:
         params.strategySummaries.length > 0
-          ? `Top candidatos:\n- ${params.strategySummaries.join("\n- ")}`
-          : "Nenhuma estratégia disponível para esta hipótese.",
+          ? `Top candidates:\n- ${params.strategySummaries.join("\n- ")}`
+          : "No strategies are available for this hypothesis yet.",
     },
     {
       id: "risk",
       title: "Risk Review",
       body:
         params.riskSummary.length > 0
-          ? `Pontos de auditoria:\n- ${params.riskSummary.join("\n- ")}`
-          : "Risk review indisponível nesta execução.",
+          ? `Audit points:\n- ${params.riskSummary.join("\n- ")}`
+          : "Risk review is unavailable in this run.",
     },
     {
       id: "invalid",
       title: "Invalidating Conditions",
       body:
         params.invalidatingConditions.length > 0
-          ? `O que quebra a hipótese:\n- ${params.invalidatingConditions.join("\n- ")}`
-          : "Condições de invalidação não informadas.",
+          ? `What would break the thesis:\n- ${params.invalidatingConditions.join("\n- ")}`
+          : "Invalidating conditions were not provided.",
     },
     {
       id: "appendix",
       title: "Appendix",
       body:
-        "Este relatório consolida módulos do AlphaOS (Market Memory, Narrative Intelligence, Evidence/RAG, Hypothesis Engine, Strategy Lab e Critic Agent) em formato legível e exportável.",
+        "This report consolidates AlphaOS modules such as Market Memory, Narrative Intelligence, Evidence/RAG, Hypothesis Engine, Strategy Lab, and Critic Agent in a readable, exportable format.",
     },
   ]
 
@@ -161,7 +161,9 @@ function buildFallbackReport(params: {
     tone: "neutral",
     author: "AlphaOS Generator",
     tags: ["Generated", "Institutional", ...params.topNarratives.slice(0, 3)],
-    executiveSummary: params.evidenceSummary[0] ?? "Relatório institucional gerado com base em evidências e auditoria.",
+    executiveSummary:
+      params.evidenceSummary[0] ??
+      "Institutional report generated from evidence, market context, and risk review.",
     sections,
   }
 }
@@ -185,7 +187,7 @@ export function createResearchService(): ResearchService {
     async getById(id) {
       const stored = await researchRepository.getById(id)
       const report = stored ?? (await getAllReports()).find((r) => r.id === id)
-      if (!report) return err("Relatório não encontrado", "RESEARCH_REPORT_NOT_FOUND")
+      if (!report) return err("Report not found", "RESEARCH_REPORT_NOT_FOUND")
       return ok(report)
     },
     async generateReport(params) {
@@ -202,7 +204,7 @@ export function createResearchService(): ResearchService {
         listRes.data[0]?.id
 
       if (!hypothesisId) {
-        return err("Nenhuma hipótese disponível para gerar relatório", "RESEARCH_NO_HYPOTHESES")
+        return err("No hypothesis is available to generate a report", "RESEARCH_NO_HYPOTHESES")
       }
 
       const hypothesisRes = await hypothesesService.getById(hypothesisId)

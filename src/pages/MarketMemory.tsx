@@ -90,10 +90,11 @@ export default function MarketMemory() {
           Market Memory
         </div>
         <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
-          Explorer + timeline premium
+          Explore historical market states
         </h2>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Daily snapshots, timeline comparison, and similar-market retrieval with explicit live vs fallback behavior.
+          Review daily snapshots, compare regimes, and retrieve similar historical setups with
+          explicit vector vs fallback labeling.
         </p>
       </div>
 
@@ -101,7 +102,7 @@ export default function MarketMemory() {
         <Card className="bg-card/40 lg:col-span-4">
           <CardHeader>
             <CardTitle>Timeline</CardTitle>
-            <CardDescription>Selecione um snapshot para explorar.</CardDescription>
+            <CardDescription>Select a snapshot to explore.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="relative">
@@ -109,7 +110,7 @@ export default function MarketMemory() {
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar por data, título ou resumo…"
+                placeholder="Search by date, title, or summary..."
                 className="pl-9"
               />
             </div>
@@ -125,10 +126,10 @@ export default function MarketMemory() {
               </div>
             ) : error ? (
               <div className="rounded-xl border bg-background/35 p-4">
-                <div className="text-sm font-medium">Falha ao carregar</div>
+                <div className="text-sm font-medium">Failed to load</div>
                 <div className="mt-1 text-sm text-muted-foreground">{error.message}</div>
                 <Button variant="outline" className="mt-3" onClick={retry}>
-                  Tentar novamente
+                  Retry
                 </Button>
               </div>
             ) : (
@@ -169,7 +170,7 @@ export default function MarketMemory() {
                               {s.summary}
                             </div>
                           </div>
-                          {active ? <Badge>Atual</Badge> : <Badge variant="secondary">Snapshot</Badge>}
+                          {active ? <Badge>Current</Badge> : <Badge variant="secondary">Snapshot</Badge>}
                         </div>
                       </button>
                     )
@@ -184,12 +185,12 @@ export default function MarketMemory() {
           <Card className="bg-card/40">
             <CardHeader>
               <CardTitle>Snapshot Explorer</CardTitle>
-              <CardDescription>Métricas e narrativas do dia.</CardDescription>
+            <CardDescription>Daily metrics, narratives, and market context.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {!selected ? (
                 <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-                  Selecione um snapshot na timeline.
+                  Select a snapshot from the timeline.
                 </div>
               ) : (
                 <>
@@ -228,13 +229,13 @@ export default function MarketMemory() {
                       </div>
                     </div>
                     <div className="rounded-xl border bg-background/35 p-4">
-                      <div className="text-xs text-muted-foreground">Resumo</div>
+                      <div className="text-xs text-muted-foreground">Summary</div>
                       <div className="mt-1 text-sm text-foreground/90">{selected.summary}</div>
                     </div>
                   </div>
 
                   <div className="rounded-xl border bg-background/35 p-4">
-                    <div className="text-sm font-medium">Narrativas</div>
+                    <div className="text-sm font-medium">Narratives</div>
                     <div className="mt-3 space-y-2">
                       {selected.narratives
                         .slice()
@@ -266,19 +267,19 @@ export default function MarketMemory() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <GitCompare className="h-4 w-4 text-primary" />
-                Comparar períodos
+                Compare periods
               </CardTitle>
-              <CardDescription>Delta de métricas e leitura de contexto.</CardDescription>
+              <CardDescription>Compare metric deltas and regime context.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex flex-col gap-2 md:flex-row md:items-center">
-                <div className="text-sm text-muted-foreground md:w-40">Comparar com</div>
+                <div className="text-sm text-muted-foreground md:w-40">Compare with</div>
                 <select
                   value={compareId ?? ""}
                   onChange={(e) => setCompareId(e.target.value || null)}
                   className="h-9 w-full rounded-md border border-input bg-background/40 px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <option value="">Selecione…</option>
+                  <option value="">Select...</option>
                   {compareOptions.map((o) => (
                     <option key={o.id} value={o.id}>
                       {o.label}
@@ -289,7 +290,7 @@ export default function MarketMemory() {
 
               {!comparison ? (
                 <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-                  Escolha um período para ver as diferenças.
+                  Choose a period to inspect the regime differences.
                 </div>
               ) : (
                 <div className="grid gap-3 md:grid-cols-3">
@@ -308,7 +309,7 @@ export default function MarketMemory() {
                     </div>
                   ))}
                   <div className="rounded-xl border bg-background/35 p-4 md:col-span-3">
-                    <div className="text-xs text-muted-foreground">Leitura</div>
+                    <div className="text-xs text-muted-foreground">Interpretation</div>
                     <div className="mt-1 text-sm text-foreground/90">
                       {comparison.b.context.historicalContext}
                     </div>
@@ -322,12 +323,12 @@ export default function MarketMemory() {
         <Card className="bg-card/40 lg:col-span-3">
           <CardHeader>
             <CardTitle>Similar Markets</CardTitle>
-            <CardDescription>Similarity score + contexto + “what happened next”.</CardDescription>
+            <CardDescription>Similarity method, context, and what happened next.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {!selected ? (
               <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-                Selecione um snapshot para buscar similares.
+                Select a snapshot to retrieve similar markets.
               </div>
             ) : (
               <>
@@ -381,7 +382,7 @@ export default function MarketMemory() {
                     </div>
                     <div className="mt-2 text-xs text-muted-foreground">{row.reasoning}</div>
                     <Separator className="my-3" />
-                    <div className="text-xs text-muted-foreground">O que aconteceu depois</div>
+                    <div className="text-xs text-muted-foreground">What happened next</div>
                     <div className="mt-1 text-sm text-foreground/90">
                       {row.snapshot.context.whatHappenedNext}
                     </div>
@@ -390,7 +391,7 @@ export default function MarketMemory() {
                       className="mt-3 w-full"
                       onClick={() => setSelectedId(row.snapshot.id)}
                     >
-                      Abrir snapshot
+                      Open snapshot
                     </Button>
                   </div>
                 ))}

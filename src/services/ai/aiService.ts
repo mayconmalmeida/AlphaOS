@@ -26,7 +26,7 @@ export function createAiService(): AiService {
 
       if (!status.edgeFunctionReady) {
         if (!shouldUseMock) {
-          return err("Supabase nao configurado para Edge Functions.", "AI_INFRA_NOT_READY")
+          return err("Supabase is not configured for Edge Functions.", "AI_INFRA_NOT_READY")
         }
         return ok(await buildMockAiResponse<T>(request))
       }
@@ -34,7 +34,7 @@ export function createAiService(): AiService {
       const supabase = getSupabaseClient()
       if (!supabase) {
         if (!shouldUseMock) {
-          return err("Cliente Supabase indisponivel.", "SUPABASE_CLIENT_UNAVAILABLE")
+          return err("Supabase client is unavailable.", "SUPABASE_CLIENT_UNAVAILABLE")
         }
         return ok(await buildMockAiResponse<T>(request))
       }

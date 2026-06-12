@@ -12,7 +12,7 @@ export function useHypothesisDetail(id?: string) {
 
   const load = useCallback(async () => {
     if (!id) {
-      setError({ message: "Hipótese inválida", code: "HYPOTHESIS_INVALID" })
+      setError({ message: "Invalid hypothesis", code: "HYPOTHESIS_INVALID" })
       setLoading(false)
       return
     }

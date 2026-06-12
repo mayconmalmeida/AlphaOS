@@ -48,8 +48,11 @@ export default function Settings() {
           Settings
         </div>
         <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
-          Preferências
+          Control demo readiness and trust signals
         </h2>
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          Keep the experience clean, credible, and stable for judges, investors, and recorded demos.
+        </p>
       </div>
 
       <SystemHealthDashboard />
@@ -57,16 +60,16 @@ export default function Settings() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="bg-card/40">
           <CardHeader>
-            <CardTitle>Tema</CardTitle>
-            <CardDescription>Dark premium por padrão.</CardDescription>
+            <CardTitle>Theme</CardTitle>
+            <CardDescription>Set the default visual experience for the AlphaOS workspace.</CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <Badge variant="secondary">Atual</Badge>
+              <Badge variant="secondary">Current</Badge>
               <Badge variant="outline">{theme}</Badge>
             </div>
             <Button variant="outline" onClick={toggleTheme}>
-              Alternar tema
+              Toggle theme
             </Button>
           </CardContent>
         </Card>
@@ -74,21 +77,22 @@ export default function Settings() {
         <Card className="bg-card/40">
           <CardHeader>
             <CardTitle>Fallback Controls</CardTitle>
-            <CardDescription>Controle explícito de fallback para cenários offline ou indisponibilidade de integrações.</CardDescription>
+            <CardDescription>Control how AlphaOS behaves when live integrations are unavailable.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-              Use fallback quando a infraestrutura live não estiver disponível. AlphaOS mantém proveniência e sinaliza claramente quando dados são live vs fallback.
+              Use fallback when live infrastructure is unavailable. AlphaOS preserves provenance and
+              clearly signals live versus fallback data.
             </div>
             <div className="flex items-center justify-between gap-4 rounded-xl border bg-background/35 p-4">
               <div>
-                <div className="text-sm font-medium">Estado atual</div>
+                <div className="text-sm font-medium">Current state</div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  {demoMode.enabled ? "Fallback forçado" : "Live intelligence quando disponível"}
+                  {demoMode.enabled ? "Forced fallback" : "Live intelligence when available"}
                 </div>
               </div>
               <Button variant="outline" onClick={demoMode.toggle}>
-                {demoMode.enabled ? "Desativar fallback" : "Ativar fallback"}
+                {demoMode.enabled ? "Disable fallback" : "Enable fallback"}
               </Button>
             </div>
             <Button
@@ -97,7 +101,7 @@ export default function Settings() {
               onClick={embeddingPipeline.seed}
               disabled={embeddingPipeline.processing}
             >
-              {embeddingPipeline.processing ? "Preparando..." : "Seed Sample Data"}
+              {embeddingPipeline.processing ? "Preparing..." : "Seed Sample Data"}
             </Button>
           </CardContent>
         </Card>
@@ -107,7 +111,7 @@ export default function Settings() {
         <CardHeader>
           <CardTitle>CoinMarketCap Real Data</CardTitle>
           <CardDescription>
-            Proxy seguro via Supabase Edge Function, cache na camada de serviços e fallback explícito.
+            Secure access through a Supabase Edge Function with service-layer caching and explicit fallback.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -138,7 +142,7 @@ export default function Settings() {
               onClick={cmcIntegration.runIngestion}
               disabled={cmcIntegration.loading || embeddingPipeline.processing}
             >
-              {cmcIntegration.loading ? "Ingerindo..." : "Ingest CMC Snapshot"}
+              {cmcIntegration.loading ? "Ingesting..." : "Ingest CMC Snapshot"}
             </Button>
             <Button
               variant="outline"
@@ -162,13 +166,13 @@ export default function Settings() {
                 {cmcIntegration.lastIngestion.snapshotTitle}
               </div>
               <div className="mt-1 text-sm text-muted-foreground">
-                {cmcIntegration.lastIngestion.documentsQueued} documentos enfileirados via{" "}
+                {cmcIntegration.lastIngestion.documentsQueued} documents queued via{" "}
                 {cmcIntegration.lastIngestion.mode}.
               </div>
             </div>
           ) : (
             <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-              Enfileire um snapshot CMC para alimentar{" "}
+              Queue a CMC snapshot to feed{" "}
               <code>market document -&gt; embedding -&gt; RAG-ready memory</code>.
             </div>
           )}
@@ -196,7 +200,7 @@ export default function Settings() {
         <CardHeader>
           <CardTitle>AI Infrastructure</CardTitle>
           <CardDescription>
-            Health check genérico para a infraestrutura reutilizável da Parte 11.
+            Validate the reusable AI infrastructure layer before presenting the product live.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -215,7 +219,7 @@ export default function Settings() {
 
           <div className="flex flex-wrap gap-2">
             <Button onClick={runAiCheck} disabled={loading}>
-              {loading ? "Executando..." : "Run AI Health Check"}
+              {loading ? "Running..." : "Run AI Health Check"}
             </Button>
             <Button variant="outline" onClick={retry} disabled={loading || !error}>
               Retry
@@ -248,7 +252,7 @@ export default function Settings() {
             </div>
           ) : (
             <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-              Execute o health check para validar loading, erro, retry e JSON estruturado.
+              Run the health check to validate loading, retry flow, and structured output.
             </div>
           )}
         </CardContent>
@@ -327,7 +331,7 @@ export default function Settings() {
               <div className="mt-3 space-y-3">
                 {embeddingPipeline.jobs.length === 0 ? (
                   <div className="text-sm text-muted-foreground">
-                    Nenhum documento enfileirado ainda.
+                    No documents are queued yet.
                   </div>
                 ) : (
                   embeddingPipeline.jobs.slice(0, 6).map((job) => (
@@ -356,7 +360,7 @@ export default function Settings() {
                       {job.status === "failed" ? (
                         <div className="mt-3 flex items-center justify-between gap-3">
                           <div className="text-xs text-muted-foreground">
-                            {job.lastError ?? "Falha de processamento"}
+                            {job.lastError ?? "Processing failed"}
                           </div>
                           <Button
                             variant="outline"
@@ -379,7 +383,7 @@ export default function Settings() {
               <div className="mt-3 space-y-3">
                 {embeddingPipeline.records.length === 0 ? (
                   <div className="text-sm text-muted-foreground">
-                    Nenhum embedding persistido ainda.
+                    No embeddings are stored yet.
                   </div>
                 ) : (
                   embeddingPipeline.records.slice(0, 6).map((record) => (
@@ -404,7 +408,7 @@ export default function Settings() {
         <CardHeader>
           <CardTitle>Semantic Retrieval</CardTitle>
           <CardDescription>
-            Busca vetorial preparada para `pgvector` via RPC `match_market_documents`.
+            Vector search over market memory and research documents through `pgvector`.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -412,7 +416,7 @@ export default function Settings() {
             <input
               value={semanticSearch.query}
               onChange={(e) => semanticSearch.setQuery(e.target.value)}
-              placeholder="Pesquisar contexto de mercado..."
+              placeholder="Search market context..."
               className="h-9 rounded-md border border-input bg-background/40 px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
             <select
@@ -432,7 +436,7 @@ export default function Settings() {
               }
               className="h-9 rounded-md border border-input bg-background/40 px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <option value="all">Todos os tipos</option>
+              <option value="all">All types</option>
               <option value="snapshot">Snapshot</option>
               <option value="news">News</option>
               <option value="narrative">Narrative</option>
@@ -442,7 +446,7 @@ export default function Settings() {
               <option value="research">Research</option>
             </select>
             <Button onClick={semanticSearch.run} disabled={semanticSearch.loading}>
-              {semanticSearch.loading ? "Buscando..." : "Search"}
+              {semanticSearch.loading ? "Searching..." : "Search"}
             </Button>
           </div>
 
@@ -455,7 +459,7 @@ export default function Settings() {
           <div className="space-y-3">
             {semanticSearch.results.length === 0 ? (
               <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-                Execute uma busca para visualizar resultados semânticos.
+                Run a search to inspect semantic retrieval results.
               </div>
             ) : (
               semanticSearch.results.map((result) => (

@@ -1,8 +1,12 @@
+import { useEffect, useMemo, useState } from "react"
 import { ExternalLink, FileText, Plus } from "lucide-react"
+import { useLocation } from "react-router-dom"
 
 import { AlphaScoreBadge } from "@/components/alpha/AlphaScoreBadge"
 import { EvidenceGraph } from "@/components/evidence/EvidenceGraph"
 import { ProvenancePanel } from "@/components/evidence/ProvenancePanel"
+import { GuidedJourneyBanner } from "@/components/journey/GuidedJourneyBanner"
+import { GuidedJourneySummary } from "@/components/journey/GuidedJourneySummary"
 import { EvidencePanel } from "@/components/rag/EvidencePanel"
 import { ResearchReportLayout } from "@/components/research/ResearchReportLayout"
 import { Badge } from "@/components/ui/badge"
@@ -10,8 +14,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useRagResearch } from "@/hooks/useRagResearch"
 import { useResearchCenter } from "@/hooks/useResearchCenter"
+import { parseGuidedJourney } from "@/lib/guidedJourney"
 import { buildAlphaScore } from "@/services/alphaScoreService"
 import { buildProvenanceSummary } from "@/services/evidence/evidenceGraph"
+import { hypothesesService } from "@/services/hypotheses"
 import type { HypothesisDetail } from "@/services/hypotheses"
 
 function exportReport(title: string, sections: { title: string; body: string }[]) {
@@ -26,6 +32,8 @@ function exportReport(title: string, sections: { title: string; body: string }[]
 }
 
 export default function Research() {
+  const location = useLocation()
+  const journey = parseGuidedJourney(location.search)
   const rag = useRagResearch()
   const {
     reports,
@@ -41,6 +49,34 @@ export default function Research() {
     retry,
     generateReport,
   } = useResearchCenter()
+  const [showSummary, setShowSummary] = useState(false)
+  const [journeyHypothesis, setJourneyHypothesis] = useState<HypothesisDetail | null>(null)
+
+  useEffect(() => {
+    if (!journey.active) return
+    if (journey.step !== 7) return
+    if (!journey.hypothesisId) return
+    if (selectedHypothesisId === journey.hypothesisId) return
+    setSelectedHypothesisId(journey.hypothesisId)
+  }, [journey.active, journey.hypothesisId, journey.step, selectedHypothesisId, setSelectedHypothesisId])
+
+  useEffect(() => {
+    let active = true
+    if (!journey.active) {
+      setJourneyHypothesis(null)
+      return
+    }
+    if (!journey.hypothesisId) return
+    hypothesesService.getById(journey.hypothesisId).then((res) => {
+      if (!active) return
+      if (res.ok) {
+        setJourneyHypothesis(res.data as HypothesisDetail)
+      }
+    })
+    return () => {
+      active = false
+    }
+  }, [journey.active, journey.hypothesisId])
 
   const provenance = buildProvenanceSummary({
     title: selectedReport?.title ?? "Research Center",
@@ -106,6 +142,10 @@ export default function Research() {
       })
     : null
 
+  const journeyAlphaScore = useMemo(() => {
+    return journeyHypothesis ? buildAlphaScore(journeyHypothesis) : null
+  }, [journeyHypothesis])
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -114,10 +154,11 @@ export default function Research() {
             Research Center
           </div>
           <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
-            Relatórios institucionais
+            Generate institutional research reports
           </h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Geração de relatórios a partir de hipótese, evidências, memória de mercado, narrativas, estratégias e auditoria.
+            Generate investor-ready reports from hypotheses, evidence, market memory, narratives,
+            strategy work, and audit outputs.
           </p>
         </div>
         <div className="flex flex-col items-stretch gap-2 md:flex-row md:items-center">
@@ -126,7 +167,7 @@ export default function Research() {
             onChange={(e) => setSelectedHypothesisId(e.target.value)}
             className="h-9 min-w-[240px] rounded-md border border-input bg-background/40 px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <option value="">Selecione uma hipótese</option>
+            <option value="">Select a hypothesis</option>
             {hypotheses.map((h) => (
               <option key={h.id} value={h.id}>
                 {h.title}
@@ -140,7 +181,7 @@ export default function Research() {
             disabled={generating}
           >
             <Plus className="h-4 w-4" />
-            {generating ? "Gerando..." : "Generate Report"}
+            {generating ? "Generating..." : "Generate Report"}
           </Button>
           <Button
             className="flex items-center gap-2"
@@ -157,6 +198,24 @@ export default function Research() {
         </div>
       </div>
 
+      {journey.active ? (
+        <>
+          <GuidedJourneyBanner hypothesisId={journey.hypothesisId} onFinish={() => setShowSummary(true)} />
+          {journey.hypothesisId ? (
+            <GuidedJourneySummary
+              open={showSummary}
+              onClose={() => setShowSummary(false)}
+              hypothesisId={journey.hypothesisId}
+              alphaScore={journeyAlphaScore}
+              evidenceCount={journeyHypothesis?.evidence.length ?? 0}
+              reportsCount={reports.length}
+              narrativesTracked={journeyHypothesis?.relatedNarratives.length ?? 0}
+              marketMemoryMatches={journeyHypothesis?.historicalAnalogues.length ?? 0}
+            />
+          ) : null}
+        </>
+      ) : null}
+
       {loading ? (
         <div className="grid gap-4 lg:grid-cols-12">
           <div className="h-[520px] animate-pulse rounded-xl border bg-background/30 lg:col-span-4" />
@@ -165,10 +224,10 @@ export default function Research() {
       ) : error ? (
         <Card className="bg-card/40">
           <CardContent className="p-5">
-            <div className="text-sm font-medium">Falha ao carregar relatórios</div>
+            <div className="text-sm font-medium">Failed to load reports</div>
             <div className="mt-1 text-sm text-muted-foreground">{error.message}</div>
             <Button variant="outline" className="mt-3" onClick={retry}>
-              Tentar novamente
+              Retry
             </Button>
           </CardContent>
         </Card>
@@ -178,7 +237,7 @@ export default function Research() {
             <Card className="bg-card/40 lg:col-span-4">
               <CardHeader>
                 <CardTitle>Research Library</CardTitle>
-                <CardDescription>Biblioteca institucional de relatórios.</CardDescription>
+                <CardDescription>Curated library of institutional research outputs.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {reports.map((report) => (
@@ -252,11 +311,11 @@ export default function Research() {
                 <Card className="bg-card/40">
                   <CardHeader>
                     <CardTitle>Research Viewer</CardTitle>
-                    <CardDescription>Template estilo Bloomberg Research + Goldman Sachs.</CardDescription>
+                    <CardDescription>Institutional layout inspired by top-tier research desks.</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="rounded-xl border bg-background/35 p-6 text-sm text-muted-foreground">
-                      Selecione um relatório na biblioteca para abrir o viewer.
+                      Select a report from the library to open the viewer.
                     </div>
                   </CardContent>
                 </Card>
@@ -268,7 +327,7 @@ export default function Research() {
             <CardHeader>
               <CardTitle>RAG Evidence Engine</CardTitle>
               <CardDescription>
-                Recupera contexto semantico antes de responder. Nenhuma claim deve sair sem evidencia.
+                Retrieves semantic context before answering. No claim ships without evidence.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -278,10 +337,10 @@ export default function Research() {
                   onChange={(e) => rag.setQuestion(e.target.value)}
                   rows={3}
                   className="min-h-[88px] rounded-md border border-input bg-background/40 px-3 py-2 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  placeholder="Faça uma pergunta de pesquisa de mercado..."
+                  placeholder="Ask a market research question..."
                 />
                 <Button onClick={rag.run} disabled={rag.loading} className="h-fit">
-                  {rag.loading ? "Gerando..." : "Generate Answer"}
+                  {rag.loading ? "Generating..." : "Generate Answer"}
                 </Button>
               </div>
 
@@ -305,7 +364,7 @@ export default function Research() {
                 </>
               ) : (
                 <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-                  Gere uma resposta para visualizar evidencias ranqueadas, prompt de contexto e citacoes.
+                  Generate an answer to inspect ranked evidence, the context prompt, and citations.
                 </div>
               )}
             </CardContent>

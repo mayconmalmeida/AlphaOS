@@ -350,7 +350,7 @@ export function createEmbeddingService(): EmbeddingService {
 
       const jobs = embeddingStorage.getJobs()
       const existing = jobs.find((job) => job.id === jobId)
-      if (!existing) return err("Embedding job nao encontrado.", "EMBEDDING_JOB_NOT_FOUND")
+      if (!existing) return err("Embedding job not found.", "EMBEDDING_JOB_NOT_FOUND")
 
       const retriedJob: EmbeddingJob = {
         ...existing,

@@ -18,6 +18,7 @@ const TITLES: Record<string, { titleKey: string; title: string; kickerKey?: stri
   "/strategy-lab": { titleKey: "nav.strategyLab", title: "Strategy Lab", kickerKey: "topbar.kickers.strategyLab", kicker: "Evolution pipeline" },
   "/research": { titleKey: "nav.research", title: "Research", kickerKey: "topbar.kickers.research", kicker: "Institutional reports" },
   "/cmc-coverage": { titleKey: "nav.cmcCoverage", title: "CMC Coverage", kickerKey: "topbar.kickers.cmcCoverage", kicker: "Coverage intelligence" },
+  "/system-health": { titleKey: "nav.systemHealth", title: "System Health", kickerKey: "topbar.kickers.systemHealth", kicker: "Infrastructure readiness" },
   "/settings": { titleKey: "nav.settings", title: "Settings", kickerKey: "topbar.kickers.settings", kicker: "Preferences" },
 }
 
@@ -59,7 +60,7 @@ export function Topbar() {
           ) : null}
         </div>
         <div className="mt-0.5 text-xs text-muted-foreground">
-          {t("topbar.subtitle", "Prioritize insights. Avoid black boxes.")}
+          {t("topbar.subtitle", "Evidence-backed market research for high-conviction decisions.")}
         </div>
       </div>
 

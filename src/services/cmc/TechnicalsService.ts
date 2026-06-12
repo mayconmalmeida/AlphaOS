@@ -31,7 +31,7 @@ export function createTechnicalsService(deps: {
         return ok(mapped)
       } catch (e) {
         return err(
-          e instanceof Error ? e.message : "Falha ao carregar technicals",
+          e instanceof Error ? e.message : "Failed to load technicals",
           "CMC_TECHNICALS"
         )
       }

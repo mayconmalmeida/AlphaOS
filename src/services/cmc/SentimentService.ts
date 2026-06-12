@@ -28,7 +28,7 @@ export function createSentimentService(deps: {
         return ok(mapped)
       } catch (e) {
         return err(
-          e instanceof Error ? e.message : "Falha ao carregar market pulse",
+          e instanceof Error ? e.message : "Failed to load market pulse",
           "CMC_MARKET_PULSE"
         )
       }

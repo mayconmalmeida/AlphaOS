@@ -30,7 +30,7 @@ export function createMarketMemoryService(): MarketMemoryService {
 
   async function getSnapshot(id: string) {
     const snap = await marketSnapshotsRepository.getById(id)
-    if (!snap) return err("Snapshot não encontrado", "MM_NOT_FOUND")
+    if (!snap) return err("Snapshot not found", "MM_NOT_FOUND")
     await pgvectorRepository.upsertMarketDocument(snapshotToMarketDocument(snap))
     return ok(snap)
   }
@@ -39,7 +39,7 @@ export function createMarketMemoryService(): MarketMemoryService {
     const snapshots = await marketSnapshotsRepository.list()
     const dataset = snapshots.length > 0 ? snapshots : mockSnapshots
     const base = dataset.find((s) => s.id === id)
-    if (!base) return err("Snapshot não encontrado", "MM_NOT_FOUND")
+    if (!base) return err("Snapshot not found", "MM_NOT_FOUND")
 
     const baseEmbeddingRes = await pgvectorRepository.getEmbeddingForDocument(base.id)
     if (baseEmbeddingRes.ok && baseEmbeddingRes.data?.source === "live") {
@@ -81,10 +81,10 @@ export function createMarketMemoryService(): MarketMemoryService {
         const sim = cosineSimilarity(baseEmb, mockEmbeddingVector(s.id))
         const reasoning =
           sim > 0.85
-            ? "Alta coincidência de regime e dispersão."
+            ? "High overlap in regime structure and dispersion."
             : sim > 0.75
-              ? "Padrões similares com diferenças em risco/volatilidade."
-              : "Similaridade parcial em narrativas, mas condições divergentes."
+              ? "Similar pattern with differences in risk and volatility."
+              : "Partial narrative similarity, but the underlying conditions still diverge."
         return { snapshot: s, similarity: sim, reasoning, method: "heuristic" as const }
       })
       .sort((a, b) => b.similarity - a.similarity)
@@ -98,7 +98,7 @@ export function createMarketMemoryService(): MarketMemoryService {
     const dataset = snapshots.length > 0 ? snapshots : mockSnapshots
     const a = dataset.find((s) => s.id === aId)
     const b = dataset.find((s) => s.id === bId)
-    if (!a || !b) return err("Snapshot não encontrado", "MM_NOT_FOUND")
+    if (!a || !b) return err("Snapshot not found", "MM_NOT_FOUND")
 
     const delta = {
       btcDominance: b.marketPulse.btcDominance - a.marketPulse.btcDominance,

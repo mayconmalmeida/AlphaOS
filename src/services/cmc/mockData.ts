@@ -30,7 +30,7 @@ export const mockNews: CmcNewsItemDto[] = [
     source: "Market Desk",
     published_at: "2026-06-11T12:40:00Z",
     sentiment_score: 0.18,
-    summary: "Captação concentra em infraestrutura; dispersão reduz e liquidez melhora em pares líderes.",
+    summary: "Flow is concentrating in infrastructure, dispersion is tightening, and liquidity is improving in category leaders.",
   },
   {
     id: "n2",
@@ -38,7 +38,7 @@ export const mockNews: CmcNewsItemDto[] = [
     source: "Wire",
     published_at: "2026-06-11T09:10:00Z",
     sentiment_score: 0.12,
-    summary: "Notícias elevam a força de narrativa, mas com risco de sobre-extensão no curto prazo.",
+    summary: "Headlines are strengthening the narrative, but short-term overextension risk is rising.",
   },
   {
     id: "n3",
@@ -46,7 +46,7 @@ export const mockNews: CmcNewsItemDto[] = [
     source: "Signals (Editorial)",
     published_at: "2026-06-10T22:20:00Z",
     sentiment_score: -0.04,
-    summary: "Fluxo sai de alta beta e se concentra em narrativas de produtividade e infraestrutura.",
+    summary: "Flow is leaving high beta and concentrating in productivity and infrastructure narratives.",
   },
 ]
 

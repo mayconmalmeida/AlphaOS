@@ -13,7 +13,7 @@ export function EvidencePanel({ evidence, answer }: EvidencePanelProps) {
       <Card className="bg-card/40 lg:col-span-5">
         <CardHeader>
           <CardTitle>Evidence Panel</CardTitle>
-          <CardDescription>Evidencias recuperadas antes da resposta.</CardDescription>
+          <CardDescription>Evidence retrieved before the answer is generated.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {evidence.map((item) => (
@@ -38,7 +38,7 @@ export function EvidencePanel({ evidence, answer }: EvidencePanelProps) {
         <CardHeader>
           <CardTitle>Answer With Citations</CardTitle>
           <CardDescription>
-            A resposta deve usar apenas o contexto recuperado pelo mecanismo RAG.
+            The answer uses only the context retrieved by the RAG engine.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -72,7 +72,7 @@ export function EvidencePanel({ evidence, answer }: EvidencePanelProps) {
             </>
           ) : (
             <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-              Gere uma resposta para visualizar as citações e o reasoning por evidencia.
+              Generate an answer to inspect citations and reasoning by evidence item.
             </div>
           )}
         </CardContent>
