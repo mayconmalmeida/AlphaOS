@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { buildGuidedJourneyHref } from "@/lib/guidedJourney"
 import { buildAlphaScore } from "@/services/alphaScoreService"
 import type { HypothesisDetail } from "@/services/hypotheses"
 import { useHypothesisGeneration } from "@/hooks/useHypothesisGeneration"
@@ -31,34 +30,29 @@ export default function Hypotheses() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">
-            Hypothesis Center
-          </div>
-          <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
+          <div className="text-[11px] font-medium tracking-wide text-muted-foreground">Hypothesis Center</div>
+          <h2 className="mt-1 font-display text-xl font-semibold tracking-tight sm:text-2xl">
             Explainable market hypotheses
           </h2>
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          <p className="mt-2 max-w-2xl text-[13px] leading-snug text-muted-foreground">
             AlphaOS generates market hypotheses backed by evidence. These are research views, not
             signals or recommendations.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button asChild disabled={data.length === 0}>
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <Button asChild className="w-full sm:w-auto">
             <Link
-              to={buildGuidedJourneyHref({
-                step: 1,
-                hypothesisId: data.find((item) => item.status !== "closed")?.id ?? data[0]?.id ?? null,
-              })}
+              to="/journey"
               className="flex items-center gap-2"
             >
               Explore Today&apos;s Best Opportunity
               <ChevronRight className="h-4 w-4" />
             </Link>
           </Button>
-          <Button onClick={handleGenerate} disabled={generating}>
+          <Button onClick={handleGenerate} disabled={generating} className="w-full sm:w-auto">
             <Sparkles className="h-4 w-4" />
             {generating ? "Generating..." : "Generate Hypothesis"}
           </Button>
@@ -77,7 +71,7 @@ export default function Hypotheses() {
       ) : null}
 
       <Card className="bg-card/40">
-        <CardContent className="grid gap-3 p-5 md:grid-cols-[1fr_180px_auto]">
+        <CardContent className="grid gap-3 p-5 lg:grid-cols-[1fr_180px_auto]">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -97,7 +91,7 @@ export default function Hypotheses() {
             <option value="watch">Watch</option>
             <option value="closed">Closed</option>
           </select>
-          <Button variant="outline" onClick={retry}>
+          <Button variant="outline" onClick={retry} className="w-full lg:w-auto">
             Refresh
           </Button>
         </CardContent>
@@ -180,10 +174,7 @@ export default function Hypotheses() {
                 </Link>
                 <Button asChild size="sm">
                   <Link
-                    to={buildGuidedJourneyHref({
-                      step: 1,
-                      hypothesisId: h.id,
-                    })}
+                    to="/journey"
                     className="flex items-center gap-2"
                   >
                     Explore Today&apos;s Best Opportunity

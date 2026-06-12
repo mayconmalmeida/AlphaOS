@@ -51,6 +51,10 @@ function deriveStateFromProbe(probe: EdgeProbeResult): HealthState {
   return "error"
 }
 
+function missingSecretReason(secretName: string, serviceLabel: string) {
+  return `Secret required: ${secretName}. ${serviceLabel} cannot run live until this secret is configured in Supabase.`
+}
+
 function buildItem(
   key: IntegrationHealth["key"],
   label: string,
@@ -193,7 +197,7 @@ async function probeAiEdge(): Promise<EdgeProbeResult> {
     ok: res.data.source === "edge" && res.data.provider === "openai",
     reason:
       res.data.source === "mock"
-        ? "Edge Function responded with mock output. OPENAI_API_KEY is likely missing in Supabase secrets."
+        ? missingSecretReason("OPENAI_API_KEY", "OpenAI generation")
         : "OpenAI edge response succeeded.",
     source: res.data.source,
     provider: res.data.provider,
@@ -226,7 +230,7 @@ async function probeEmbeddingEdge(): Promise<EdgeProbeResult> {
   if (source === "mock") {
     return {
       ok: false,
-      reason: "Embedding Edge Function returned mock vectors. OPENAI_API_KEY is likely missing in Supabase secrets.",
+      reason: missingSecretReason("OPENAI_API_KEY", "OpenAI embeddings"),
       source,
       provider,
       dimensions,
@@ -273,7 +277,9 @@ async function probeCmcEdge(): Promise<EdgeProbeResult> {
   if (data?.source === "mock") {
     return {
       ok: false,
-      reason: data.warning ?? "CoinMarketCap proxy returned mock data instead of live market data.",
+      reason: data.warning?.toLowerCase().includes("cmc_api_key")
+        ? missingSecretReason("CMC_API_KEY", "CoinMarketCap intelligence")
+        : (data.warning ?? "CoinMarketCap proxy returned connectivity-limited data instead of live market data."),
       source: data.source,
       warning: data.warning,
     }
@@ -417,10 +423,10 @@ export async function auditSystemHealth(): Promise<SystemHealthReport> {
       edgeState,
       edgeState === "connected"
         ? "All audited Edge Functions responded successfully."
-        : "One or more Edge Functions are deployed but failing or returning fallback responses.",
+        : "One or more Edge Functions are deployed but are still missing a required secret or returning connectivity-limited responses.",
       edgeState === "connected"
         ? "No action required."
-        : "Deploy all Supabase functions and ensure OPENAI_API_KEY and CMC_API_KEY are set in Supabase project secrets.",
+        : "Deploy all Supabase functions and configure any required secrets in the Supabase project.",
       lastChecked,
       counts.lastSync,
       edgeDetails
@@ -435,7 +441,7 @@ export async function auditSystemHealth(): Promise<SystemHealthReport> {
       aiProbe.reason,
       aiProbe.ok
         ? "No action required."
-        : "Set OPENAI_API_KEY in Supabase secrets and redeploy generate-ai-response and generate-embedding.",
+        : "Add OPENAI_API_KEY to Supabase secrets and refresh the health audit.",
       lastChecked,
       counts.lastSync,
       [`Provider: ${aiProbe.provider ?? "unknown"}`, `Source: ${aiProbe.source ?? "unknown"}`]
@@ -450,7 +456,7 @@ export async function auditSystemHealth(): Promise<SystemHealthReport> {
       cmcProbe.reason,
       cmcProbe.ok
         ? "No action required."
-        : "Set CMC_API_KEY in Supabase secrets, confirm proxy deployment, and verify upstream CoinMarketCap access.",
+        : "Add CMC_API_KEY to Supabase secrets, confirm proxy deployment, and refresh the health audit.",
       lastChecked,
       counts.lastSync,
       [
@@ -500,7 +506,7 @@ export async function auditSystemHealth(): Promise<SystemHealthReport> {
       embeddingProbe.reason,
       embeddingProbe.ok
         ? "No action required."
-        : "Fix the embedding Edge Function and verify OPENAI_API_KEY plus 1536-dimensional vectors are returned.",
+        : "Add OPENAI_API_KEY to Supabase secrets and verify the embedding function returns live 1536-dimensional vectors.",
       lastChecked,
       counts.lastSync,
       [

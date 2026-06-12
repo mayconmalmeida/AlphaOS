@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 
 import { Download, Sparkles } from "lucide-react"
 
+import { OpportunityIntelligencePanel } from "@/components/opportunity/OpportunityIntelligencePanel"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -16,13 +17,15 @@ export function ResearchReportLayout({
   actions?: ReactNode
   onExportMarkdown?: () => void
 }) {
+  const sections = report.sections.filter((section) => section.title !== "Opportunity Intelligence")
+
   return (
     <Card className="bg-card/40">
       <CardHeader>
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div>
             <CardTitle>Research Viewer</CardTitle>
-            <CardDescription>Template estilo Bloomberg Research + Goldman Sachs.</CardDescription>
+            <CardDescription>Institutional layout inspired by top-tier global research desks.</CardDescription>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Badge>{report.tone}</Badge>
@@ -34,7 +37,7 @@ export function ResearchReportLayout({
       </CardHeader>
       <CardContent>
         <div className="space-y-5">
-          <div className="rounded-2xl border bg-background/35 p-6">
+          <div className="rounded-2xl border bg-background/35 p-4 sm:p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -48,7 +51,7 @@ export function ResearchReportLayout({
                 </div>
               </div>
               {onExportMarkdown ? (
-                <Button variant="outline" className="gap-2" onClick={onExportMarkdown}>
+                <Button variant="outline" className="w-full gap-2 sm:w-auto" onClick={onExportMarkdown}>
                   <Download className="h-4 w-4" />
                   Export Markdown
                 </Button>
@@ -65,8 +68,17 @@ export function ResearchReportLayout({
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            {report.sections.map((section) => (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {report.opportunityIntelligence ? (
+              <div className="lg:col-span-2">
+                <OpportunityIntelligencePanel
+                  intelligence={report.opportunityIntelligence}
+                  title="Opportunity Intelligence"
+                  description="Institutional summary of conviction, narrative exposure, beneficiaries, and invalidating conditions."
+                />
+              </div>
+            ) : null}
+            {sections.map((section) => (
               <div key={section.id} className="rounded-xl border bg-background/35 p-5">
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
                   {section.title}

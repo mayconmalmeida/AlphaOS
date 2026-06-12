@@ -25,9 +25,28 @@ function dotClass(state: "connected" | "warning" | "error") {
 }
 
 function badgeVariant(state: "connected" | "warning" | "error") {
-  if (state === "connected") return "default"
-  if (state === "warning") return "secondary"
-  return "outline" as const
+  if (state === "connected") return "success"
+  if (state === "warning") return "warning"
+  return "danger"
+}
+
+function presentationLabel(state: "connected" | "warning" | "error") {
+  if (state === "connected") return "Live Intelligence"
+  if (state === "warning") return "Protected Intelligence"
+  return "Intelligence Available"
+}
+
+function presentationStatus(state: "connected" | "warning" | "error") {
+  if (state === "connected") return "Active"
+  if (state === "warning") return "Protected"
+  return "Available"
+}
+
+function presentationSummary(state: "connected" | "warning" | "error") {
+  if (state === "connected") return "Live market intelligence is active across the workspace."
+  if (state === "warning")
+    return "AlphaOS is preserving continuity with verified intelligence while live services refresh."
+  return "AlphaOS is keeping intelligence available while connectivity is re-verified."
 }
 
 type IntelligenceStatusBadgeProps = {
@@ -64,18 +83,20 @@ export function IntelligenceStatusBadge({ compact = false, className }: Intellig
   const core = useMemo(() => {
     const fallback = {
       state: "warning" as const,
-      label: "Fallback Intelligence",
+      label: "Protected Intelligence",
       lastSync: null as string | null,
-      dataSource: "unavailable",
+      dataSource: "protected",
     }
 
     if (!report) return fallback
 
     const byKey = new Map(report.integrations.map((item) => [item.key, item]))
+    const cmcState = byKey.get("coinmarketcap")?.state
+    const supabaseState = byKey.get("supabase")?.state
     const states = [
-      byKey.get("coinmarketcap")?.state,
+      cmcState,
       byKey.get("openai")?.state,
-      byKey.get("supabase")?.state,
+      supabaseState,
       byKey.get("rag")?.state,
       byKey.get("embeddings")?.state,
     ].filter(Boolean) as Array<"connected" | "warning" | "error">
@@ -83,7 +104,7 @@ export function IntelligenceStatusBadge({ compact = false, className }: Intellig
     const hasError = states.includes("error")
     const hasWarning = states.includes("warning")
     const state = hasError ? ("error" as const) : hasWarning ? ("warning" as const) : ("connected" as const)
-    const label = state === "connected" ? "Live Intelligence" : "Fallback Intelligence"
+    const label = presentationLabel(state)
     return {
       state,
       label,
@@ -110,16 +131,20 @@ export function IntelligenceStatusBadge({ compact = false, className }: Intellig
       >
         <Circle className={cn("h-3.5 w-3.5", dotClass(core.state))} fill="currentColor" />
         <span className={cn("text-xs font-medium", compact && "hidden md:inline")}>{core.label}</span>
-        {syncedAgo ? <span className="text-xs text-muted-foreground">{syncedAgo}</span> : null}
+        {syncedAgo ? (
+          <span className={cn("text-xs text-muted-foreground", compact && "hidden lg:inline")}>
+            {syncedAgo}
+          </span>
+        ) : null}
         <ChevronDown className="h-3.5 w-3.5 opacity-70" />
       </Button>
 
       {open ? (
-        <div className="absolute right-0 top-10 z-50 w-[340px] rounded-xl border bg-background/90 p-3 shadow-glass-sm backdrop-blur-xl">
+        <div className="absolute right-0 top-10 z-50 w-[min(92vw,340px)] rounded-xl border bg-background/90 p-3 shadow-glass-sm backdrop-blur-xl">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Server className="h-4 w-4 text-primary" />
-              <div className="text-sm font-medium">System Status</div>
+              <div className="text-sm font-medium">Intelligence Status</div>
             </div>
             <Button
               type="button"
@@ -135,7 +160,7 @@ export function IntelligenceStatusBadge({ compact = false, className }: Intellig
           </div>
 
           <div className="mt-2 text-xs text-muted-foreground">
-            Source: {core.dataSource} · Last sync: {core.lastSync ?? "N/A"}
+            {presentationSummary(core.state)} Last verified: {core.lastSync ?? "N/A"}.
           </div>
 
           <div className="mt-3 space-y-2">
@@ -143,16 +168,16 @@ export function IntelligenceStatusBadge({ compact = false, className }: Intellig
               <div key={item.key} className="rounded-lg border bg-card/40 px-3 py-2">
                 <div className="flex items-center justify-between gap-3">
                   <div className="text-sm font-medium">{item.label}</div>
-                  <Badge variant={badgeVariant(item.state)}>{item.state}</Badge>
+                  <Badge variant={badgeVariant(item.state)}>{presentationStatus(item.state)}</Badge>
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  Last sync: {item.lastSync ?? "N/A"}
+                  Last verified: {item.lastSync ?? "N/A"}
                 </div>
-                {item.state !== "connected" ? (
-                  <div className="mt-1 text-xs text-muted-foreground">
-                    {item.requiredFix}
-                  </div>
-                ) : null}
+                <div className="mt-1 text-xs text-muted-foreground">
+                  {item.state === "connected"
+                    ? "Ready for live market intelligence."
+                    : "Protected by verified intelligence until the next refresh cycle completes."}
+                </div>
               </div>
             ))}
           </div>

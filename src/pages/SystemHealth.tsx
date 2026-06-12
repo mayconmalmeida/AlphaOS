@@ -12,92 +12,88 @@ export default function SystemHealth() {
   const semanticSearch = useSemanticSearch()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <div className="text-xs uppercase tracking-wider text-muted-foreground">
-          System Health
-        </div>
-        <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
-          Monitor live readiness across the stack
+        <div className="text-[11px] font-medium tracking-wide text-muted-foreground">System Health</div>
+        <h2 className="mt-1 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+          Infrastructure Readiness Center
         </h2>
-        <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
-          Verify whether AlphaOS is running on live infrastructure, where fallback is still active,
-          and whether embeddings plus RAG are ready for a customer-facing demo.
+        <p className="mt-2 max-w-3xl text-[13px] leading-snug text-muted-foreground">
+          Review the readiness of market intelligence, research support, and reporting before a customer-facing presentation.
         </p>
       </div>
 
       <SystemHealthDashboard />
 
-      <div className="grid gap-4 lg:grid-cols-12">
-        <Card className="bg-card/40 lg:col-span-5">
+      <div className="grid gap-3 xl:grid-cols-12">
+        <Card className="bg-card/40 xl:col-span-5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Database className="h-4 w-4 text-primary" />
-              Embedding Health
+              Research Memory Readiness
             </CardTitle>
             <CardDescription>
-              Queue state, vector dimension, retries, and last generated record.
+              Tracks how quickly AlphaOS is preparing verified research context for downstream intelligence.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3">
             <div className="flex flex-wrap gap-2">
-              <Badge variant="outline">Pending {embeddingPipeline.stats.pending}</Badge>
-              <Badge variant="outline">Processing {embeddingPipeline.stats.processing}</Badge>
-              <Badge>Completed {embeddingPipeline.stats.completed}</Badge>
-              <Badge variant="secondary">Failed {embeddingPipeline.stats.failed}</Badge>
+              <Badge variant="outline">Queued {embeddingPipeline.stats.pending}</Badge>
+              <Badge variant="outline">In Progress {embeddingPipeline.stats.processing}</Badge>
+              <Badge variant="success">Ready {embeddingPipeline.stats.completed}</Badge>
+              <Badge variant="danger">Needs Review {embeddingPipeline.stats.failed}</Badge>
             </div>
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="rounded-xl border bg-background/35 p-4">
-                <div className="text-xs text-muted-foreground">Last embedding generated</div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <div className="rounded-xl border bg-background/30 p-3">
+                <div className="text-[11px] text-muted-foreground">Last research refresh</div>
                 <div className="mt-2 text-sm font-medium">
                   {embeddingPipeline.stats.lastGenerated ?? "N/A"}
                 </div>
               </div>
-              <div className="rounded-xl border bg-background/35 p-4">
-                <div className="text-xs text-muted-foreground">Vector dimension</div>
+              <div className="rounded-xl border bg-background/30 p-3">
+                <div className="text-[11px] text-muted-foreground">Coverage quality</div>
                 <div className="mt-2 text-sm font-medium">
-                  {embeddingPipeline.stats.vectorDimension ?? "N/A"} · target 1536 · mismatches{" "}
-                  {embeddingPipeline.stats.dimensionMismatches}
+                  {embeddingPipeline.stats.vectorQuality}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  Model: {embeddingPipeline.stats.embeddingModel ?? "N/A"}
+                  Coverage gaps flagged: {embeddingPipeline.stats.dimensionMismatches}
                 </div>
               </div>
             </div>
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="rounded-xl border bg-background/35 p-4">
-                <div className="text-xs text-muted-foreground">Last successful job</div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <div className="rounded-xl border bg-background/30 p-3">
+                <div className="text-[11px] text-muted-foreground">Last successful refresh</div>
                 <div className="mt-2 text-sm font-medium">
                   {embeddingPipeline.stats.lastSuccessfulEmbedding ?? "N/A"}
                 </div>
               </div>
-              <div className="rounded-xl border bg-background/35 p-4">
-                <div className="text-xs text-muted-foreground">Last failed job</div>
+              <div className="rounded-xl border bg-background/30 p-3">
+                <div className="text-[11px] text-muted-foreground">Last issue flagged</div>
                 <div className="mt-2 text-sm font-medium">
                   {embeddingPipeline.stats.lastFailedEmbedding ?? "N/A"}
                 </div>
               </div>
             </div>
-            <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-              {embeddingPipeline.stats.vectorQuality}
+            <div className="rounded-xl border bg-background/30 p-3 text-[13px] leading-snug text-muted-foreground">
+              AlphaOS keeps enriching research memory in the background so evidence trails remain available during live presentations.
             </div>
             <div className="flex flex-wrap gap-2">
               <Button onClick={embeddingPipeline.seed} disabled={embeddingPipeline.processing}>
-                Seed Documents
+                Prepare Records
               </Button>
               <Button
                 variant="outline"
                 onClick={embeddingPipeline.processNext}
                 disabled={embeddingPipeline.processing}
               >
-                Process Next
+                Process Next Batch
               </Button>
               <Button
                 variant="outline"
                 onClick={embeddingPipeline.retryFailedJobs}
                 disabled={embeddingPipeline.processing || embeddingPipeline.stats.failed === 0}
               >
-                Retry Failed Jobs
+                Retry Flagged Items
               </Button>
               <Button
                 variant="outline"
@@ -110,18 +106,18 @@ export default function SystemHealth() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/40 lg:col-span-7">
+        <Card className="bg-card/40 xl:col-span-7">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="h-4 w-4 text-primary" />
-              RAG Search Test
+              Research Context Review
             </CardTitle>
             <CardDescription>
-              Validates semantic retrieval with real query embeddings when available.
+              Review how AlphaOS surfaces the most relevant market context behind each thesis.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-3 md:grid-cols-[1fr_180px_auto]">
+          <CardContent className="space-y-3">
+            <div className="grid gap-3 lg:grid-cols-[1fr_180px_auto]">
               <input
                 value={semanticSearch.query}
                 onChange={(e) => semanticSearch.setQuery(e.target.value)}
@@ -154,42 +150,46 @@ export default function SystemHealth() {
                 <option value="category">Category</option>
                 <option value="research">Research</option>
               </select>
-              <Button onClick={semanticSearch.run} disabled={semanticSearch.loading} className="gap-2">
+              <Button onClick={semanticSearch.run} disabled={semanticSearch.loading} className="gap-2 w-full lg:w-auto">
                 <Search className="h-4 w-4" />
-                {semanticSearch.loading ? "Testing..." : "Search Test"}
+                {semanticSearch.loading ? "Reviewing..." : "Review Matches"}
               </Button>
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Badge variant={semanticSearch.embeddingSource === "live" ? "default" : "secondary"}>
-                Query Embedding {semanticSearch.embeddingSource ?? "idle"}
+              <Badge variant={semanticSearch.embeddingSource === "live" ? "success" : "warning"}>
+                {semanticSearch.embeddingSource === "live"
+                  ? "Research Context Ready"
+                  : semanticSearch.embeddingSource === "fallback"
+                    ? "Research Context Protected"
+                    : "Context Review Available"}
               </Badge>
             </div>
 
             {semanticSearch.error ? (
-              <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
+              <div className="rounded-xl border bg-background/30 p-3 text-sm text-muted-foreground">
                 {semanticSearch.error.message}
               </div>
             ) : null}
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {semanticSearch.results.length === 0 ? (
-                <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-                  Run a retrieval test to verify semantic search, relevance scoring, and document availability.
+                <div className="rounded-xl border bg-background/30 p-3 text-sm text-muted-foreground">
+                  Run a context review to inspect the strongest supporting evidence AlphaOS can surface for the current market question.
                 </div>
               ) : (
                 semanticSearch.results.map((result) => (
-                  <div key={result.id} className="rounded-xl border bg-background/35 p-4">
+                  <div key={result.id} className="rounded-xl border bg-background/30 p-3">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
                         <div className="text-sm font-medium">{result.title}</div>
                         <div className="mt-1 text-xs text-muted-foreground">
-                          {result.documentType} · relevance {Math.round(result.similarity * 100)}%
+                          {result.documentType} · match strength {Math.round(result.similarity * 100)}%
                         </div>
                       </div>
                       <Badge variant="outline">{result.documentType}</Badge>
                     </div>
-                    <div className="mt-3 text-sm text-foreground/90">{result.content}</div>
+                    <div className="mt-3 text-[13px] leading-snug text-foreground/90">{result.content}</div>
                   </div>
                 ))
               )}

@@ -37,7 +37,7 @@ export async function buildMockAiResponse<T = unknown>(
 
   return {
     content:
-      "Mock fallback ativo. A infraestrutura de IA esta pronta, mas a Edge Function ou a chave de API ainda nao estao configuradas.",
+      "Live AI is not available yet. Configure the required Edge Function secret to switch AlphaOS from simulated output to live generation.",
     structuredData,
     provider: "mock",
     model: "mock-fallback",

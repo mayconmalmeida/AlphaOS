@@ -6,6 +6,20 @@ export type MarketSnapshot = {
   sourceMode?: "live" | "fallback"
   lastSyncAt?: string | null
   sourceCapabilities?: string[]
+  quotes?: Array<{
+    symbol: string
+    priceUsd: number
+    volume24hUsd: number
+    marketCapUsd: number
+  }>
+  news?: Array<{
+    id: string
+    title: string
+    source: string
+    publishedAt: string
+    sentimentScore?: number
+    summary?: string
+  }>
   marketPulse: {
     btcDominance: number
     fearGreed: number

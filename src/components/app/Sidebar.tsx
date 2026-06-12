@@ -30,18 +30,29 @@ const NAV: Array<NavItem & { key: string }> = [
   { to: "/market-replay", key: "marketReplay", label: "Market Replay", icon: PlayCircle },
   { to: "/strategy-lab", key: "strategyLab", label: "Strategy Lab", icon: FlaskConical },
   { to: "/research", key: "research", label: "Research", icon: FileText },
-  { to: "/cmc-coverage", key: "cmcCoverage", label: "CMC Coverage", icon: History },
+  { to: "/cmc-coverage", key: "cmcCoverage", label: "CMC Intelligence", icon: History },
   { to: "/system-health", key: "systemHealth", label: "System Health", icon: Stethoscope },
   { to: "/settings", key: "settings", label: "Settings", icon: Settings },
 ]
 
-export function Sidebar() {
+export function Sidebar({
+  mobile = false,
+  onNavigate,
+}: {
+  mobile?: boolean
+  onNavigate?: () => void
+}) {
   const { t } = useI18n()
 
   return (
-    <aside className="flex h-full w-[280px] flex-col border-r bg-background/30 backdrop-blur-xl">
-      <div className="flex items-center gap-3 px-5 py-5">
-        <div className="grid h-11 w-11 place-items-center overflow-hidden rounded-lg border bg-card/70 p-1 shadow-glass-sm">
+    <aside
+      className={[
+        "flex h-full flex-col border-r bg-background/60 backdrop-blur-xl",
+        mobile ? "w-[min(84vw,312px)] shadow-xl" : "w-[232px] xl:w-[248px]",
+      ].join(" ")}
+    >
+      <div className="flex items-center gap-3 px-4 py-3">
+        <div className="grid h-9 w-9 place-items-center overflow-hidden rounded-lg border bg-card/60 p-1">
           <img
             src="/AlphaOS_Logo.png"
             alt="AlphaOS"
@@ -49,7 +60,7 @@ export function Sidebar() {
           />
         </div>
         <div className="min-w-0">
-          <div className="font-display text-base font-semibold leading-tight tracking-tight">
+          <div className="font-display text-sm font-semibold leading-tight tracking-tight">
             AlphaOS
           </div>
           <div className="truncate text-xs text-muted-foreground">
@@ -60,38 +71,39 @@ export function Sidebar() {
 
       <Separator />
 
-      <nav className="flex flex-1 flex-col gap-1 p-3">
+      <nav className="flex flex-1 flex-col gap-1 px-2 py-2">
         {NAV.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
+            onClick={onNavigate}
             className={({ isActive }) =>
               cn(
-                "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
-                "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
-                isActive && "bg-accent text-foreground"
+                "group flex items-center gap-2.5 rounded-md px-3 py-2 text-[13px] transition-colors",
+                "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
+                isActive && "bg-accent/55 text-foreground"
               )
             }
           >
-            <item.icon className="h-4 w-4 opacity-90" />
+            <item.icon className="h-3.5 w-3.5 opacity-80" />
             <span className="truncate">{t(`nav.${item.key}`, item.label)}</span>
           </NavLink>
         ))}
       </nav>
 
-      <div className="px-5 pb-5">
-        <div className="rounded-xl border bg-card/60 p-4 shadow-glass-sm">
+      <div className="px-4 pb-4">
+        <div className="rounded-lg border bg-background/40 p-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <History className="h-3.5 w-3.5" />
+              <History className="h-3.5 w-3.5 opacity-80" />
               <span>{t("shell.intelligenceStatus", "Intelligence Status")}</span>
             </div>
             <IntelligenceStatusBadge compact />
           </div>
-          <div className="mt-2 text-sm leading-snug text-foreground/90">
+          <div className="mt-2 text-xs leading-snug text-muted-foreground">
             {t(
               "shell.intelligenceDescription",
-              "Powered by CoinMarketCap Intelligence with explicit fallback and provenance when live connectivity is unavailable."
+              "Powered by CoinMarketCap Intelligence with clear live status, evidence provenance, and operational health signals."
             )}
           </div>
         </div>

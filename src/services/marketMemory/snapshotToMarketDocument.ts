@@ -36,7 +36,22 @@ export function snapshotToMarketDocument(snapshot: MarketSnapshot): {
 
   const technicalSummary = (snapshot.technicals ?? [])
     .slice(0, 8)
-    .map((t) => `${t.symbol} ${t.trend} (momentum ${Math.round(t.momentum)}, vol ${Math.round(t.volatility)})`)
+    .map(
+      (t) =>
+        `${t.symbol} ${t.trend} (momentum ${Math.round(t.momentum * 100)}%, vol ${Math.round(
+          t.volatility * 100
+        )}%)`
+    )
+    .join(" | ")
+
+  const quoteSummary = (snapshot.quotes ?? [])
+    .slice(0, 8)
+    .map((q) => `${q.symbol} ${q.priceUsd.toFixed(q.priceUsd >= 1000 ? 0 : 2)} USD`)
+    .join(" | ")
+
+  const newsSummary = (snapshot.news ?? [])
+    .slice(0, 5)
+    .map((item) => `${item.title} (${item.source})`)
     .join(" | ")
 
   const content = [
@@ -52,9 +67,11 @@ export function snapshotToMarketDocument(snapshot: MarketSnapshot): {
     `volume_24h_usd: ${snapshot.marketPulse.volume24hUsd}`,
     `sentiment_score: ${snapshot.marketPulse.sentimentScore}`,
     `news_momentum: ${snapshot.marketPulse.newsMomentum}`,
+    `quotes: ${quoteSummary || "N/A"}`,
     `narratives: ${narrativeSummary || "N/A"}`,
     `categories: ${categorySummary || "N/A"}`,
     `technicals: ${technicalSummary || "N/A"}`,
+    `news: ${newsSummary || "N/A"}`,
     `summary: ${snapshot.summary}`,
     `what_happened_next: ${snapshot.context.whatHappenedNext}`,
   ].join("\n")
@@ -75,6 +92,8 @@ export function snapshotToMarketDocument(snapshot: MarketSnapshot): {
         velocity: n.velocity,
         growth: n.growth,
       })),
+      quotes: snapshot.quotes ?? [],
+      news: snapshot.news ?? [],
       categories: snapshot.categories ?? [],
       technicals: snapshot.technicals ?? [],
       marketPulse: snapshot.marketPulse,

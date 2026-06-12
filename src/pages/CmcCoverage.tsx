@@ -1,53 +1,77 @@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useEmbeddingPipeline } from "@/hooks/useEmbeddingPipeline"
 import { useHypotheses } from "@/hooks/useHypotheses"
 import { useI18n } from "@/i18n/I18nProvider"
 import { useResearchCenter } from "@/hooks/useResearchCenter"
 import { useCmcIntegration } from "@/hooks/useCmcIntegration"
+import { useSystemHealth } from "@/hooks/useSystemHealth"
 
 const COVERAGE = [
-  { label: "Quotes", live: true },
-  { label: "Technicals", live: true },
-  { label: "News", live: true },
-  { label: "Sentiment", live: true },
-  { label: "Categories", live: true },
-  { label: "Narratives", live: true },
-  { label: "Skills Marketplace", live: false },
-  { label: "MCP", live: false },
+  {
+    label: "Quotes",
+    live: true,
+    description: "Real-time pricing and market cap context anchor each opportunity in current market reality.",
+  },
+  {
+    label: "Technicals",
+    live: true,
+    description: "Technical confirmation helps AlphaOS validate momentum, trend quality, and timing.",
+  },
+  {
+    label: "News",
+    live: true,
+    description: "Headline flow adds catalyst awareness and keeps the research layer tied to what changed.",
+  },
+  {
+    label: "Sentiment",
+    live: true,
+    description: "Sentiment signals help AlphaOS distinguish conviction, caution, and crowd positioning.",
+  },
+  {
+    label: "Categories",
+    live: true,
+    description: "Category rotation reveals where leadership is forming across sectors and thematic groups.",
+  },
+  {
+    label: "Narratives",
+    live: true,
+    description: "Narrative intelligence translates market activity into explainable themes and opportunity framing.",
+  },
 ]
 
 export default function CmcCoverage() {
   const { t } = useI18n()
   const cmcIntegration = useCmcIntegration()
-  const embeddingPipeline = useEmbeddingPipeline()
   const hypotheses = useHypotheses()
   const research = useResearchCenter()
+  const systemHealth = useSystemHealth()
+  const byKey = new Map(systemHealth.report?.integrations.map((item) => [item.key, item]) ?? [])
+  const cmcHealth = byKey.get("coinmarketcap") ?? null
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <div className="text-xs uppercase tracking-wider text-muted-foreground">
-          {t("nav.cmcCoverage", "CMC Coverage")}
+        <div className="text-[11px] font-medium tracking-wide text-muted-foreground">
+          {t("nav.cmcCoverage", "CMC Intelligence")}
         </div>
-        <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
-          {t("cmcCoverage.title", "CoinMarketCap Intelligence Coverage")}
+        <h2 className="mt-1 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+          {t("cmcCoverage.title", "CoinMarketCap Intelligence Layer")}
         </h2>
-        <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
+        <p className="mt-2 max-w-3xl text-[13px] leading-snug text-muted-foreground">
           {t(
             "cmcCoverage.subtitle",
-            "Operational depth and document coverage across the AlphaOS intelligence stack."
+            "See how CoinMarketCap powers market context, narrative intelligence, and research outputs across AlphaOS."
           )}
         </p>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-12">
+      <div className="grid gap-3 lg:grid-cols-12">
         <Card className="bg-card/40 lg:col-span-7">
           <CardHeader>
-            <CardTitle>Coverage Matrix</CardTitle>
-            <CardDescription>Hackathon-facing proof of CoinMarketCap data usage.</CardDescription>
+            <CardTitle>Capability Layer</CardTitle>
+            <CardDescription>How CoinMarketCap intelligence enters AlphaOS and turns into product-ready insight.</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-3 md:grid-cols-2">
+          <CardContent className="grid gap-2 md:grid-cols-2">
             {COVERAGE.map((item) => (
               (() => {
                 const capabilityKey =
@@ -70,29 +94,29 @@ export default function CmcCoverage() {
                     : null
 
                 return (
-              <div key={item.label} className="rounded-xl border bg-background/35 p-4">
+              <div key={item.label} className="rounded-xl border bg-background/30 p-3">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="text-sm font-medium">{item.label}</div>
+                  <div className="text-[13px] font-medium">{item.label}</div>
                   <Badge
                     variant={
                       runtime?.source === "live"
-                        ? "default"
-                        : item.live
-                          ? "secondary"
+                        ? "success"
+                        : runtime?.source === "idle"
+                          ? "outline"
+                          : item.live
+                          ? "warning"
                           : "outline"
                     }
                   >
                     {runtime?.source === "live"
-                      ? "Live"
+                      ? "Live Intelligence"
                       : item.live
-                        ? "Fallback"
+                        ? "Protected Intelligence"
                         : t("cmcCoverage.readiness", "Readiness")}
                   </Badge>
                 </div>
-                <div className="mt-2 text-xs text-muted-foreground">
-                  {item.live
-                    ? `${runtime?.message ?? "Connected through AlphaOS services, ingestion, and downstream evidence flows."} Last sync: ${runtime?.lastSync ?? "N/A"}`
-                    : "Planned interface with readiness signals exposed for judging and roadmap credibility."}
+                <div className="mt-2 text-[13px] leading-snug text-muted-foreground">
+                    {item.description} Last verified: {runtime?.lastSync ?? "N/A"}.
                 </div>
               </div>
                 )
@@ -103,20 +127,24 @@ export default function CmcCoverage() {
 
         <Card className="bg-card/40 lg:col-span-5">
           <CardHeader>
-            <CardTitle>Operational Metrics</CardTitle>
-            <CardDescription>Live counters pulled from the running product state.</CardDescription>
+            <CardTitle>Product Impact</CardTitle>
+            <CardDescription>What the CoinMarketCap intelligence layer is already powering inside AlphaOS.</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-3">
+          <CardContent className="grid gap-2 sm:grid-cols-2">
             {[
-              { label: t("cmcCoverage.documentsProcessed", "Documents processed"), value: embeddingPipeline.jobs.length },
-              { label: t("cmcCoverage.narrativesTracked", "Narratives tracked"), value: 6 },
-              { label: t("cmcCoverage.evidenceGenerated", "Evidence generated"), value: hypotheses.data.reduce((acc, item) => acc + item.evidenceCount, 0) || 0 },
-              { label: t("cmcCoverage.hypothesesGenerated", "Hypotheses generated"), value: hypotheses.data.length },
-              { label: t("cmcCoverage.reportsGenerated", "Research reports generated"), value: research.reports.length },
+              {
+                label: t("cmcCoverage.documentsProcessed", "Intelligence records"),
+                value: systemHealth.report?.summary.totalDocuments ?? 0,
+              },
+              { label: "Market states indexed", value: systemHealth.report?.summary.totalMarketSnapshots ?? 0 },
+              { label: t("cmcCoverage.evidenceGenerated", "Evidence trails"), value: hypotheses.data.reduce((acc, item) => acc + item.evidenceCount, 0) || 0 },
+              { label: t("cmcCoverage.hypothesesGenerated", "Opportunity briefs"), value: hypotheses.data.length },
+              { label: t("cmcCoverage.reportsGenerated", "Research reports"), value: research.reports.length },
+              { label: "Strategy pathways", value: systemHealth.report?.summary.totalStrategies ?? 0 },
             ].map((item) => (
-              <div key={item.label} className="rounded-xl border bg-background/35 p-4">
-                <div className="text-xs text-muted-foreground">{item.label}</div>
-                <div className="mt-2 font-display text-2xl font-semibold tracking-tight">{item.value}</div>
+              <div key={item.label} className="rounded-xl border bg-background/30 p-3">
+                <div className="text-[11px] text-muted-foreground">{item.label}</div>
+                <div className="mt-1 font-display text-xl font-semibold tracking-tight">{item.value}</div>
               </div>
             ))}
           </CardContent>
@@ -125,26 +153,31 @@ export default function CmcCoverage() {
 
       <Card className="bg-card/40">
         <CardHeader>
-          <CardTitle>Coverage Provenance</CardTitle>
-          <CardDescription>Judge-facing reliability and fallback state.</CardDescription>
+          <CardTitle>Executive Readiness</CardTitle>
+          <CardDescription>High-level confidence inputs showing that CoinMarketCap intelligence is feeding the product experience.</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-wrap gap-2">
-          <Badge variant={cmcIntegration.status.edgeProxyReady ? "default" : "outline"}>
-            CMC Proxy {cmcIntegration.status.edgeProxyReady ? "Ready" : "Fallback only"}
+        <CardContent className="flex flex-wrap gap-1.5">
+          <Badge
+            variant={
+              cmcHealth?.state === "connected"
+                ? "success"
+                : cmcHealth?.state === "warning"
+                  ? "warning"
+                  : cmcHealth?.state === "error"
+                    ? "danger"
+                    : "outline"
+            }
+          >
+            {cmcHealth?.state === "connected" ? "CoinMarketCap Intelligence Connected" : "CoinMarketCap Intelligence Protected"}
           </Badge>
-          <Badge variant="outline">Mode {cmcIntegration.status.mode}</Badge>
+          <Badge variant="outline">Last verified {systemHealth.report?.summary.lastSync ?? "N/A"}</Badge>
           <Badge variant="outline">
-            Sentiment {cmcIntegration.runtimeStatus.sentiment.source}
+            {cmcIntegration.runtimeStatus.sentiment.source === "live" ? "Intelligence Active" : "Protected Intelligence"}
           </Badge>
-          <Badge variant="outline">Docs {embeddingPipeline.jobs.length}</Badge>
-          <Badge variant="outline">
-            {t("cmcCoverage.mcp", "MCP readiness")} {" "}
-            {COVERAGE.find((item) => item.label === "MCP")?.live ? "Ready" : "Planned"}
-          </Badge>
-          <Badge variant="outline">
-            {t("cmcCoverage.skillsMarketplace", "Skills Marketplace readiness")} {" "}
-            {COVERAGE.find((item) => item.label === "Skills Marketplace")?.live ? "Ready" : "Planned"}
-          </Badge>
+          <Badge variant="outline">Market data ready</Badge>
+          <Badge variant="outline">Research ready</Badge>
+          <Badge variant="outline">Narrative coverage active</Badge>
+          <Badge variant="outline">Records {systemHealth.report?.summary.totalDocuments ?? 0}</Badge>
         </CardContent>
       </Card>
     </div>

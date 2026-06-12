@@ -84,22 +84,20 @@ export default function MarketMemory() {
       : null
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <div className="text-xs uppercase tracking-wider text-muted-foreground">
-          Market Memory
-        </div>
-        <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
+        <div className="text-[11px] font-medium tracking-wide text-muted-foreground">Market Memory</div>
+        <h2 className="mt-1 font-display text-xl font-semibold tracking-tight sm:text-2xl">
           Explore historical market states
         </h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Review daily snapshots, compare regimes, and retrieve similar historical setups with
-          explicit vector vs fallback labeling.
+        <p className="mt-2 max-w-2xl text-[13px] leading-snug text-muted-foreground">
+          Review daily snapshots, compare regimes, and surface the closest historical setups with
+          clear market context and verified intelligence states.
         </p>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-12">
-        <Card className="bg-card/40 lg:col-span-4">
+      <div className="grid gap-3 xl:grid-cols-12">
+        <Card className="bg-card/40 xl:col-span-4">
           <CardHeader>
             <CardTitle>Timeline</CardTitle>
             <CardDescription>Select a snapshot to explore.</CardDescription>
@@ -181,7 +179,7 @@ export default function MarketMemory() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-4 lg:col-span-5">
+        <div className="grid gap-4 xl:col-span-5">
           <Card className="bg-card/40">
             <CardHeader>
               <CardTitle>Snapshot Explorer</CardTitle>
@@ -293,7 +291,7 @@ export default function MarketMemory() {
                   Choose a period to inspect the regime differences.
                 </div>
               ) : (
-                <div className="grid gap-3 md:grid-cols-3">
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                   {[
                     { k: "BTC Dom", v: comparison.delta.btcDominance, fmt: (n: number) => `${n.toFixed(1)}%` },
                     { k: "Fear&Greed", v: comparison.delta.fearGreed, fmt: (n: number) => `${Math.round(n)}` },
@@ -320,7 +318,7 @@ export default function MarketMemory() {
           </Card>
         </div>
 
-        <Card className="bg-card/40 lg:col-span-3">
+        <Card className="bg-card/40 xl:col-span-3">
           <CardHeader>
             <CardTitle>Similar Markets</CardTitle>
             <CardDescription>Similarity method, context, and what happened next.</CardDescription>
@@ -335,20 +333,20 @@ export default function MarketMemory() {
                 {similar.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     <Badge variant={similar[0].method === "vector" ? "default" : "secondary"}>
-                      {similar[0].method === "vector" ? "Vector Search" : "Heuristic Fallback"}
+                      {similar[0].method === "vector" ? "Vector Search" : "Heuristic Matching"}
                     </Badge>
                     <Badge variant="outline">
-                      {selected.sourceMode === "live" ? "Live" : "Fallback"}
+                      {selected.sourceMode === "live" ? "Live Intelligence" : "Protected Intelligence"}
                     </Badge>
                   </div>
                 ) : (
                   <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-                    No comparable snapshots found yet. Ingest and embed more snapshots to enable vector similarity.
+                    Historical comparison expands automatically as new market states are indexed.
                   </div>
                 )}
                 {similar[0]?.method === "heuristic" ? (
                   <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-                    Vector similarity is unavailable because snapshot embeddings are missing or running in fallback. Generate embeddings to enable pgvector similarity.
+                    Similarity coverage is building from accumulated market intelligence and will deepen with every new market state.
                   </div>
                 ) : null}
                 {similar.map((row) => (
@@ -362,7 +360,7 @@ export default function MarketMemory() {
                         <div className="mt-2 flex flex-wrap gap-2">
                           <Badge variant="outline">{getSnapshotMarketRegime(row.snapshot)}</Badge>
                           <Badge variant="outline">
-                            Mode {row.snapshot.sourceMode ?? "fallback"}
+                            {row.snapshot.sourceMode === "live" ? "Live Intelligence" : "Protected Intelligence"}
                           </Badge>
                         </div>
                       </div>

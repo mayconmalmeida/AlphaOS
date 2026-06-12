@@ -11,31 +11,31 @@ const TOTAL_STEPS = 7
 const STEP_META: Record<GuidedJourneyStep, { title: string; matters: string }> = {
   1: {
     title: "Opportunity",
-    matters: "Start with a single opportunity so the product’s value is instantly obvious.",
+    matters: "Start with a single opportunity so the value is obvious in seconds.",
   },
   2: {
     title: "Why Now",
-    matters: "Timing turns a narrative into asymmetry before consensus forms.",
+    matters: "Explain what changed recently so the thesis matters now, not later.",
   },
   3: {
     title: "Evidence Graph",
-    matters: "Evidence makes the thesis auditable, not just persuasive.",
+    matters: "Show auditable evidence and how each signal supports the conviction.",
   },
   4: {
     title: "Historical Analogue",
-    matters: "History stress-tests whether today’s setup rhymes with past regimes.",
+    matters: "Ground the thesis with a comparable historical setup and outcome.",
   },
   5: {
     title: "Market Replay",
-    matters: "Replay shows how narratives evolved and what happened next.",
+    matters: "Replay shows what followed a similar setup and which narratives won.",
   },
   6: {
     title: "Strategy Candidate",
-    matters: "A strategy candidate turns research into testable execution logic.",
+    matters: "Turn the thesis into a testable, risk-controlled strategy outline.",
   },
   7: {
     title: "Research Report",
-    matters: "A report packages the full chain into something a team can share and act on.",
+    matters: "Package the full chain into a research artifact a team can share and act on.",
   },
 }
 
@@ -96,19 +96,5 @@ export function getGuidedJourneyEstimatedTime(step: GuidedJourneyStep) {
   return remainingSeconds >= 60
     ? `${Math.ceil(remainingSeconds / 60)} min remaining`
     : `~${remainingSeconds}s remaining`
-}
-
-export function getGuidedJourneyPath(params: {
-  step: GuidedJourneyStep
-  hypothesisId?: string | null
-}) {
-  const hypothesisId = params.hypothesisId
-  if (params.step === 1) return "/dashboard"
-  if (params.step === 2 || params.step === 3 || params.step === 4) {
-    return hypothesisId ? `/hypotheses/${hypothesisId}` : "/hypotheses"
-  }
-  if (params.step === 5) return "/market-replay"
-  if (params.step === 6) return "/strategy-lab"
-  return "/research"
 }
 

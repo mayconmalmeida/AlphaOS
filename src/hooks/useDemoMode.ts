@@ -4,9 +4,9 @@ const STORAGE_KEY = "alphaos.demo-mode"
 
 export function useDemoMode() {
   const [enabled, setEnabled] = useState<boolean>(() => {
-    if (typeof window === "undefined") return true
+    if (typeof window === "undefined") return false
     const saved = window.localStorage.getItem(STORAGE_KEY)
-    return saved ? saved === "true" : true
+    return saved ? saved === "true" : false
   })
 
   useEffect(() => {

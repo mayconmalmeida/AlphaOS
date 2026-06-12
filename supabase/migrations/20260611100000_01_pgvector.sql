@@ -1,4 +1,4 @@
-create extension if not exists vector with schema extensions;
+create extension if not exists vector;
 
 create table if not exists public.market_documents (
   id text primary key,
@@ -24,7 +24,7 @@ create table if not exists public.market_documents (
 create table if not exists public.market_embeddings (
   id text primary key,
   document_id text not null references public.market_documents(id) on delete cascade,
-  embedding extensions.vector(1536),
+  embedding vector(1536),
   model text not null,
   provider text not null,
   dimensions int not null default 1536,
@@ -40,10 +40,10 @@ create index if not exists market_documents_document_type_idx
 
 create index if not exists market_embeddings_embedding_hnsw_idx
   on public.market_embeddings
-  using hnsw (embedding extensions.vector_cosine_ops);
+  using hnsw (embedding vector_cosine_ops);
 
 create or replace function public.match_market_documents (
-  query_embedding extensions.vector(1536),
+  query_embedding vector(1536),
   match_threshold float,
   match_count int,
   filter_document_type text default null
@@ -77,4 +77,3 @@ as $$
   order by e.embedding <=> query_embedding
   limit match_count;
 $$;
-

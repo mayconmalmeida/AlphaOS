@@ -11,6 +11,10 @@ import { mockResearchReports } from "@/services/research/mockData"
 import { researchRepository } from "@/services/research/ResearchRepository"
 import type { ResearchReport } from "@/services/research/types"
 import { strategiesService } from "@/services/strategies"
+import {
+  buildOpportunityIntelligence,
+  buildOpportunityReportSection,
+} from "@/services/opportunityIntelligence"
 
 type ReportAiOutput = {
   title: string
@@ -79,6 +83,8 @@ function buildFallbackReport(params: {
   riskSummary: string[]
   evidenceSummary: string[]
   analogues: string[]
+  opportunitySectionBody: string
+  opportunityIntelligence: ResearchReport["opportunityIntelligence"]
 }): Omit<ResearchReport, "id"> {
   const title = `Institutional Memo — ${params.hypothesisTitle}`
 
@@ -87,6 +93,11 @@ function buildFallbackReport(params: {
       id: "exec",
       title: "Executive Summary",
       body: params.evidenceSummary.join("\n"),
+    },
+    {
+      id: "opportunity-intelligence",
+      title: "Opportunity Intelligence",
+      body: params.opportunitySectionBody,
     },
     {
       id: "regime",
@@ -165,6 +176,7 @@ function buildFallbackReport(params: {
       params.evidenceSummary[0] ??
       "Institutional report generated from evidence, market context, and risk review.",
     sections,
+    opportunityIntelligence: params.opportunityIntelligence,
   }
 }
 
@@ -213,6 +225,8 @@ export function createResearchService(): ResearchService {
       }
 
       const hypothesis = hypothesisRes.data
+      const trackedSymbols =
+        hypothesis.relatedAssets.length > 0 ? hypothesis.relatedAssets.slice(0, 4) : ["BTC", "ETH", "SOL"]
       const strategiesRes = await strategiesService.listCandidates({
         hypothesisId: hypothesis.id,
         status: "all",
@@ -226,13 +240,15 @@ export function createResearchService(): ResearchService {
         })
       )
 
-      const [snapshotsRes, narrativesRes, categoriesRes, sentimentRes, newsRes] =
+      const [snapshotsRes, narrativesRes, categoriesRes, sentimentRes, newsRes, quotesRes, technicalsRes] =
         await Promise.all([
           marketMemoryService.listSnapshots(),
           cmcServices.narratives.getNarratives(),
           cmcServices.categories.getCategories(),
           cmcServices.sentiment.getMarketPulse(),
           cmcServices.news.getLatestNews(),
+          cmcServices.quotes.getQuotes(trackedSymbols),
+          cmcServices.technicals.getTechnicals(trackedSymbols),
         ])
 
       const latestSnapshot = snapshotsRes.ok ? snapshotsRes.data[0] ?? null : null
@@ -293,6 +309,7 @@ export function createResearchService(): ResearchService {
         critic_reports: criticReports.filter(Boolean),
         required_structure: [
           "Executive Summary",
+          "Opportunity Intelligence",
           "Market Regime",
           "Narrative Intelligence",
           "Supporting Evidence",
@@ -306,6 +323,13 @@ export function createResearchService(): ResearchService {
       }
 
       const prompt = buildPrompt(input)
+
+      const opportunityIntelligence = buildOpportunityIntelligence(hypothesis, {
+        quotes: quotesRes.ok ? quotesRes.data : [],
+        categories: categoriesRes.ok ? categoriesRes.data : [],
+        technicals: technicalsRes.ok ? technicalsRes.data : [],
+      })
+      const opportunitySectionBody = buildOpportunityReportSection(opportunityIntelligence)
 
       const aiRes = await aiService.generate<ReportAiOutput>({
         taskType: "research_report",
@@ -324,6 +348,8 @@ export function createResearchService(): ResearchService {
         riskSummary,
         evidenceSummary,
         analogues,
+        opportunitySectionBody,
+        opportunityIntelligence,
       })
 
       const output =
@@ -344,11 +370,21 @@ export function createResearchService(): ResearchService {
             author: "AlphaOS Generator",
             tags: output.tags,
             executiveSummary: output.executive_summary,
-            sections: output.sections.map((s, idx) => ({
-              id: `${idx + 1}`,
-              title: s.title,
-              body: s.body,
-            })),
+            sections: [
+              {
+                id: "opportunity-intelligence",
+                title: "Opportunity Intelligence",
+                body: opportunitySectionBody,
+              },
+              ...output.sections
+                .filter((s) => s.title.toLowerCase() !== "opportunity intelligence")
+                .map((s, idx) => ({
+                  id: `${idx + 1}`,
+                  title: s.title,
+                  body: s.body,
+                })),
+            ],
+            opportunityIntelligence,
           }
         : { id: createId(), ...fallback }
 

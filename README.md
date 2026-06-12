@@ -1,81 +1,104 @@
 # AlphaOS
 
-AlphaOS e um agente autonomo de pesquisa de mercado com interface premium, pipeline de evidencias, geracao de hipoteses, laboratorio de estrategias, auditoria institucional e relatorios prontos para demo/hackathon.
+## Project Name
 
-Research and simulation only. Not financial advice.
+AlphaOS
 
-## Stack
+## Tagline
 
-- React 18 + TypeScript + Vite
-- Tailwind CSS + componentes utilitarios
-- React Router
-- Recharts
+The Autonomous Market Research Agent
+
+## One-Liner
+
+AlphaOS transforms CoinMarketCap intelligence into explainable market hypotheses, historical analogues, strategy candidates and institutional research reports.
+
+## Problem
+
+Crypto markets generate too many disconnected signals: prices, sentiment, narratives, news, technicals and categories. Traders and researchers struggle to connect these signals into evidence-backed market theses.
+
+## Solution
+
+AlphaOS acts as an autonomous market research agent that ingests CoinMarketCap intelligence, builds market memory, detects narrative shifts, generates Alpha Opportunities, explains why they matter now, validates them with evidence, compares them against historical analogues, derives strategy candidates and produces research reports.
+
+## Core Features
+
+- Guided Journey
+- Alpha Opportunities
+- Alpha Score
+- Why Now
+- Evidence Graph
+- Market Memory
+- Market Replay
+- Strategy Builder
+- Critic Agent
+- Research Reports
+- System Health
+- CoinMarketCap Intelligence Coverage
+
+## Architecture
+
+CoinMarketCap Data  
+→ Ingestion  
+→ Market Snapshots  
+→ Market Documents  
+→ Embeddings  
+→ pgvector  
+→ RAG  
+→ Hypothesis Engine  
+→ Strategy Builder  
+→ Critic Agent  
+→ Research Reports
+
+## Tech Stack
+
+- React
+- TypeScript
+- Tailwind CSS
+- Supabase
 - Supabase Edge Functions
-- OpenAI infrastructure layer
-- CoinMarketCap proxy architecture
-- pgvector-ready semantic retrieval
+- pgvector
+- OpenAI
+- CoinMarketCap API
 
-## Arquitetura
+## CoinMarketCap Usage
 
-- `src/pages`
-  - Telas principais: Dashboard, Hypotheses, Strategy Lab, Research e Settings.
-- `src/components`
-  - Shell da aplicacao, layouts e visualizacoes reutilizaveis.
-- `src/hooks`
-  - Orquestracao de loading, erro, retry, demo mode e acoes de produto.
-- `src/services/cmc`
-  - Camada CoinMarketCap com provider resiliente: `edge-proxy -> fallback mock`.
-- `src/services/hypotheses`
-  - Hypothesis Generation Engine + persistencia local.
-- `src/services/strategies`
-  - Strategy Generation Engine + ranking + comparacao + export.
-- `src/services/critic`
-  - Critic Agent com output estruturado e gate de aprovacao.
-- `src/services/research`
-  - Report Generation + biblioteca + viewer + pagina compartilhavel.
-- `src/services/embeddings`
-  - Fila de embeddings, retry e persistencia local.
-- `src/services/pgvector`
-  - Repositorio pronto para Supabase RPC e busca vetorial.
-- `supabase/functions`
-  - Edge Functions para IA, embeddings e CoinMarketCap proxy.
+AlphaOS is designed around turning CoinMarketCap’s raw signals into a single, explainable research chain:
 
-## Fluxo do Produto
+- Quotes: market context, dominance signals, and asset-level inputs.
+- Technicals: confirmation signals that support or weaken a thesis.
+- News: event-driven catalysts and narrative accelerants.
+- Sentiment: crowd positioning and regime-level mood.
+- Categories: sector intelligence and rotation context.
+- Narratives: narrative velocity/strength and what’s gaining attention.
+- MCP-ready architecture: ingestion + normalization + storage interfaces designed for “swap the provider, keep the product” evolution.
+- Skills Marketplace readiness: clear, modular research/strategy outputs that map to composable “skills” (generate, critique, report).
 
-1. Dashboard mostra oportunidades e regime.
-2. Hypothesis Center explica a tese e suas evidencias.
-3. Strategy Lab gera estrategias backtestaveis.
-4. Critic Agent revisa e marca aprovacao institucional.
-5. Research Center gera relatorio institucional compartilhavel.
-6. Settings opera infraestrutura, ingestao e demo mode.
+## AI Architecture
 
-## Demo Flow Final
+- RAG: grounded answers and research outputs backed by retrieved evidence.
+- Embeddings: market documents are embedded for similarity + recall across time.
+- Hypothesis Generation: structured opportunities with “why now” and evidence requirements.
+- Alpha Score: explainable scoring that summarizes opportunity strength and risk.
+- Critic Agent: structured critique + approval gating for institutional tone/quality.
+- Report Generation: converts the full chain into a shareable research artifact.
 
-1. Abrir `/dashboard`
-2. Abrir uma hipotese em `/hypotheses`
-3. Explorar evidencia e invalidating conditions
-4. Gerar estrategias em `/strategy-lab`
-5. Revisar critic report
-6. Gerar relatorio em `/research`
+## Demo Flow
 
-## Dados Reais
+Open the app → click **Explore Today’s Best Opportunity** → continue through the 7 guided steps on `/journey`.
 
-- A integracao CMC usa `Supabase Edge Function` para proteger `CMC_API_KEY`.
-- Quando a infra nao esta pronta ou algum endpoint falha, o app cai para mock sem quebrar a UX.
-- O ingestion flow atual:
-  - `CMC data -> normalized market snapshot -> embedding queue -> RAG-ready memory`
+## Environment Variables
 
-## Demo Mode e Sample Seed
+Frontend (Vite):
 
-- `Demo Mode` fica persistido em `localStorage`.
-- `Settings` oferece `Seed Sample Data` para preparar a fila de embeddings.
-- `Ingest CMC Snapshot` enfileira documentos normalizados do snapshot atual.
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
 
-## Ambiente
+Edge Function secrets (configure in Supabase, not in Vite):
 
-- Veja `ENVIRONMENT.md` para configurar variaveis e segredos.
+- `OPENAI_API_KEY`
+- `CMC_API_KEY`
 
-## Scripts
+## Running Locally
 
 ```bash
 npm install
@@ -83,3 +106,7 @@ npm run dev
 npm run check
 npm run build
 ```
+
+## Disclaimer
+
+For research and simulation only. Not financial advice.

@@ -6,15 +6,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { demoBuild } from "@/config/demoBuild"
-import { buildGuidedJourneyHref } from "@/lib/guidedJourney"
 
 export default function Landing() {
-  const journeyStart = buildGuidedJourneyHref({ step: 1, hypothesisId: null })
+  const journeyStart = "/journey"
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-6xl px-6 py-10">
-        <header className="flex items-center justify-between">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <div className="grid h-9 w-9 place-items-center overflow-hidden rounded-lg border bg-card/70 shadow-glass-sm">
               <img
@@ -33,14 +32,14 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button asChild variant="ghost">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+            <Button asChild variant="ghost" className="w-full sm:w-auto">
               <Link to="/research" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
                 View Research Reports
               </Link>
             </Button>
-            <Button asChild>
+            <Button asChild className="w-full sm:w-auto">
               <Link to={journeyStart} className="flex items-center gap-2">
                 Explore Today&apos;s Best Opportunity
                 <ArrowRight className="h-4 w-4" />
@@ -49,8 +48,8 @@ export default function Landing() {
           </div>
         </header>
 
-        <section className="mt-14">
-          <div className="rounded-2xl border bg-card/40 p-10 shadow-glass-sm backdrop-blur">
+        <section className="mt-10 sm:mt-14">
+          <div className="rounded-2xl border bg-card/40 p-6 shadow-glass-sm backdrop-blur sm:p-10">
             <div className="flex flex-wrap items-center gap-2">
               <Badge>Premium</Badge>
               <Badge variant="secondary">Explainable research</Badge>
@@ -58,10 +57,10 @@ export default function Landing() {
             </div>
 
             <div className="mt-6 text-sm font-medium text-muted-foreground">AlphaOS</div>
-            <h1 className="mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+            <h1 className="mt-6 max-w-3xl font-display text-3xl font-semibold leading-[1.05] tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
               {demoBuild.landingHeroTitle}
             </h1>
-            <p className="mt-5 max-w-2xl text-base text-muted-foreground md:text-lg">
+            <p className="mt-5 max-w-2xl text-sm text-muted-foreground sm:text-base md:text-lg">
               {demoBuild.landingSubheadline} AlphaOS turns market memory, evidence, and strategy
               evolution into an institutional-grade research workflow.
             </p>
@@ -80,7 +79,7 @@ export default function Landing() {
               </Button>
             </div>
 
-            <div className="mt-10 grid gap-3 md:grid-cols-3">
+            <div className="mt-8 grid gap-3 md:grid-cols-3">
               <div className="rounded-xl border bg-background/40 p-4">
                 <div className="text-xs text-muted-foreground">Trading calls</div>
                 <div className="mt-1 font-display text-lg font-semibold">No</div>
@@ -106,8 +105,8 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="mt-14">
-          <div className="flex items-end justify-between gap-6">
+        <section className="mt-12 sm:mt-14">
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <div className="text-xs uppercase tracking-wider text-muted-foreground">
                 Platform

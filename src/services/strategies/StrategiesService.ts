@@ -162,7 +162,7 @@ function buildFallbackStrategies(
     const universe = universes[index % universes.length].slice(0, 4)
     const focusNarrative =
       hypothesis.relatedNarratives[index % Math.max(1, hypothesis.relatedNarratives.length)] ??
-      "Market Structure"
+      "AI Infrastructure"
     const sizingModes = [
       "Equal-risk allocation",
       "Volatility-adjusted sizing",

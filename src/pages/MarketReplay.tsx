@@ -1,12 +1,9 @@
 import { FastForward, Pause, Play, RotateCcw, Sparkles, TimerReset } from "lucide-react"
-import { useLocation } from "react-router-dom"
 
-import { GuidedJourneyBanner } from "@/components/journey/GuidedJourneyBanner"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useMarketReplay } from "@/hooks/useMarketReplay"
-import { parseGuidedJourney } from "@/lib/guidedJourney"
 
 function toneClass(tone: "positive" | "neutral" | "negative") {
   if (tone === "positive") return "text-primary"
@@ -15,8 +12,6 @@ function toneClass(tone: "positive" | "neutral" | "negative") {
 }
 
 export default function MarketReplay() {
-  const location = useLocation()
-  const journey = parseGuidedJourney(location.search)
   const {
     scenario,
     currentFrame,
@@ -36,20 +31,16 @@ export default function MarketReplay() {
   } = useMarketReplay()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <div className="text-xs uppercase tracking-wider text-muted-foreground">
-          Market Replay
-        </div>
-        <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
+        <div className="text-[11px] font-medium tracking-wide text-muted-foreground">Market Replay</div>
+        <h2 className="mt-1 font-display text-xl font-semibold tracking-tight sm:text-2xl">
           Replay how market narratives unfolded
         </h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        <p className="mt-2 max-w-2xl text-[13px] leading-snug text-muted-foreground">
           Step through past market regimes with context, capital rotation, signals, and lessons.
         </p>
       </div>
-
-      {journey.active ? <GuidedJourneyBanner hypothesisId={journey.hypothesisId} /> : null}
 
       <Card className="bg-card/40">
         <CardHeader>
@@ -58,7 +49,7 @@ export default function MarketReplay() {
             {scenario?.dateRange ?? "Loading scenario..."}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
           {loading ? (
             <div className="grid gap-4">
               <div className="h-[110px] animate-pulse rounded-xl border bg-background/30" />
@@ -132,8 +123,8 @@ export default function MarketReplay() {
                 </div>
               </div>
 
-              <div className="grid gap-4 lg:grid-cols-12">
-                <Card className="bg-background/20 lg:col-span-7">
+              <div className="grid gap-4 xl:grid-cols-12">
+                <Card className="bg-background/20 xl:col-span-7">
                   <CardHeader>
                     <CardTitle>Current Frame</CardTitle>
                     <CardDescription>{scenario.thesis}</CardDescription>
@@ -154,7 +145,7 @@ export default function MarketReplay() {
                       </div>
                     </div>
 
-                    <div className="grid gap-3 md:grid-cols-3">
+                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                       <div className="rounded-xl border bg-card/40 p-4">
                         <div className="text-xs text-muted-foreground">Narrative Strength</div>
                         <div className="mt-1 font-display text-lg font-semibold tracking-tight">
@@ -192,7 +183,7 @@ export default function MarketReplay() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-background/20 lg:col-span-5">
+                <Card className="bg-background/20 xl:col-span-5">
                   <CardHeader>
                     <CardTitle>Scenario Context</CardTitle>
                     <CardDescription>{scenario.context}</CardDescription>
@@ -215,8 +206,8 @@ export default function MarketReplay() {
                 </Card>
               </div>
 
-              <div className="grid gap-4 lg:grid-cols-12">
-                <Card className="bg-background/20 lg:col-span-7">
+              <div className="grid gap-4 xl:grid-cols-12">
+                <Card className="bg-background/20 xl:col-span-7">
                   <CardHeader>
                     <CardTitle>Events Timeline</CardTitle>
                     <CardDescription>Events revealed up to the current frame.</CardDescription>
@@ -225,7 +216,7 @@ export default function MarketReplay() {
                     {visibleEvents.map((row) => (
                       <div
                         key={row.id}
-                        className="flex items-start justify-between gap-4 rounded-lg border bg-card/50 p-3"
+                        className="flex flex-col gap-3 rounded-lg border bg-card/50 p-3 sm:flex-row sm:items-start sm:justify-between"
                       >
                         <div className="min-w-[68px] text-xs text-muted-foreground">
                           {row.timestampLabel}
@@ -245,7 +236,7 @@ export default function MarketReplay() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-background/20 lg:col-span-5">
+                <Card className="bg-background/20 xl:col-span-5">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Sparkles className="h-4 w-4 text-primary" />
@@ -270,7 +261,7 @@ export default function MarketReplay() {
                     30, 60, and 90-day follow-through transforms replay into a learning engine.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="grid gap-4 md:grid-cols-3">
+                <CardContent className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {scenario.followThrough.map((item) => (
                     <div key={item.horizon} className="rounded-xl border bg-background/35 p-4">
                       <div className="flex items-center justify-between gap-3">

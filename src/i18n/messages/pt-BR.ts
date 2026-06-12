@@ -8,7 +8,7 @@ const ptBR: TranslationTree = {
     export: "Exportar",
     searchSoon: "Pesquisar",
     themeToggle: "Alternar tema",
-    demoMode: "Fallback Intelligence",
+    demoMode: "Protected Intelligence",
     liveReady: "Live Intelligence",
     on: "Ligado",
     off: "Desligado",
@@ -23,7 +23,7 @@ const ptBR: TranslationTree = {
     strategyLab: "Laboratório de Estratégias",
     research: "Pesquisa",
     settings: "Configurações",
-    cmcCoverage: "Cobertura CMC",
+    cmcCoverage: "Inteligência CMC",
   },
   topbar: {
     subtitle: "Priorize insights. Evite caixas-pretas.",
@@ -36,7 +36,7 @@ const ptBR: TranslationTree = {
       strategyLab: "Pipeline de evolução",
       research: "Relatórios institucionais",
       settings: "Preferências",
-      cmcCoverage: "Inteligência de cobertura",
+      cmcCoverage: "Camada de inteligência",
     },
   },
   shell: {
@@ -83,8 +83,8 @@ const ptBR: TranslationTree = {
     volumeConfirmation: "Confirmação de volume",
   },
   cmcCoverage: {
-    title: "Cobertura de Inteligência CoinMarketCap",
-    subtitle: "Profundidade operacional e cobertura documental em toda a stack de inteligência do AlphaOS.",
+    title: "Camada de Inteligência CoinMarketCap",
+    subtitle: "Profundidade operacional ao vivo, cobertura de ingestão e uso downstream em todos os fluxos de inteligência do AlphaOS.",
     live: "Ao vivo",
     fallback: "Fallback",
     readiness: "Prontidão",

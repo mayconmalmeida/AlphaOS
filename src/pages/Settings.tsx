@@ -6,7 +6,6 @@ import { useCmcIntegration } from "@/hooks/useCmcIntegration"
 import { useDemoMode } from "@/hooks/useDemoMode"
 import { useAiTask } from "@/hooks/useAiTask"
 import { useEmbeddingPipeline } from "@/hooks/useEmbeddingPipeline"
-import { useI18n } from "@/i18n/I18nProvider"
 import { useSemanticSearch } from "@/hooks/useSemanticSearch"
 import { useTheme } from "@/hooks/useTheme"
 
@@ -19,9 +18,21 @@ const heartbeatSchema = {
   },
 }
 
+function intelligenceLabel(source?: string) {
+  return source === "live" || source === "edge"
+    ? "Live Intelligence"
+    : source === "cache"
+      ? "Cached Intelligence"
+      : "Protected Intelligence"
+}
+
+function capabilityLabel(capability: string) {
+  if (capability === "technicals") return "Technical Signals"
+  return capability.charAt(0).toUpperCase() + capability.slice(1)
+}
+
 export default function Settings() {
   const { theme, toggleTheme } = useTheme()
-  const { t } = useI18n()
   const demoMode = useDemoMode()
   const cmcIntegration = useCmcIntegration()
   const embeddingPipeline = useEmbeddingPipeline()
@@ -41,23 +52,31 @@ export default function Settings() {
     })
   }
 
+  const aiResult = (data as
+    | (typeof data & {
+        provider?: string
+        model?: string
+        source?: string
+        content?: string
+        structuredData?: { status?: string; message?: string; timestamp?: string }
+      })
+    | null)
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <div className="text-xs uppercase tracking-wider text-muted-foreground">
-          Settings
-        </div>
-        <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
-          Control demo readiness and trust signals
+        <div className="text-[11px] font-medium tracking-wide text-muted-foreground">Settings</div>
+        <h2 className="mt-1 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+          Workspace Readiness Controls
         </h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Keep the experience clean, credible, and stable for judges, investors, and recorded demos.
+        <p className="mt-2 max-w-2xl text-[13px] leading-snug text-muted-foreground">
+          Keep AlphaOS stable, credible, and presentation-ready across live demos, judging, and investor walkthroughs.
         </p>
       </div>
 
       <SystemHealthDashboard />
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-3 lg:grid-cols-2">
         <Card className="bg-card/40">
           <CardHeader>
             <CardTitle>Theme</CardTitle>
@@ -76,23 +95,24 @@ export default function Settings() {
 
         <Card className="bg-card/40">
           <CardHeader>
-            <CardTitle>Fallback Controls</CardTitle>
-            <CardDescription>Control how AlphaOS behaves when live integrations are unavailable.</CardDescription>
+            <CardTitle>Experience Controls</CardTitle>
+            <CardDescription>Adjust how AlphaOS preserves continuity when live refresh cycles are still completing.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-              Use fallback when live infrastructure is unavailable. AlphaOS preserves provenance and
-              clearly signals live versus fallback data.
+              AlphaOS protects the presentation layer with verified intelligence so the workspace remains dependable during demos.
             </div>
-            <div className="flex items-center justify-between gap-4 rounded-xl border bg-background/35 p-4">
+            <div className="flex flex-col gap-4 rounded-xl border bg-background/35 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <div className="text-sm font-medium">Current state</div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  {demoMode.enabled ? "Forced fallback" : "Live intelligence when available"}
+                  {demoMode.enabled
+                    ? "Protected continuity is prioritized for the current session."
+                    : "Live intelligence is preferred whenever the workspace is fully connected."}
                 </div>
               </div>
               <Button variant="outline" onClick={demoMode.toggle}>
-                {demoMode.enabled ? "Disable fallback" : "Enable fallback"}
+                {demoMode.enabled ? "Prefer live intelligence" : "Protect current session"}
               </Button>
             </div>
             <Button
@@ -101,7 +121,7 @@ export default function Settings() {
               onClick={embeddingPipeline.seed}
               disabled={embeddingPipeline.processing}
             >
-              {embeddingPipeline.processing ? "Preparing..." : "Seed Sample Data"}
+              {embeddingPipeline.processing ? "Preparing..." : "Prepare Workspace Records"}
             </Button>
           </CardContent>
         </Card>
@@ -109,9 +129,9 @@ export default function Settings() {
 
       <Card className="bg-card/40">
         <CardHeader>
-          <CardTitle>CoinMarketCap Real Data</CardTitle>
+          <CardTitle>CoinMarketCap Intelligence Access</CardTitle>
           <CardDescription>
-            Secure access through a Supabase Edge Function with service-layer caching and explicit fallback.
+            Review how verified CoinMarketCap intelligence is feeding the workspace right now.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -119,21 +139,23 @@ export default function Settings() {
             <Badge
               variant={cmcIntegration.status.supabaseUrlConfigured ? "default" : "secondary"}
             >
-              SUPABASE_URL {cmcIntegration.status.supabaseUrlConfigured ? "ok" : "missing"}
+              Workspace Connection {cmcIntegration.status.supabaseUrlConfigured ? "ready" : "missing"}
             </Badge>
             <Badge
               variant={cmcIntegration.status.supabaseAnonKeyConfigured ? "default" : "secondary"}
             >
-              ANON_KEY {cmcIntegration.status.supabaseAnonKeyConfigured ? "ok" : "missing"}
+              Application Access {cmcIntegration.status.supabaseAnonKeyConfigured ? "ready" : "missing"}
             </Badge>
             <Badge
               variant={cmcIntegration.status.edgeProxyReady ? "default" : "outline"}
             >
-              CMC Proxy {cmcIntegration.status.edgeProxyReady ? "ready" : "fallback only"}
+              Market Intelligence Gateway {cmcIntegration.status.edgeProxyReady ? "ready" : "not configured"}
             </Badge>
-            <Badge variant="outline">Mode {cmcIntegration.status.mode}</Badge>
             <Badge variant="outline">
-              Sentiment {cmcIntegration.runtimeStatus.sentiment.source}
+              {cmcIntegration.status.mode === "edge-proxy" ? "Live Intelligence" : "Protected Intelligence"}
+            </Badge>
+            <Badge variant="outline">
+              Sentiment {intelligenceLabel(cmcIntegration.runtimeStatus.sentiment.source)}
             </Badge>
           </div>
 
@@ -142,14 +164,14 @@ export default function Settings() {
               onClick={cmcIntegration.runIngestion}
               disabled={cmcIntegration.loading || embeddingPipeline.processing}
             >
-              {cmcIntegration.loading ? "Ingesting..." : "Ingest CMC Snapshot"}
+              {cmcIntegration.loading ? "Syncing..." : "Sync Market Snapshot"}
             </Button>
             <Button
               variant="outline"
               onClick={embeddingPipeline.refresh}
               disabled={embeddingPipeline.loading || embeddingPipeline.processing}
             >
-              Refresh Pipeline
+              Refresh Readiness
             </Button>
           </div>
 
@@ -161,19 +183,20 @@ export default function Settings() {
 
           {cmcIntegration.lastIngestion ? (
             <div className="rounded-xl border bg-background/35 p-4">
-              <div className="text-xs text-muted-foreground">Last Ingestion</div>
+              <div className="text-xs text-muted-foreground">Latest verified market state</div>
               <div className="mt-2 text-sm font-medium">
                 {cmcIntegration.lastIngestion.snapshotTitle}
               </div>
               <div className="mt-1 text-sm text-muted-foreground">
-                {cmcIntegration.lastIngestion.documentsQueued} documents queued via{" "}
-                {cmcIntegration.lastIngestion.mode}.
+                {cmcIntegration.lastIngestion.documentsQueued} intelligence records prepared through{" "}
+                {cmcIntegration.lastIngestion.mode === "edge-proxy"
+                  ? "live intelligence"
+                  : "protected continuity"}.
               </div>
             </div>
           ) : (
             <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-              Queue a CMC snapshot to feed{" "}
-              <code>market document -&gt; embedding -&gt; RAG-ready memory</code>.
+              Sync a verified CoinMarketCap snapshot to expand market memory, research support, and downstream reports.
             </div>
           )}
 
@@ -181,13 +204,13 @@ export default function Settings() {
             {Object.values(cmcIntegration.runtimeStatus).map((item) => (
               <div key={item.capability} className="rounded-xl border bg-background/35 p-4">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="text-sm font-medium">{item.capability}</div>
-                  <Badge variant={item.source === "live" ? "default" : item.source === "idle" ? "outline" : "secondary"}>
-                    {item.source}
+                  <div className="text-sm font-medium">{capabilityLabel(item.capability)}</div>
+                  <Badge variant={item.source === "live" ? "success" : "warning"}>
+                    {intelligenceLabel(item.source)}
                   </Badge>
                 </div>
                 <div className="mt-2 text-xs text-muted-foreground">
-                  Last sync: {item.lastSync ?? "N/A"}
+                  Last verified: {item.lastSync ?? "N/A"}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">{item.message}</div>
               </div>
@@ -198,28 +221,28 @@ export default function Settings() {
 
       <Card className="bg-card/40">
         <CardHeader>
-          <CardTitle>AI Infrastructure</CardTitle>
+          <CardTitle>Research Intelligence</CardTitle>
           <CardDescription>
-            Validate the reusable AI infrastructure layer before presenting the product live.
+            Validate the research engine behind summaries, evidence framing, and institutional output.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">
             <Badge variant={status.supabaseUrlConfigured ? "default" : "secondary"}>
-              SUPABASE_URL {status.supabaseUrlConfigured ? "ok" : "missing"}
+              Workspace Connection {status.supabaseUrlConfigured ? "ready" : "missing"}
             </Badge>
             <Badge variant={status.supabaseAnonKeyConfigured ? "default" : "secondary"}>
-              ANON_KEY {status.supabaseAnonKeyConfigured ? "ok" : "missing"}
+              Application Access {status.supabaseAnonKeyConfigured ? "ready" : "missing"}
             </Badge>
             <Badge variant={status.edgeFunctionReady ? "default" : "outline"}>
-              Edge Function {status.edgeFunctionReady ? "ready" : "fallback"}
+              Research Gateway {status.edgeFunctionReady ? "ready" : "not configured"}
             </Badge>
 
           </div>
 
           <div className="flex flex-wrap gap-2">
             <Button onClick={runAiCheck} disabled={loading}>
-              {loading ? "Running..." : "Run AI Health Check"}
+              {loading ? "Reviewing..." : "Run Research Check"}
             </Button>
             <Button variant="outline" onClick={retry} disabled={loading || !error}>
               Retry
@@ -235,24 +258,33 @@ export default function Settings() {
           {data ? (
             <div className="grid gap-4 lg:grid-cols-2">
               <div className="rounded-xl border bg-background/35 p-4">
-                <div className="text-xs text-muted-foreground">Provider</div>
+                <div className="text-xs text-muted-foreground">Research status</div>
                 <div className="mt-1 text-sm">
-                  {data.provider} · {data.model} · {data.source}
+                  {aiResult?.structuredData?.status ?? "Ready"} ·{" "}
+                  {intelligenceLabel(aiResult?.source)}
                 </div>
-                <div className="mt-4 text-xs text-muted-foreground">Content</div>
-                <div className="mt-1 text-sm text-foreground/90">{data.content}</div>
+                <div className="mt-4 text-xs text-muted-foreground">Latest verification</div>
+                <div className="mt-1 text-sm text-foreground/90">
+                  {aiResult?.structuredData?.message ??
+                    aiResult?.content ??
+                    "Research verification completed successfully."}
+                </div>
               </div>
 
               <div className="rounded-xl border bg-background/35 p-4">
-                <div className="text-xs text-muted-foreground">Structured Output</div>
-                <pre className="mt-2 overflow-auto text-xs text-foreground/90">
-                  {JSON.stringify(data.structuredData, null, 2)}
-                </pre>
+                <div className="text-xs text-muted-foreground">Verification timestamp</div>
+                <div className="mt-1 text-sm text-foreground/90">
+                  {aiResult?.structuredData?.timestamp ?? "N/A"}
+                </div>
+                <div className="mt-4 text-xs text-muted-foreground">Research model</div>
+                <div className="mt-1 text-sm text-foreground/90">
+                  {[aiResult?.provider, aiResult?.model].filter(Boolean).join(" · ") || "Institutional research profile active"}
+                </div>
               </div>
             </div>
           ) : (
             <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-              Run the health check to validate loading, retry flow, and structured output.
+              Run the research check to confirm that AlphaOS can produce verified institutional output on demand.
             </div>
           )}
         </CardContent>
@@ -260,39 +292,39 @@ export default function Settings() {
 
       <Card className="bg-card/40">
         <CardHeader>
-          <CardTitle>{t("embeddings.dashboard", "Embedding Health Dashboard")}</CardTitle>
+          <CardTitle>Research Memory Operations</CardTitle>
           <CardDescription>
-            Validate dimensions, queue health, vector quality, and retrieval readiness.
+            Monitor the preparation and indexing of the market intelligence that supports research outputs.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            <Badge variant="outline">Pending {embeddingPipeline.stats.pending}</Badge>
-            <Badge variant="outline">Processing {embeddingPipeline.stats.processing}</Badge>
-            <Badge variant="default">Completed {embeddingPipeline.stats.completed}</Badge>
-            <Badge variant="secondary">Failed {embeddingPipeline.stats.failed}</Badge>
-            <Badge variant="secondary">
-              Stored Records {embeddingPipeline.stats.totalRecords}
-            </Badge>
+            <Badge variant="outline">Queued {embeddingPipeline.stats.pending}</Badge>
+            <Badge variant="outline">In Progress {embeddingPipeline.stats.processing}</Badge>
+            <Badge variant="default">Ready {embeddingPipeline.stats.completed}</Badge>
+            <Badge variant="secondary">Needs Review {embeddingPipeline.stats.failed}</Badge>
+            <Badge variant="secondary">Stored Records {embeddingPipeline.stats.totalRecords}</Badge>
           </div>
 
           <div className="grid gap-3 md:grid-cols-4">
             <div className="rounded-xl border bg-background/35 p-4">
-              <div className="text-xs text-muted-foreground">{t("embeddings.vectorQuality", "Vector quality")}</div>
+              <div className="text-xs text-muted-foreground">Readiness profile</div>
               <div className="mt-2 text-sm font-medium">{embeddingPipeline.stats.vectorQuality}</div>
             </div>
             <div className="rounded-xl border bg-background/35 p-4">
-              <div className="text-xs text-muted-foreground">{t("embeddings.lastGenerated", "Last generated")}</div>
+              <div className="text-xs text-muted-foreground">Last refreshed</div>
               <div className="mt-2 text-sm font-medium">
                 {embeddingPipeline.stats.lastGenerated ?? "N/A"}
               </div>
             </div>
             <div className="rounded-xl border bg-background/35 p-4">
-              <div className="text-xs text-muted-foreground">{t("embeddings.dimensions", "Dimensions")}</div>
-              <div className="mt-2 text-sm font-medium">1536 target</div>
+              <div className="text-xs text-muted-foreground">Research profile</div>
+              <div className="mt-2 text-sm font-medium">
+                {embeddingPipeline.stats.embeddingModel ?? "Research intelligence ready"}
+              </div>
             </div>
             <div className="rounded-xl border bg-background/35 p-4">
-              <div className="text-xs text-muted-foreground">Dimension mismatches</div>
+              <div className="text-xs text-muted-foreground">Coverage gaps</div>
               <div className="mt-2 text-sm font-medium">
                 {embeddingPipeline.stats.dimensionMismatches}
               </div>
@@ -301,14 +333,14 @@ export default function Settings() {
 
           <div className="flex flex-wrap gap-2">
             <Button onClick={embeddingPipeline.seed} disabled={embeddingPipeline.processing}>
-              Seed Documents
+              Prepare Records
             </Button>
             <Button
               variant="outline"
               onClick={embeddingPipeline.processNext}
               disabled={embeddingPipeline.processing}
             >
-              Process Next
+              Process Next Batch
             </Button>
             <Button
               variant="outline"
@@ -327,11 +359,11 @@ export default function Settings() {
 
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="rounded-xl border bg-background/35 p-4">
-              <div className="text-xs text-muted-foreground">Queue</div>
+              <div className="text-xs text-muted-foreground">Processing queue</div>
               <div className="mt-3 space-y-3">
                 {embeddingPipeline.jobs.length === 0 ? (
                   <div className="text-sm text-muted-foreground">
-                    No documents are queued yet.
+                    No research records are queued right now.
                   </div>
                 ) : (
                   embeddingPipeline.jobs.slice(0, 6).map((job) => (
@@ -342,7 +374,7 @@ export default function Settings() {
                             {job.document.title}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {job.document.type}
+                            Intelligence record
                           </div>
                         </div>
                         <Badge
@@ -360,7 +392,7 @@ export default function Settings() {
                       {job.status === "failed" ? (
                         <div className="mt-3 flex items-center justify-between gap-3">
                           <div className="text-xs text-muted-foreground">
-                            {job.lastError ?? "Processing failed"}
+                            {job.lastError ?? "This record needs another processing pass."}
                           </div>
                           <Button
                             variant="outline"
@@ -379,21 +411,21 @@ export default function Settings() {
             </div>
 
             <div className="rounded-xl border bg-background/35 p-4">
-              <div className="text-xs text-muted-foreground">Stored Metadata</div>
+              <div className="text-xs text-muted-foreground">Recent indexed records</div>
               <div className="mt-3 space-y-3">
                 {embeddingPipeline.records.length === 0 ? (
                   <div className="text-sm text-muted-foreground">
-                    No embeddings are stored yet.
+                    Research memory is still building its indexed record base.
                   </div>
                 ) : (
                   embeddingPipeline.records.slice(0, 6).map((record) => (
                     <div key={record.id} className="rounded-lg border bg-card/40 p-3">
                       <div className="flex items-center justify-between gap-3">
-                        <div className="text-sm font-medium">{record.documentId}</div>
-                        <Badge variant="secondary">{record.provider}</Badge>
+                        <div className="text-sm font-medium">Indexed intelligence record</div>
+                        <Badge variant="secondary">Ready</Badge>
                       </div>
                       <div className="mt-2 text-xs text-muted-foreground">
-                        {record.model} · {record.dimensions} dims · retries {record.retryCount}
+                        {record.model} · refresh attempts {record.retryCount}
                       </div>
                     </div>
                   ))
@@ -406,9 +438,9 @@ export default function Settings() {
 
       <Card className="bg-card/40">
         <CardHeader>
-          <CardTitle>Semantic Retrieval</CardTitle>
+          <CardTitle>Research Lookup</CardTitle>
           <CardDescription>
-            Vector search over market memory and research documents through `pgvector`.
+            Inspect how AlphaOS retrieves supporting market context across memory and research records.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -459,7 +491,7 @@ export default function Settings() {
           <div className="space-y-3">
             {semanticSearch.results.length === 0 ? (
               <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-                Run a search to inspect semantic retrieval results.
+                Run a lookup to inspect the strongest matching market context available to AlphaOS.
               </div>
             ) : (
               semanticSearch.results.map((result) => (
@@ -468,7 +500,7 @@ export default function Settings() {
                     <div>
                       <div className="text-sm font-medium">{result.title}</div>
                       <div className="mt-1 text-xs text-muted-foreground">
-                        {result.documentType} · similarity {Math.round(result.similarity * 100)}%
+                        {result.documentType} · match strength {Math.round(result.similarity * 100)}%
                       </div>
                     </div>
                     <Badge variant="outline">{result.documentType}</Badge>

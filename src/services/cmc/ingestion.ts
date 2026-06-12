@@ -72,6 +72,7 @@ export async function ingestCurrentCmcSnapshot(params?: {
   const quotes = quotesRes.data
 
   const snapshotTitle = `CMC Snapshot ${timestamp.slice(0, 16).replace("T", " ")}`
+  const leadNarrative = narratives[0]?.name ?? "diversified narrative leadership"
 
   const runtime = getCmcRuntimeStatus()
   const snapshotId = createDocId("cmc-snapshot")
@@ -79,12 +80,26 @@ export async function ingestCurrentCmcSnapshot(params?: {
     id: snapshotId,
     date: timestamp.slice(0, 10),
     title: snapshotTitle,
-    summary: `${runtime.sentiment.source === "live" ? "Live CMC data" : "Fallback data"}: market pulse ${Math.round(pulse.fearGreed)} FG with ${narratives[0]?.name ?? "mixed"} leadership.`,
+    summary: `${runtime.sentiment.source === "live" ? "Live CMC data" : "Fallback data"}: market pulse ${Math.round(pulse.fearGreed)} FG with ${leadNarrative}.`,
     sourceMode: runtime.sentiment.source === "live" ? "live" : "fallback",
     lastSyncAt: runtime.sentiment.lastSync ?? timestamp,
     sourceCapabilities: Object.values(runtime)
       .filter((item) => item.source !== "idle")
       .map((item) => item.capability),
+    quotes: quotes.map((item) => ({
+      symbol: item.symbol,
+      priceUsd: item.priceUsd,
+      volume24hUsd: item.volume24hUsd,
+      marketCapUsd: item.marketCapUsd,
+    })),
+    news: news.map((item) => ({
+      id: item.id,
+      title: item.title,
+      source: item.source,
+      publishedAt: item.publishedAt,
+      sentimentScore: item.sentimentScore,
+      summary: item.summary,
+    })),
     marketPulse: {
       btcDominance: pulse.btcDominance,
       fearGreed: pulse.fearGreed,
@@ -168,7 +183,7 @@ export async function ingestCurrentCmcSnapshot(params?: {
       content: technicals
         .map(
           (item) =>
-            `${item.symbol}: trend ${item.trend}, momentum ${item.momentum}, volatility ${item.volatility}`
+            `${item.symbol}: trend ${item.trend}, momentum ${Math.round(item.momentum * 100)}%, volatility ${Math.round(item.volatility * 100)}%`
         )
         .join("\n"),
       sourceRef: "cmc://cryptocurrency/market_pairs/latest",

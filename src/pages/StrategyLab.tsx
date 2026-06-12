@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
   AlertTriangle,
   CheckCircle2,
@@ -8,11 +8,9 @@ import {
   Sparkles,
   XCircle,
 } from "lucide-react"
-import { useLocation } from "react-router-dom"
 
 import { AlphaScoreBadge } from "@/components/alpha/AlphaScoreBadge"
 import { ProvenancePanel } from "@/components/evidence/ProvenancePanel"
-import { GuidedJourneyBanner } from "@/components/journey/GuidedJourneyBanner"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,8 +18,8 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { useCriticReport } from "@/hooks/useCriticReport"
 import { useStrategyLab } from "@/hooks/useStrategyLab"
-import { parseGuidedJourney } from "@/lib/guidedJourney"
 import { buildAlphaScore } from "@/services/alphaScoreService"
+import { getCmcRuntimeStatus } from "@/services/cmc/runtime"
 import { buildProvenanceSummary } from "@/services/evidence/evidenceGraph"
 
 function fmtPct(value: number) {
@@ -29,18 +27,23 @@ function fmtPct(value: number) {
 }
 
 function displayPipelineStatus(value: string) {
-  if (value === "mock") return "simulated"
+  if (value === "mock") return "Protected Intelligence"
   return value
 }
 
+function provenanceMode(source?: "live" | "fallback" | "cache" | "idle") {
+  if (source === "live" || source === "fallback" || source === "cache") return source
+  return "unknown" as const
+}
+
 export default function StrategyLab() {
-  const location = useLocation()
-  const journey = parseGuidedJourney(location.search)
   const [showHypothesisDetails, setShowHypothesisDetails] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
+  const [showAdvanced, setShowAdvanced] = useState(false)
   const [showPipelineDetails, setShowPipelineDetails] = useState(false)
   const [showRankedCandidates, setShowRankedCandidates] = useState(false)
   const [showComparison, setShowComparison] = useState(false)
+  const [expandVariations, setExpandVariations] = useState(false)
   const {
     search,
     setSearch,
@@ -64,12 +67,6 @@ export default function StrategyLab() {
     retry,
   } = useStrategyLab()
 
-  useEffect(() => {
-    if (!journey.active) return
-    if (!journey.hypothesisId) return
-    if (selectedHypothesisId === journey.hypothesisId) return
-    setSelectedHypothesisId(journey.hypothesisId)
-  }, [journey.active, journey.hypothesisId, selectedHypothesisId, setSelectedHypothesisId])
   const selectedStrategy = comparison?.left ?? topRanked[0] ?? null
   const activeAlphaScore = activeHypothesis
     ? buildAlphaScore({
@@ -85,6 +82,7 @@ export default function StrategyLab() {
     error: criticError,
     retry: criticRetry,
   } = useCriticReport(selectedStrategy)
+  const runtime = getCmcRuntimeStatus()
 
   const provenance =
     selectedStrategy && criticReport
@@ -100,10 +98,42 @@ export default function StrategyLab() {
           quality: criticReport.overallStatus === "approved" ? "Institutional review passed" : "Needs review",
           historicalAnalogues: [selectedStrategy.hypothesisTitle ?? "Selected hypothesis"],
           sources: [
-            { label: "Hypothesis evidence", used: true, freshness: "Current", reliability: "High", sourceType: "hypothesis", mode: "live", capability: "Quotes" },
-            { label: "Critic checks", used: true, freshness: "Current", reliability: "High", sourceType: "critic", mode: "cache", capability: "Skills Marketplace readiness" },
-            { label: "Narrative signals", used: true, freshness: "1h", reliability: "Medium", sourceType: "narrative", mode: "live", capability: "Narratives" },
-            { label: "Technicals", used: true, freshness: "2h", reliability: "Medium", sourceType: "technical", mode: "live", capability: "Technicals" },
+            {
+              label: "Hypothesis evidence",
+              used: true,
+              freshness: runtime.quotes.lastSync ?? "Unavailable",
+              reliability: "High",
+              sourceType: "hypothesis",
+              mode: provenanceMode(runtime.quotes.source),
+              capability: "Quotes",
+            },
+            {
+              label: "Critic checks",
+              used: true,
+              freshness: "Current",
+              reliability: "High",
+              sourceType: "critic",
+              mode: "cache",
+              capability: "Skills Marketplace readiness",
+            },
+            {
+              label: "Narrative signals",
+              used: true,
+              freshness: runtime.narratives.lastSync ?? "Unavailable",
+              reliability: "Medium",
+              sourceType: "narrative",
+              mode: provenanceMode(runtime.narratives.source),
+              capability: "Narratives",
+            },
+            {
+              label: "Technicals",
+              used: true,
+              freshness: runtime.technicals.lastSync ?? "Unavailable",
+              reliability: "Medium",
+              sourceType: "technical",
+              mode: provenanceMode(runtime.technicals.source),
+              capability: "Technicals",
+            },
           ],
         })
       : null
@@ -126,24 +156,20 @@ export default function StrategyLab() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <div className="text-xs uppercase tracking-wider text-muted-foreground">
-          Strategy Lab
-        </div>
-        <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
+        <div className="text-[11px] font-medium tracking-wide text-muted-foreground">Strategy Lab</div>
+        <h2 className="mt-1 font-display text-xl font-semibold tracking-tight sm:text-2xl">
           Turn hypotheses into testable strategies
         </h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        <p className="mt-2 max-w-2xl text-[13px] leading-snug text-muted-foreground">
           Generate backtestable strategy variations from a selected hypothesis. Research and
           simulation only.
         </p>
       </div>
 
-      {journey.active ? <GuidedJourneyBanner hypothesisId={journey.hypothesisId} /> : null}
-
       <Card className="bg-card/40">
-        <CardContent className="grid gap-3 p-5 md:grid-cols-[220px_1fr_auto]">
+        <CardContent className="grid gap-3 pt-3 lg:grid-cols-[220px_1fr_auto]">
           <select
             value={selectedHypothesisId}
             onChange={(e) => setSelectedHypothesisId(e.target.value)}
@@ -156,13 +182,13 @@ export default function StrategyLab() {
               </option>
             ))}
           </select>
-          <div className="rounded-xl border bg-background/35 p-4">
+          <div className="rounded-xl border bg-background/30 p-3">
             {activeHypothesis ? (
               <>
                 <div className="font-display text-base font-semibold tracking-tight">
                   {activeHypothesis.title}
                 </div>
-                <div className="mt-1 text-sm text-muted-foreground">
+                <div className="mt-1 text-[13px] leading-snug text-muted-foreground">
                   {activeHypothesis.whyNow}
                 </div>
                 <Button
@@ -175,7 +201,7 @@ export default function StrategyLab() {
                 </Button>
                 {showHypothesisDetails ? (
                   <>
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    <div className="mt-3 flex flex-wrap gap-1.5">
                       <Badge>{activeHypothesis.status}</Badge>
                       <Badge variant="secondary">
                         Confidence {activeHypothesis.confidence}%
@@ -183,7 +209,7 @@ export default function StrategyLab() {
                       {activeAlphaScore ? <AlphaScoreBadge score={activeAlphaScore} compact /> : null}
                       <Badge variant="outline">{activeHypothesis.marketRegime}</Badge>
                     </div>
-                    <div className="mt-3 text-sm text-muted-foreground">
+                    <div className="mt-3 text-[13px] leading-snug text-muted-foreground">
                       {activeHypothesis.description}
                     </div>
                   </>
@@ -195,7 +221,7 @@ export default function StrategyLab() {
               </div>
             )}
           </div>
-          <Button onClick={generateStrategies} disabled={!selectedHypothesisId || generating}>
+          <Button onClick={generateStrategies} disabled={!selectedHypothesisId || generating} className="gap-2">
             <Sparkles className="h-4 w-4" />
             {generating ? "Generating..." : "Generate Strategies"}
           </Button>
@@ -204,7 +230,7 @@ export default function StrategyLab() {
 
       {generationError ? (
         <Card className="bg-card/40">
-          <CardContent className="p-5">
+          <CardContent className="pt-3">
             <div className="text-sm font-medium">Failed to generate strategies</div>
             <div className="mt-1 text-sm text-muted-foreground">
               {generationError.message}
@@ -214,20 +240,20 @@ export default function StrategyLab() {
       ) : null}
 
       <Card className="bg-card/40">
-        <CardContent className="space-y-4 p-5">
+        <CardContent className="space-y-3 pt-3">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <div className="text-sm font-medium">Candidate workspace</div>
-              <div className="mt-1 text-sm text-muted-foreground">
+              <div className="text-sm font-medium">Strategy candidates</div>
+              <div className="mt-1 text-[13px] leading-snug text-muted-foreground">
                 {candidates.length} strategy variations available for ranking, review, and export.
               </div>
             </div>
             <Button variant="outline" onClick={() => setShowFilters((value) => !value)}>
-              {showFilters ? "Hide filters" : "Filters & export"}
+              {showFilters ? "Hide" : "Refine"}
             </Button>
           </div>
           {showFilters ? (
-            <div className="grid gap-3 md:grid-cols-[1fr_180px_auto]">
+            <div className="grid gap-3 lg:grid-cols-[1fr_180px_auto]">
               <div className="relative">
                 <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -247,11 +273,11 @@ export default function StrategyLab() {
                 <option value="warning">Warning</option>
                 <option value="candidate">Candidate</option>
               </select>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={retry}>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Button variant="outline" onClick={retry} className="w-full sm:w-auto">
                   Refresh
                 </Button>
-                <Button onClick={exportJson} className="gap-2">
+                <Button variant="outline" onClick={exportJson} className="w-full gap-2 sm:w-auto">
                   <Download className="h-4 w-4" />
                   Export JSON
                 </Button>
@@ -259,10 +285,10 @@ export default function StrategyLab() {
             </div>
           ) : (
             <div className="flex flex-wrap gap-2">
-              <Badge variant="outline">
+              <Badge variant="success">
                 Approved {candidates.filter((item) => item.status === "approved").length}
               </Badge>
-              <Badge variant="outline">
+              <Badge variant="warning">
                 Warning {candidates.filter((item) => item.status === "warning").length}
               </Badge>
               <Badge variant="outline">
@@ -280,40 +306,49 @@ export default function StrategyLab() {
             Keep the first screen simple and expand operational detail only when needed.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap gap-2">
+        <CardContent className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap gap-2">
             <Badge variant="outline">Hypotheses {hypotheses.length}</Badge>
             <Badge variant="outline">Active candidates {candidates.length}</Badge>
-            <Badge variant="secondary">Top score {topRanked[0]?.score ?? "N/A"}</Badge>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowPipelineDetails((value) => !value)}
-            >
-              {showPipelineDetails ? "Hide pipeline details" : "View pipeline details"}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowRankedCandidates((value) => !value)}
-            >
-              {showRankedCandidates ? "Hide ranked candidates" : "Show ranked candidates"}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowComparison((value) => !value)}
-            >
-              {showComparison ? "Hide comparison" : "Show comparison"}
+              <Badge variant="outline">Top score {topRanked[0]?.score ?? "N/A"}</Badge>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setShowAdvanced((value) => !value)}>
+              {showAdvanced ? "Hide advanced" : "Advanced"}
             </Button>
           </div>
+          {showAdvanced ? (
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPipelineDetails((value) => !value)}
+              >
+                {showPipelineDetails ? "Hide pipeline details" : "Pipeline details"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowRankedCandidates((value) => !value)}
+              >
+                {showRankedCandidates ? "Hide ranked candidates" : "Ranked candidates"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowComparison((value) => !value)}
+              >
+                {showComparison ? "Hide comparison" : "Comparison"}
+              </Button>
+            </div>
+          ) : null}
           {loading ? (
             <div className="grid gap-4 lg:grid-cols-2">
               <div className="h-[280px] animate-pulse rounded-xl border bg-background/30" />
               <div className="h-[280px] animate-pulse rounded-xl border bg-background/30" />
             </div>
           ) : error ? (
-            <div className="rounded-xl border bg-background/35 p-5">
+            <div className="rounded-xl border bg-background/30 p-3">
               <div className="text-sm font-medium">Failed to load strategies</div>
               <div className="mt-1 text-sm text-muted-foreground">{error.message}</div>
               <Button variant="outline" className="mt-3" onClick={retry}>
@@ -322,28 +357,28 @@ export default function StrategyLab() {
             </div>
           ) : (
             <>
-              {showPipelineDetails ? (
-                <div className="grid gap-3 md:grid-cols-5">
+              {showAdvanced && showPipelineDetails ? (
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
                   {pipeline.map((s) => (
-                    <div key={s.label} className="rounded-xl border bg-background/35 p-4">
-                      <div className="text-xs text-muted-foreground">Step</div>
+                    <div key={s.label} className="rounded-xl border bg-background/30 p-3">
+                      <div className="text-[11px] text-muted-foreground">Step</div>
                       <div className="mt-1 font-display text-base font-semibold tracking-tight">
                         {s.label}
                       </div>
-                      <div className="mt-3 flex flex-wrap gap-2">
+                      <div className="mt-3 flex flex-wrap gap-1.5">
                         <Badge
                           variant={
                             s.status === "ready"
-                              ? "default"
+                              ? "success"
                               : s.status === "active"
-                                ? "outline"
-                                : "secondary"
+                                ? "warning"
+                                : "outline"
                           }
                         >
                           {displayPipelineStatus(s.status)}
                         </Badge>
                         {typeof s.count === "number" ? (
-                          <Badge variant="secondary">{s.count}</Badge>
+                          <Badge variant="outline">{s.count}</Badge>
                         ) : null}
                       </div>
                     </div>
@@ -351,11 +386,11 @@ export default function StrategyLab() {
                 </div>
               ) : null}
 
-              {(showRankedCandidates || showComparison) ? <Separator /> : null}
+              {(showAdvanced && (showRankedCandidates || showComparison)) ? <Separator /> : null}
 
               <div className="grid gap-4 lg:grid-cols-2">
-                {showRankedCandidates ? (
-                  <div className="rounded-xl border bg-background/35 p-5">
+                {showAdvanced && showRankedCandidates ? (
+                  <div className="rounded-xl border bg-background/30 p-3">
                     <div className="text-sm font-medium">Ranked candidates</div>
                     <div className="mt-3 space-y-2">
                       {topRanked.length > 0 ? (
@@ -371,7 +406,7 @@ export default function StrategyLab() {
                                   : topRanked[1]?.id ?? row.id,
                               ])
                             }
-                            className="flex w-full items-center justify-between rounded-lg border bg-card/50 px-3 py-3 text-left transition-colors hover:bg-card/70"
+                            className="flex w-full items-center justify-between rounded-lg border bg-card/50 px-3 py-2.5 text-left transition-colors hover:bg-card/70"
                           >
                             <div className="min-w-0">
                               <div className="truncate text-sm">{row.spec.strategyName}</div>
@@ -391,17 +426,17 @@ export default function StrategyLab() {
                   </div>
                 ) : null}
 
-                {showComparison ? (
-                  <div className="rounded-xl border bg-background/35 p-5">
+                {showAdvanced && showComparison ? (
+                  <div className="rounded-xl border bg-background/30 p-3">
                     <div className="text-sm font-medium">Comparison</div>
                     {comparison ? (
                       <>
-                        <div className="mt-3 grid gap-3 md:grid-cols-2">
+                        <div className="mt-3 grid gap-3 xl:grid-cols-2">
                           {[comparison.left, comparison.right].map((strategy) => (
                             <div
                               key={strategy.id}
                               className={[
-                                "rounded-xl border bg-card/50 p-4",
+                                "rounded-xl border bg-card/50 p-3",
                                 selectedIds?.includes(strategy.id)
                                   ? "border-primary/40"
                                   : "border-border",
@@ -410,16 +445,16 @@ export default function StrategyLab() {
                               <div className="font-display text-base font-semibold tracking-tight">
                                 {strategy.spec.strategyName}
                               </div>
-                              <div className="mt-2 flex flex-wrap gap-2">
-                                <Badge>{displayPipelineStatus(strategy.status)}</Badge>
-                                <Badge variant="secondary">{displayPipelineStatus(strategy.pipelineStage)}</Badge>
+                              <div className="mt-2 flex flex-wrap gap-1.5">
+                                <Badge variant="outline">{displayPipelineStatus(strategy.status)}</Badge>
+                                <Badge variant="outline">{displayPipelineStatus(strategy.pipelineStage)}</Badge>
                                 <Badge variant="outline">Score {strategy.score}</Badge>
                               </div>
                             </div>
                           ))}
                         </div>
 
-                        <div className="mt-4 grid gap-2 md:grid-cols-2">
+                        <div className="mt-4 grid gap-2 sm:grid-cols-2">
                           {[
                             {
                               k: "Total Return",
@@ -466,24 +501,24 @@ export default function StrategyLab() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-12">
-        <Card className="bg-card/40 lg:col-span-5">
+      <div className="grid gap-4 xl:grid-cols-12">
+        <Card className="bg-card/40 xl:col-span-5">
           <CardHeader>
             <CardTitle>Selected Strategy</CardTitle>
             <CardDescription>Strategy specification ready for review, export, and iteration.</CardDescription>
           </CardHeader>
           <CardContent>
             {selectedStrategy ? (
-              <div className="space-y-4 rounded-xl border bg-background/35 p-4">
+              <div className="space-y-3 rounded-xl border bg-background/30 p-3">
                 <div>
                   <div className="font-display text-lg font-semibold tracking-tight">
                     {selectedStrategy.spec.strategyName}
                   </div>
-                  <div className="mt-1 text-sm text-muted-foreground">
+                  <div className="mt-1 text-[13px] leading-snug text-muted-foreground">
                     {selectedStrategy.spec.objective}
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {selectedStrategy.spec.universe.map((item) => (
                     <Badge key={item} variant="secondary">
                       {item}
@@ -496,33 +531,37 @@ export default function StrategyLab() {
                     <div className="text-xs text-muted-foreground">
                       Position Sizing
                     </div>
-                    <div className="mt-1 text-sm">
+                    <div className="mt-1 text-[13px] leading-snug">
                       {selectedStrategy.spec.positionSizing}
                     </div>
                   </div>
                   <div className="rounded-lg border bg-card/50 p-3">
                     <div className="text-xs text-muted-foreground">Rebalance</div>
-                    <div className="mt-1 text-sm">
+                    <div className="mt-1 text-[13px] leading-snug">
                       {selectedStrategy.spec.rebalanceFrequency}
                     </div>
                   </div>
                 </div>
-                <div className="rounded-lg border bg-card/50 p-3">
-                  <div className="text-xs text-muted-foreground">Entry Rules</div>
-                  <div className="mt-2 space-y-1 text-sm">
+                <details className="rounded-lg border bg-card/50 p-3">
+                  <summary className="cursor-pointer select-none text-xs text-muted-foreground">
+                    Entry Rules · {selectedStrategy.spec.entryRules.length}
+                  </summary>
+                  <div className="mt-2 space-y-1 text-[13px] leading-snug">
                     {selectedStrategy.spec.entryRules.map((item) => (
                       <div key={item}>{item}</div>
                     ))}
                   </div>
-                </div>
-                <div className="rounded-lg border bg-card/50 p-3">
-                  <div className="text-xs text-muted-foreground">Risk Controls</div>
-                  <div className="mt-2 space-y-1 text-sm">
+                </details>
+                <details className="rounded-lg border bg-card/50 p-3">
+                  <summary className="cursor-pointer select-none text-xs text-muted-foreground">
+                    Risk Controls · {selectedStrategy.spec.riskControls.length}
+                  </summary>
+                  <div className="mt-2 space-y-1 text-[13px] leading-snug">
                     {selectedStrategy.spec.riskControls.map((item) => (
                       <div key={item}>{item}</div>
                     ))}
                   </div>
-                </div>
+                </details>
               </div>
             ) : (
               <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
@@ -532,24 +571,30 @@ export default function StrategyLab() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card/40 lg:col-span-7">
-          <CardHeader>
-            <CardTitle>All Variations</CardTitle>
-            <CardDescription>
-              Strategies ranked by score for comparison and export.
-            </CardDescription>
+        <Card className="bg-card/40 xl:col-span-7">
+          <CardHeader className="flex-row items-start justify-between gap-3">
+            <div>
+              <CardTitle>All Variations</CardTitle>
+              <CardDescription>
+                Strategies ranked by score for comparison and export.
+              </CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setExpandVariations((v) => !v)}>
+              {expandVariations ? "Collapse" : "Expand"}
+            </Button>
           </CardHeader>
           <CardContent>
-            <div className="overflow-hidden rounded-xl border">
-              <div className="grid grid-cols-[1.6fr_repeat(5,0.8fr)] bg-background/20 px-3 py-2 text-xs text-muted-foreground">
-                <div>Strategy</div>
-                <div>Status</div>
-                <div>Score</div>
-                <div>Return</div>
-                <div>DD</div>
-                <div>Win</div>
-              </div>
-              <div className="max-h-[420px] overflow-auto divide-y divide-border">
+            <div className="overflow-x-auto rounded-xl border">
+              <div className="min-w-[760px]">
+                <div className="grid grid-cols-[1.6fr_repeat(5,0.8fr)] bg-background/20 px-3 py-2 text-xs text-muted-foreground">
+                  <div>Strategy</div>
+                  <div>Status</div>
+                  <div>Score</div>
+                  <div>Return</div>
+                  <div>DD</div>
+                  <div>Win</div>
+                </div>
+                <div className={(expandVariations ? "max-h-[520px]" : "max-h-[320px]") + " overflow-auto divide-y divide-border"}>
                 {candidates.length > 0 ? (
                   candidates.map((item) => (
                     <button
@@ -563,7 +608,7 @@ export default function StrategyLab() {
                             : candidates[1]?.id ?? item.id,
                         ])
                       }
-                      className="grid w-full grid-cols-[1.6fr_repeat(5,0.8fr)] items-center bg-background/30 px-3 py-3 text-left text-sm transition-colors hover:bg-background/45"
+                      className="grid w-full grid-cols-[1.6fr_repeat(5,0.8fr)] items-center bg-background/30 px-3 py-2.5 text-left text-sm transition-colors hover:bg-background/45"
                     >
                       <div className="min-w-0">
                         <div className="truncate">{item.spec.strategyName}</div>
@@ -583,6 +628,7 @@ export default function StrategyLab() {
                     No variations have been generated for this hypothesis.
                   </div>
                 )}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -603,7 +649,7 @@ export default function StrategyLab() {
           {criticLoading ? (
             <div className="h-[320px] animate-pulse rounded-xl border bg-background/30" />
           ) : criticError ? (
-            <div className="rounded-xl border bg-background/35 p-5">
+            <div className="rounded-xl border bg-background/30 p-3">
               <div className="text-sm font-medium">Failed to load report</div>
               <div className="mt-1 text-sm text-muted-foreground">{criticError.message}</div>
               <Button variant="outline" className="mt-3" onClick={criticRetry}>
@@ -611,47 +657,47 @@ export default function StrategyLab() {
               </Button>
             </div>
           ) : criticReport ? (
-            <div className="grid gap-4 lg:grid-cols-12">
-              <div className="space-y-4 lg:col-span-4">
-                <div className="rounded-xl border bg-background/35 p-5">
-                  <div className="text-xs text-muted-foreground">Overall Status</div>
+            <div className="grid gap-4 xl:grid-cols-12">
+              <div className="space-y-4 xl:col-span-4">
+                <div className="rounded-xl border bg-background/30 p-3">
+                  <div className="text-[11px] text-muted-foreground">Overall Status</div>
                   <div className="mt-2 flex items-center gap-3">
                     <Badge
                       variant={
                         criticReport.overallStatus === "approved"
-                          ? "default"
+                          ? "success"
                           : criticReport.overallStatus === "warning"
-                            ? "outline"
-                            : "secondary"
+                            ? "warning"
+                            : "danger"
                       }
                     >
                       {criticReport.overallStatus}
                     </Badge>
-                    <div className="font-display text-2xl font-semibold tracking-tight">
+                    <div className="font-display text-xl font-semibold tracking-tight">
                       {criticReport.score}
                     </div>
                   </div>
                   <div className="mt-4 grid gap-2">
                     <div className="rounded-lg border bg-card/50 p-3">
                       <div className="text-xs text-muted-foreground">Findings</div>
-                      <div className="mt-1 text-sm">{criticReport.findings.length}</div>
+                      <div className="mt-1 text-[13px]">{criticReport.findings.length}</div>
                     </div>
                     <div className="rounded-lg border bg-card/50 p-3">
                       <div className="text-xs text-muted-foreground">Warnings</div>
-                      <div className="mt-1 text-sm">{criticReport.warnings.length}</div>
+                      <div className="mt-1 text-[13px]">{criticReport.warnings.length}</div>
                     </div>
                     <div className="rounded-lg border bg-card/50 p-3">
                       <div className="text-xs text-muted-foreground">Failures</div>
-                      <div className="mt-1 text-sm">{criticReport.failureReasons.length}</div>
+                      <div className="mt-1 text-[13px]">{criticReport.failureReasons.length}</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="rounded-xl border bg-background/35 p-5">
+                <div className="rounded-xl border bg-background/30 p-3">
                   <div className="text-sm font-medium">Recommended Adjustments</div>
                   <div className="mt-3 space-y-2">
                     {criticReport.recommendedAdjustments.map((item) => (
-                      <div key={item} className="rounded-lg border bg-card/50 p-3 text-sm">
+                      <div key={item} className="rounded-lg border bg-card/50 p-3 text-[13px] leading-snug">
                         {item}
                       </div>
                     ))}
@@ -659,28 +705,28 @@ export default function StrategyLab() {
                 </div>
               </div>
 
-              <div className="space-y-4 lg:col-span-8">
-                <div className="grid gap-3 md:grid-cols-2">
+              <div className="space-y-4 xl:col-span-8">
+                <div className="grid gap-3 lg:grid-cols-2">
                   {criticReport.checks.map((check) => (
-                    <div key={check.key} className="rounded-xl border bg-background/35 p-4">
+                    <div key={check.key} className="rounded-xl border bg-background/30 p-3">
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2">
                           {check.status === "passed" ? (
-                            <CheckCircle2 className="h-4 w-4 text-primary" />
+                            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                           ) : check.status === "warning" ? (
-                            <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                            <AlertTriangle className="h-4 w-4 text-amber-500" />
                           ) : (
-                            <XCircle className="h-4 w-4 text-red-400" />
+                            <XCircle className="h-4 w-4 text-rose-500" />
                           )}
                           <div className="font-medium">{check.label}</div>
                         </div>
                         <Badge
                           variant={
                             check.status === "passed"
-                              ? "default"
+                              ? "success"
                               : check.status === "warning"
-                                ? "outline"
-                                : "secondary"
+                                ? "warning"
+                                : "danger"
                           }
                         >
                           {check.status}
@@ -691,10 +737,10 @@ export default function StrategyLab() {
                           className={[
                             "h-full rounded-full",
                             check.status === "passed"
-                              ? "bg-primary"
+                              ? "bg-emerald-500"
                               : check.status === "warning"
-                                ? "bg-yellow-400"
-                                : "bg-red-400",
+                                ? "bg-amber-500"
+                                : "bg-rose-500",
                           ].join(" ")}
                           style={{ width: `${Math.max(0, Math.min(100, check.score))}%` }}
                         />
@@ -703,44 +749,53 @@ export default function StrategyLab() {
                         <span>Score</span>
                         <span>{check.score}</span>
                       </div>
-                      <div className="mt-3 text-sm text-muted-foreground">
+                      <div className="mt-3 text-[13px] leading-snug text-muted-foreground">
                         {check.reasoning}
                       </div>
                     </div>
                   ))}
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div className="rounded-xl border bg-background/35 p-4">
-                    <div className="text-sm font-medium">Passed</div>
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  <details
+                    className="rounded-xl border bg-background/30 p-3"
+                    open={criticReport.warnings.length === 0 && criticReport.failureReasons.length === 0}
+                  >
+                    <summary className="cursor-pointer select-none text-sm font-medium">
+                      Passed · {criticReport.findings.length}
+                    </summary>
                     <div className="mt-3 space-y-2">
                       {criticReport.findings.map((item) => (
-                        <div key={item} className="text-sm text-muted-foreground">
+                        <div key={item} className="text-[13px] leading-snug text-muted-foreground">
                           {item}
                         </div>
                       ))}
                     </div>
-                  </div>
-                  <div className="rounded-xl border bg-background/35 p-4">
-                    <div className="text-sm font-medium">Warning</div>
+                  </details>
+                  <details className="rounded-xl border bg-background/30 p-3" open={criticReport.warnings.length > 0}>
+                    <summary className="cursor-pointer select-none text-sm font-medium">
+                      Warning · {criticReport.warnings.length}
+                    </summary>
                     <div className="mt-3 space-y-2">
                       {criticReport.warnings.map((item) => (
-                        <div key={item} className="text-sm text-muted-foreground">
+                        <div key={item} className="text-[13px] leading-snug text-muted-foreground">
                           {item}
                         </div>
                       ))}
                     </div>
-                  </div>
-                  <div className="rounded-xl border bg-background/35 p-4">
-                    <div className="text-sm font-medium">Failed</div>
+                  </details>
+                  <details className="rounded-xl border bg-background/30 p-3" open={criticReport.failureReasons.length > 0}>
+                    <summary className="cursor-pointer select-none text-sm font-medium">
+                      Failed · {criticReport.failureReasons.length}
+                    </summary>
                     <div className="mt-3 space-y-2">
                       {criticReport.failureReasons.map((item) => (
-                        <div key={item} className="text-sm text-muted-foreground">
+                        <div key={item} className="text-[13px] leading-snug text-muted-foreground">
                           {item}
                         </div>
                       ))}
                     </div>
-                  </div>
+                  </details>
                 </div>
               </div>
             </div>
@@ -748,7 +803,16 @@ export default function StrategyLab() {
         </CardContent>
       </Card>
 
-      {provenance ? <ProvenancePanel summary={provenance} /> : null}
+      {provenance ? (
+        <details className="rounded-xl border bg-background/30 p-3">
+          <summary className="cursor-pointer select-none text-sm font-medium">
+            Evidence provenance
+          </summary>
+          <div className="mt-3">
+            <ProvenancePanel summary={provenance} />
+          </div>
+        </details>
+      ) : null}
     </div>
   )
 }

@@ -45,7 +45,7 @@ export function AlphaScoreBreakdown({
             ))}
           </div>
         </div>
-        <div className="grid gap-3 lg:col-span-8 md:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 lg:col-span-8">
           {Object.entries(result.breakdown).map(([key, value]) => (
             <div key={key} className="rounded-xl border bg-background/35 p-4">
               <div className="flex items-center justify-between gap-3 text-sm">

@@ -12,8 +12,8 @@ export function EvidencePanel({ evidence, answer }: EvidencePanelProps) {
     <div className="grid gap-4 lg:grid-cols-12">
       <Card className="bg-card/40 lg:col-span-5">
         <CardHeader>
-          <CardTitle>Evidence Panel</CardTitle>
-          <CardDescription>Evidence retrieved before the answer is generated.</CardDescription>
+          <CardTitle>Evidence Review</CardTitle>
+          <CardDescription>Supporting evidence collected before each response is prepared.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {evidence.map((item) => (
@@ -38,7 +38,7 @@ export function EvidencePanel({ evidence, answer }: EvidencePanelProps) {
         <CardHeader>
           <CardTitle>Answer With Citations</CardTitle>
           <CardDescription>
-            The answer uses only the context retrieved by the RAG engine.
+            The answer uses only the verified context surfaced by AlphaOS.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -72,7 +72,7 @@ export function EvidencePanel({ evidence, answer }: EvidencePanelProps) {
             </>
           ) : (
             <div className="rounded-xl border bg-background/35 p-4 text-sm text-muted-foreground">
-              Generate an answer to inspect citations and reasoning by evidence item.
+              Generate a response to inspect citations and the supporting reasoning behind each evidence item.
             </div>
           )}
         </CardContent>

@@ -8,7 +8,7 @@ const en: TranslationTree = {
     export: "Export",
     searchSoon: "Search",
     themeToggle: "Toggle theme",
-    demoMode: "Fallback Intelligence",
+    demoMode: "Protected Intelligence",
     liveReady: "Live Intelligence",
     on: "On",
     off: "Off",
@@ -23,7 +23,7 @@ const en: TranslationTree = {
     strategyLab: "Strategy Lab",
     research: "Research",
     settings: "Settings",
-    cmcCoverage: "CMC Coverage",
+    cmcCoverage: "CMC Intelligence",
   },
   topbar: {
     subtitle: "Prioritize insights. Avoid black boxes.",
@@ -36,7 +36,7 @@ const en: TranslationTree = {
       strategyLab: "Evolution pipeline",
       research: "Institutional reports",
       settings: "Preferences",
-      cmcCoverage: "Coverage intelligence",
+      cmcCoverage: "Intelligence layer",
     },
   },
   shell: {
@@ -83,8 +83,8 @@ const en: TranslationTree = {
     volumeConfirmation: "Volume confirmation",
   },
   cmcCoverage: {
-    title: "CoinMarketCap Intelligence Coverage",
-    subtitle: "Operational depth and document coverage across the AlphaOS intelligence stack.",
+    title: "CoinMarketCap Intelligence Layer",
+    subtitle: "Live operational depth, ingestion coverage, and downstream usage across AlphaOS intelligence workflows.",
     live: "Live",
     fallback: "Fallback",
     readiness: "Readiness",

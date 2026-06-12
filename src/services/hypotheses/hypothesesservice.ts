@@ -136,7 +136,7 @@ function buildFallbackOutput(params: {
   topNarratives: string[]
   relatedAssets: string[]
 }): HypothesisGenerationOutput {
-  const primary = params.topNarratives[0] ?? "Market Structure"
+  const primary = params.topNarratives[0] ?? "AI Infrastructure"
   return {
     title: `${primary}: repricing asymmetry emerging`,
     description:

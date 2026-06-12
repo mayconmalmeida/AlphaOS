@@ -133,8 +133,48 @@ function toNumber(value: unknown, fallback = 0) {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback
 }
 
+function toOptionalNumber(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null
+}
+
+function normalizeLabel(value: unknown) {
+  return String(value ?? "")
+    .trim()
+    .replace(/\s+/g, " ")
+}
+
+function isPlaceholderLabel(label: string, prefix: string) {
+  return new RegExp(`^${prefix}\\s+\\d+$`, "i").test(label)
+}
+
+const THEME_PATTERNS = [
+  /\bai\b/i,
+  /infrastructure/i,
+  /\brwa\b/i,
+  /real world/i,
+  /depin/i,
+  /layer\s?2/i,
+  /\bdefi\b/i,
+  /gaming/i,
+  /meme/i,
+  /\bnft\b/i,
+  /oracle/i,
+  /storage/i,
+  /compute/i,
+  /privacy/i,
+  /payments?/i,
+  /interoperab/i,
+  /exchange/i,
+  /stablecoin/i,
+]
+
+function looksLikeMeaningfulTheme(label: string) {
+  return THEME_PATTERNS.some((pattern) => pattern.test(label))
+}
+
 function normalizeMarketPulse(globalMetrics: any, fearGreed: any) {
   const data = globalMetrics?.data ?? {}
+  const yesterdayVolumeChange = toNumber(data.quote?.USD?.total_volume_24h_yesterday_percentage_change, 0)
   return {
     dominance: {
       btc_dominance: toNumber(data.btc_dominance),
@@ -148,97 +188,147 @@ function normalizeMarketPulse(globalMetrics: any, fearGreed: any) {
       volume_24h_usd: toNumber(data.quote?.USD?.total_volume_24h),
     },
     news_momentum: Number(
-      (
-        Math.min(
-          1,
-          Math.max(0, toNumber(data.quote?.USD?.total_volume_24h_yesterday_percentage_change, 0) / 100)
-        ) || 0.5
-      ).toFixed(2)
+      Math.min(1, Math.max(0.08, Math.abs(yesterdayVolumeChange) / 100)).toFixed(2)
     ),
   }
 }
 
 function normalizeQuotes(payload: any, symbols: string[]) {
   const data = payload?.data ?? {}
-  return symbols.map((symbol) => {
-    const item = data[symbol]
-    const usd = item?.quote?.USD ?? {}
-    return {
-      symbol,
-      price_usd: toNumber(usd.price),
-      volume_24h_usd: toNumber(usd.volume_24h),
-      market_cap_usd: toNumber(usd.market_cap),
-    }
-  })
+  return symbols
+    .map((symbol) => {
+      const item = data[symbol]
+      const usd = item?.quote?.USD ?? {}
+      const price = toOptionalNumber(usd.price)
+      const volume = toOptionalNumber(usd.volume_24h)
+      const marketCap = toOptionalNumber(usd.market_cap)
+
+      if (!price || !volume || !marketCap) return null
+
+      return {
+        symbol,
+        price_usd: price,
+        volume_24h_usd: volume,
+        market_cap_usd: marketCap,
+      }
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
 }
 
 function normalizeNarratives(payload: any) {
   const items = Array.isArray(payload?.data) ? payload.data : []
-  return items.slice(0, 8).map((item: any, index: number) => {
-    const usd = item?.quote?.USD ?? {}
-    const change24h = Math.abs(toNumber(usd.percent_change_24h))
-    const change7d = Math.abs(toNumber(usd.percent_change_7d))
-    return {
-      name: String(item?.name ?? `Trend ${index + 1}`),
-      strength: Math.min(100, Math.round(40 + toNumber(item?.cmc_rank ? 100 - item.cmc_rank : 40))),
-      velocity: Math.min(100, Math.round(25 + change24h * 4)),
-      growth: Math.min(100, Math.round(20 + change7d * 3)),
-      rotation_score: Math.min(100, Math.round(30 + toNumber(usd.market_cap_dominance))),
-    }
-  })
+  return items
+    .slice(0, 12)
+    .map((item: any, index: number) => {
+      const usd = item?.quote?.USD ?? {}
+      const change24h = Math.abs(toNumber(usd.percent_change_24h))
+      const change7d = Math.abs(toNumber(usd.percent_change_7d))
+      const name = normalizeLabel(item?.name ?? item?.slug ?? `Trend ${index + 1}`)
+
+      if (!name || isPlaceholderLabel(name, "Trend") || !looksLikeMeaningfulTheme(name)) {
+        return null
+      }
+
+      return {
+        name,
+        strength: Math.min(100, Math.round(40 + toNumber(item?.cmc_rank ? 100 - item.cmc_rank : 40))),
+        velocity: Math.min(100, Math.round(25 + change24h * 4)),
+        growth: Math.min(100, Math.round(20 + change7d * 3)),
+        rotation_score: Math.min(100, Math.round(30 + toNumber(usd.market_cap_dominance))),
+      }
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
+    .slice(0, 8)
 }
 
 function normalizeCategories(payload: any) {
   const items = Array.isArray(payload?.data) ? payload.data : []
-  return items.slice(0, 8).map((item: any, index: number) => ({
-    name: String(item?.name ?? `Category ${index + 1}`),
-    strength: Math.min(100, Math.round(toNumber(item?.num_tokens, 20) + 20)),
-    rotation_score: Math.min(
-      100,
-      Math.round(Math.abs(toNumber(item?.avg_price_change, toNumber(item?.avg_price_change_24h, 0))) * 5 + 25)
-    ),
-  }))
+  return items
+    .slice(0, 16)
+    .map((item: any, index: number) => {
+      const name = normalizeLabel(item?.name ?? `Category ${index + 1}`)
+      if (!name || isPlaceholderLabel(name, "Category") || !looksLikeMeaningfulTheme(name)) {
+        return null
+      }
+
+      const tokenCount = toNumber(item?.num_tokens, 0)
+      const avgChange = Math.abs(
+        toNumber(item?.avg_price_change, toNumber(item?.avg_price_change_24h, 0))
+      )
+      const marketCap = Math.max(
+        0,
+        toNumber(item?.market_cap, toNumber(item?.market_cap_usd, 0))
+      )
+      const strength = Math.min(
+        100,
+        Math.round(28 + Math.min(28, tokenCount / 2) + Math.min(32, Math.log10(Math.max(marketCap, 1)) * 3))
+      )
+      const rotation = Math.min(100, Math.round(18 + avgChange * 6 + Math.min(22, tokenCount / 3)))
+
+      return {
+        name,
+        strength,
+        rotation_score: rotation,
+      }
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
+    .slice(0, 8)
 }
 
 function normalizeNews(payload: any) {
   const items = Array.isArray(payload?.data) ? payload.data : []
-  return items.slice(0, 8).map((item: any, index: number) => ({
-    id: String(item?.id ?? `news-${index + 1}`),
-    title: String(item?.title ?? item?.meta?.title ?? `CMC News ${index + 1}`),
-    source: String(item?.source_name ?? item?.source ?? "CoinMarketCap"),
-    published_at: String(item?.published_at ?? item?.created_at ?? new Date().toISOString()),
-    sentiment_score: toNumber(item?.sentiment, 0),
-    summary: String(item?.summary ?? item?.subtitle ?? ""),
-  }))
+  return items
+    .slice(0, 12)
+    .map((item: any, index: number) => {
+      const title = normalizeLabel(item?.title ?? item?.meta?.title ?? `CMC News ${index + 1}`)
+      const summary = normalizeLabel(item?.summary ?? item?.subtitle ?? "")
+
+      if (!title || isPlaceholderLabel(title, "CMC News")) return null
+
+      return {
+        id: String(item?.id ?? `news-${index + 1}`),
+        title,
+        source: normalizeLabel(item?.source_name ?? item?.source ?? "CoinMarketCap"),
+        published_at: String(item?.published_at ?? item?.created_at ?? new Date().toISOString()),
+        sentiment_score: toOptionalNumber(item?.sentiment) ?? undefined,
+        summary: summary || undefined,
+      }
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
+    .slice(0, 8)
 }
 
 function normalizeTechnicals(marketPairsPayload: any, quotesPayload: any, symbols: string[]) {
   const pairsData = marketPairsPayload?.data ?? {}
   const quotesData = quotesPayload?.data ?? {}
 
-  return symbols.map((symbol, index) => {
-    const quoteItem = quotesData[symbol]
-    const usd = quoteItem?.quote?.USD ?? {}
-    const pairs = Array.isArray(pairsData[symbol]?.data?.market_pairs)
-      ? pairsData[symbol].data.market_pairs
-      : []
-    const volume = toNumber(usd.volume_24h)
-    const change24h = toNumber(usd.percent_change_24h)
-    const change7d = toNumber(usd.percent_change_7d)
-    const volatility = Math.min(1, Math.abs(change24h) / 20 + Math.abs(change7d) / 40)
-    const momentum = Math.min(1, Math.max(0, 0.45 + change24h / 100 + change7d / 150))
-    const trend = change24h > 1 ? "bullish" : change24h < -1 ? "bearish" : "neutral"
+  return symbols
+    .map((symbol) => {
+      const quoteItem = quotesData[symbol]
+      const usd = quoteItem?.quote?.USD ?? {}
+      const pairs = Array.isArray(pairsData[symbol]?.data?.market_pairs)
+        ? pairsData[symbol].data.market_pairs
+        : []
+      const volume = toOptionalNumber(usd.volume_24h)
+      const change24h = toNumber(usd.percent_change_24h)
+      const change7d = toNumber(usd.percent_change_7d)
 
-    return {
-      symbol,
-      trend,
-      momentum: Number(momentum.toFixed(2)),
-      volatility: Number(volatility.toFixed(2)),
-      market_pairs_count: pairs.length,
-      volume_24h_usd: volume,
-      index,
-    }
-  }).map(({ market_pairs_count: _count, volume_24h_usd: _volume, index: _index, ...rest }) => rest)
+      if (!volume || !quoteItem) return null
+
+      const volatility = Math.min(1, Math.max(0.08, Math.abs(change24h) / 20 + Math.abs(change7d) / 40))
+      const momentum = Math.min(1, Math.max(0.08, 0.45 + change24h / 100 + change7d / 150))
+      const trend = change24h > 1 ? "bullish" : change24h < -1 ? "bearish" : "neutral"
+
+      return {
+        symbol,
+        trend,
+        momentum: Number(momentum.toFixed(2)),
+        volatility: Number(volatility.toFixed(2)),
+        market_pairs_count: pairs.length,
+      }
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
+    .map(({ market_pairs_count: _count, ...rest }) => rest)
 }
 
 Deno.serve(async (request) => {

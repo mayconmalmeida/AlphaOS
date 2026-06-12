@@ -34,8 +34,8 @@ function buildFallbackAnswer(question: string, evidence: RagEvidenceItem[]): Rag
   const top = evidence.slice(0, 3)
   const answerText =
     top.length === 0
-      ? "Nao ha evidencia suficiente recuperada para responder com confianca."
-      : `Com base apenas nas evidencias recuperadas, a leitura mais suportada para "${question}" aponta para ${top
+      ? "There is not enough retrieved evidence to answer with confidence."
+      : `Based only on the retrieved evidence, the strongest supported reading for "${question}" points to ${top
           .map((item) => item.title)
           .join(", ")}.`
 
@@ -43,8 +43,8 @@ function buildFallbackAnswer(question: string, evidence: RagEvidenceItem[]): Rag
     answer: answerText,
     reasoning:
       top.length === 0
-        ? "O mecanismo bloqueou claims porque nao encontrou contexto suficiente."
-        : "A resposta foi limitada ao contexto recuperado e nao extrapola alem das evidencias listadas.",
+        ? "AlphaOS blocked a stronger claim because the retrieval layer did not return enough supporting context."
+        : "The answer stays strictly within the retrieved evidence and does not extrapolate beyond the cited context.",
     evidenceUsed: top.map((item) => ({
       evidenceId: item.id,
       title: item.title,

@@ -1,4 +1,68 @@
 import type { ResearchReport } from "@/services/research/types"
+import {
+  buildOpportunityIntelligence,
+  buildOpportunityReportSection,
+} from "@/services/opportunityIntelligence"
+
+const aiInfrastructureOpportunity = buildOpportunityIntelligence({
+  id: "report-ai-infra",
+  title: "AI Infrastructure Expansion",
+  description:
+    "AI infrastructure remains the clearest opportunity as compute demand and narrative leadership keep reinforcing one another.",
+  confidence: 87,
+  riskScore: 34,
+  marketRegime: "Bull Expansion",
+  relatedNarratives: ["AI Infrastructure"],
+  relatedAssets: ["RNDR", "TAO", "AKT", "FET"],
+  evidenceCount: 5,
+  whyNow:
+    "Capital is rotating into quality infrastructure exposure while narrative breadth remains narrow enough to reward leaders.",
+  invalidatingConditions: [
+    "Narrative momentum drops below 60",
+    "Volume expansion disappears",
+    "BTC dominance rises sharply",
+  ],
+})
+
+const rwaOpportunity = buildOpportunityIntelligence({
+  id: "report-regime",
+  title: "RWA Narrative Acceleration",
+  description:
+    "RWA is strengthening as regulated market structure and tokenization use cases keep gaining institutional attention.",
+  confidence: 78,
+  riskScore: 38,
+  marketRegime: "Narrative Rotation",
+  relatedNarratives: ["RWA"],
+  relatedAssets: ["ONDO", "CFG", "POLYX"],
+  evidenceCount: 4,
+  whyNow:
+    "The market is rewarding tokenization narratives with clearer distribution and practical institutional use cases.",
+  invalidatingConditions: [
+    "Regulatory momentum reverses",
+    "Institutional participation slows materially",
+    "Category rotation falls below 55",
+  ],
+})
+
+const layer2Opportunity = buildOpportunityIntelligence({
+  id: "report-cycle",
+  title: "Layer 2 Selectivity",
+  description:
+    "Layer 2 exposure remains investable only where activity, liquidity, and ecosystem retention still hold.",
+  confidence: 71,
+  riskScore: 42,
+  marketRegime: "Selective Expansion",
+  relatedNarratives: ["Layer 2"],
+  relatedAssets: ["ARB", "OP", "MNT", "STRK"],
+  evidenceCount: 4,
+  whyNow:
+    "Breadth is narrowing, so only scaling ecosystems with durable activity retain narrative exposure quality.",
+  invalidatingConditions: [
+    "Activity concentration shifts away from rollups",
+    "Relative strength deteriorates across leaders",
+    "Capital rotation remains weak for scaling narratives",
+  ],
+})
 
 export const mockResearchReports: ResearchReport[] = [
   {
@@ -11,7 +75,13 @@ export const mockResearchReports: ResearchReport[] = [
     tags: ["AI", "Infrastructure", "Rotation"],
     executiveSummary:
       "AI infrastructure remains the leading narrative, supported by capital rotation, improving sentiment, and concentration in higher-quality assets.",
+    opportunityIntelligence: aiInfrastructureOpportunity,
     sections: [
+      {
+        id: "opportunity-intelligence",
+        title: "Opportunity Intelligence",
+        body: buildOpportunityReportSection(aiInfrastructureOpportunity),
+      },
       {
         id: "summary",
         title: "Executive Summary",
@@ -54,7 +124,13 @@ export const mockResearchReports: ResearchReport[] = [
     tags: ["Regime", "Liquidity", "Risk"],
     executiveSummary:
       "The market remains in a constructive expansion, but early signs of concentration and growing selectivity are appearing in allocation decisions.",
+    opportunityIntelligence: rwaOpportunity,
     sections: [
+      {
+        id: "opportunity-intelligence",
+        title: "Opportunity Intelligence",
+        body: buildOpportunityReportSection(rwaOpportunity),
+      },
       {
         id: "summary",
         title: "Executive Summary",
@@ -97,7 +173,13 @@ export const mockResearchReports: ResearchReport[] = [
     tags: ["Altcoins", "Cycle", "Breadth"],
     executiveSummary:
       "The cycle still supports selective continuation, but it now demands tighter entry discipline and stronger risk control.",
+    opportunityIntelligence: layer2Opportunity,
     sections: [
+      {
+        id: "opportunity-intelligence",
+        title: "Opportunity Intelligence",
+        body: buildOpportunityReportSection(layer2Opportunity),
+      },
       {
         id: "summary",
         title: "Executive Summary",

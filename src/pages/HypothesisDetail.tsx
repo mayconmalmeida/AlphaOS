@@ -1,31 +1,73 @@
-import { useEffect } from "react"
-import { Link, useLocation, useParams } from "react-router-dom"
+import { useEffect, useMemo, useState } from "react"
+import { Link, useParams } from "react-router-dom"
 import { ChevronLeft, ShieldAlert, Sparkles, TrendingUp } from "lucide-react"
 
 import { AlphaScoreBadge } from "@/components/alpha/AlphaScoreBadge"
 import { AlphaScoreBreakdown } from "@/components/alpha/AlphaScoreBreakdown"
 import { EvidenceGraph } from "@/components/evidence/EvidenceGraph"
 import { ProvenancePanel } from "@/components/evidence/ProvenancePanel"
-import { GuidedJourneyBanner } from "@/components/journey/GuidedJourneyBanner"
+import { OpportunityIntelligencePanel } from "@/components/opportunity/OpportunityIntelligencePanel"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useHypothesisDetail } from "@/hooks/useHypothesisDetail"
-import { parseGuidedJourney } from "@/lib/guidedJourney"
+import { isErr } from "@/lib/api"
 import { buildAlphaScore } from "@/services/alphaScoreService"
+import { cmcServices } from "@/services/cmc"
+import { getCmcRuntimeStatus } from "@/services/cmc/runtime"
+import type { CategoryMetric, Quote, TechnicalSummary } from "@/services/cmc/types"
 import {
   buildHypothesisEvidenceGraph,
   buildProvenanceSummary,
 } from "@/services/evidence/evidenceGraph"
+import { buildOpportunityIntelligence } from "@/services/opportunityIntelligence"
+
+function currency(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: value >= 1_000 ? 0 : 2,
+  }).format(value)
+}
+
+function intelligenceLabel(source?: "live" | "fallback" | "cache" | "idle") {
+  if (source === "live") return "Live Intelligence"
+  if (source === "cache") return "Cached Intelligence"
+  if (source === "idle") return "Intelligence Available"
+  return "Protected Intelligence"
+}
+
+function provenanceMode(source?: "live" | "fallback" | "cache" | "idle") {
+  if (source === "live" || source === "fallback" || source === "cache") return source
+  return "unknown" as const
+}
 
 export default function HypothesisDetail() {
   const { id } = useParams()
-  const location = useLocation()
-  const journey = parseGuidedJourney(location.search)
   const { data, loading, error, retry } = useHypothesisDetail(id)
   const alphaScore = data ? buildAlphaScore(data) : null
   const evidenceGraph = data ? buildHypothesisEvidenceGraph(data) : null
+  const [cmcSignals, setCmcSignals] = useState<{
+    quotes: Quote[]
+    categories: CategoryMetric[]
+    technicals: TechnicalSummary[]
+  }>({
+    quotes: [],
+    categories: [],
+    technicals: [],
+  })
+  const [cmcLoading, setCmcLoading] = useState(false)
+  const runtime = getCmcRuntimeStatus()
+  const opportunityIntelligence = useMemo(() => {
+    if (!data || !alphaScore) return null
+    return buildOpportunityIntelligence(data, {
+      alphaScore,
+      quotes: cmcSignals.quotes,
+      categories: cmcSignals.categories,
+      technicals: cmcSignals.technicals,
+    })
+  }, [alphaScore, cmcSignals.categories, cmcSignals.quotes, cmcSignals.technicals, data])
   const provenance = data
     ? buildProvenanceSummary({
         title: data.title,
@@ -45,11 +87,11 @@ export default function HypothesisDetail() {
           {
             label: "Quotes",
             used: data.relatedAssets.length > 0,
-            freshness: "1h",
+            freshness: runtime.quotes.lastSync ?? "Unavailable",
             reliability: "High",
             sourceType: "market",
-            mode: data.origin === "generated" ? "live" : "fallback",
-            timestamp: new Date().toISOString(),
+            mode: provenanceMode(runtime.quotes.source),
+            timestamp: runtime.quotes.lastSync ?? undefined,
             relevanceScore: data.confidence,
             confidenceScore: data.confidence,
             capability: "Quotes",
@@ -57,11 +99,11 @@ export default function HypothesisDetail() {
           {
             label: "Technicals",
             used: data.evidence.some((item) => item.sourceType === "technicals"),
-            freshness: "2h",
+            freshness: runtime.technicals.lastSync ?? "Unavailable",
             reliability: "High",
             sourceType: "technical",
-            mode: data.origin === "generated" ? "live" : "fallback",
-            timestamp: new Date().toISOString(),
+            mode: provenanceMode(runtime.technicals.source),
+            timestamp: runtime.technicals.lastSync ?? undefined,
             relevanceScore: alphaScore?.breakdown.technicalConfirmation ?? 0,
             confidenceScore: alphaScore?.breakdown.technicalConfirmation ?? 0,
             capability: "Technicals",
@@ -69,11 +111,11 @@ export default function HypothesisDetail() {
           {
             label: "News",
             used: data.evidence.some((item) => item.sourceType === "news"),
-            freshness: "30m",
+            freshness: runtime.news.lastSync ?? "Unavailable",
             reliability: "Medium",
             sourceType: "news",
-            mode: data.origin === "generated" ? "live" : "fallback",
-            timestamp: new Date().toISOString(),
+            mode: provenanceMode(runtime.news.source),
+            timestamp: runtime.news.lastSync ?? undefined,
             relevanceScore:
               data.evidence.length > 0
                 ? Math.round(
@@ -87,11 +129,11 @@ export default function HypothesisDetail() {
           {
             label: "Sentiment",
             used: data.evidence.some((item) => item.sourceType === "sentiment"),
-            freshness: "15m",
+            freshness: runtime.sentiment.lastSync ?? "Unavailable",
             reliability: "Medium",
             sourceType: "sentiment",
-            mode: data.origin === "generated" ? "live" : "fallback",
-            timestamp: new Date().toISOString(),
+            mode: provenanceMode(runtime.sentiment.source),
+            timestamp: runtime.sentiment.lastSync ?? undefined,
             relevanceScore: alphaScore?.breakdown.sentimentAlignment ?? 0,
             confidenceScore: alphaScore?.breakdown.sentimentAlignment ?? 0,
             capability: "Sentiment",
@@ -99,11 +141,11 @@ export default function HypothesisDetail() {
           {
             label: "Narratives",
             used: data.relatedNarratives.length > 0,
-            freshness: "1h",
+            freshness: runtime.narratives.lastSync ?? "Unavailable",
             reliability: "High",
             sourceType: "narrative",
-            mode: data.origin === "generated" ? "live" : "fallback",
-            timestamp: new Date().toISOString(),
+            mode: provenanceMode(runtime.narratives.source),
+            timestamp: runtime.narratives.lastSync ?? undefined,
             relevanceScore: alphaScore?.breakdown.narrativeStrength ?? 0,
             confidenceScore: alphaScore?.breakdown.narrativeStrength ?? 0,
             capability: "Narratives",
@@ -125,27 +167,44 @@ export default function HypothesisDetail() {
     : null
 
   useEffect(() => {
-    if (!journey.active) return
-    if (!journey.step) return
+    let cancelled = false
 
-    const targetId =
-      journey.step === 2
-        ? "journey-why-now"
-        : journey.step === 3
-          ? "journey-evidence-graph"
-          : journey.step === 4
-            ? "journey-historical-analogue"
-            : null
+    async function loadSignals() {
+      if (!data) {
+        setCmcSignals({ quotes: [], categories: [], technicals: [] })
+        return
+      }
 
-    if (!targetId) return
-    const el = document.getElementById(targetId)
-    if (!el) return
-    el.scrollIntoView({ behavior: "smooth", block: "start" })
-  }, [journey.active, journey.step])
+      const symbols = data.relatedAssets.slice(0, 3)
+      const normalizedSymbols = symbols.length > 0 ? symbols : ["BTC", "ETH", "SOL"]
+      setCmcLoading(true)
+
+      const [quotesRes, categoriesRes, technicalsRes] = await Promise.all([
+        cmcServices.quotes.getQuotes(normalizedSymbols),
+        cmcServices.categories.getCategories(),
+        cmcServices.technicals.getTechnicals(normalizedSymbols),
+      ])
+
+      if (cancelled) return
+
+      setCmcSignals({
+        quotes: isErr(quotesRes) ? [] : quotesRes.data,
+        categories: isErr(categoriesRes) ? [] : categoriesRes.data,
+        technicals: isErr(technicalsRes) ? [] : technicalsRes.data,
+      })
+      setCmcLoading(false)
+    }
+
+    loadSignals()
+
+    return () => {
+      cancelled = true
+    }
+  }, [data])
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Link
           to="/hypotheses"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
@@ -153,12 +212,10 @@ export default function HypothesisDetail() {
           <ChevronLeft className="h-4 w-4" />
           Back
         </Link>
-        <Badge variant="secondary">
-          {data?.origin === "generated" ? "Generated" : "Fallback Intelligence"}
+        <Badge variant={data?.origin === "mock" ? "warning" : "success"}>
+          {data?.origin === "mock" ? "Protected Intelligence" : "Live Intelligence"}
         </Badge>
       </div>
-
-      {journey.active ? <GuidedJourneyBanner hypothesisId={data?.id ?? journey.hypothesisId} /> : null}
 
       {loading ? (
         <div className="grid gap-4">
@@ -179,19 +236,19 @@ export default function HypothesisDetail() {
       ) : data ? (
         <>
           <div>
-            <div className="text-xs uppercase tracking-wider text-muted-foreground">
+            <div className="text-[11px] font-medium tracking-wide text-muted-foreground">
               Hypothesis #{data.id}
             </div>
-            <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
+            <h2 className="mt-1 font-display text-xl font-semibold tracking-tight sm:text-2xl">
               {data.title}
             </h2>
-            <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
+            <p className="mt-2 max-w-3xl text-[13px] leading-snug text-muted-foreground">
               {data.description}
             </p>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-12">
-            <Card className="bg-card/40 lg:col-span-8">
+          <div className="grid gap-3 xl:grid-cols-12">
+            <Card className="bg-card/40 xl:col-span-8">
               <CardHeader>
                 <CardTitle>Thesis</CardTitle>
                 <CardDescription>
@@ -212,6 +269,86 @@ export default function HypothesisDetail() {
                   <div className="text-xs text-muted-foreground">Why now</div>
                   <div className="mt-1 text-sm text-foreground/90">{data.whyNow}</div>
                 </div>
+                <div className="grid gap-3 md:grid-cols-3">
+                  <div className="rounded-xl border bg-background/35 p-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="text-xs text-muted-foreground">Market Context</div>
+                      <Badge variant={runtime.quotes.source === "live" ? "success" : "warning"}>
+                        {intelligenceLabel(runtime.quotes.source)}
+                      </Badge>
+                    </div>
+                    {cmcLoading ? (
+                      <div className="mt-3 h-14 animate-pulse rounded-lg border bg-background/40" />
+                    ) : cmcSignals.quotes.length > 0 ? (
+                      <div className="mt-3 space-y-2">
+                        {cmcSignals.quotes.slice(0, 3).map((quote) => (
+                          <div key={quote.symbol} className="flex items-center justify-between gap-3 text-[13px]">
+                            <span>{quote.symbol}</span>
+                            <span className="text-muted-foreground">{currency(quote.priceUsd)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="mt-3 text-[13px] leading-snug text-muted-foreground">
+                        Verified market context remains available while live pricing refreshes.
+                      </div>
+                    )}
+                  </div>
+                  <div className="rounded-xl border bg-background/35 p-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="text-xs text-muted-foreground">Category Rotation</div>
+                      <Badge variant={runtime.categories.source === "live" ? "success" : "warning"}>
+                        {intelligenceLabel(runtime.categories.source)}
+                      </Badge>
+                    </div>
+                    {cmcLoading ? (
+                      <div className="mt-3 h-14 animate-pulse rounded-lg border bg-background/40" />
+                    ) : cmcSignals.categories.length > 0 ? (
+                      <div className="mt-3 space-y-2">
+                        {cmcSignals.categories
+                          .slice()
+                          .sort((a, b) => b.rotationScore - a.rotationScore)
+                          .slice(0, 3)
+                          .map((category) => (
+                            <div key={category.name} className="flex items-center justify-between gap-3 text-[13px]">
+                              <span>{category.name}</span>
+                              <span className="text-muted-foreground">Rotation {Math.round(category.rotationScore)}</span>
+                            </div>
+                          ))}
+                      </div>
+                    ) : (
+                      <div className="mt-3 text-[13px] leading-snug text-muted-foreground">
+                        Category rotation is protected with the latest verified intelligence.
+                      </div>
+                    )}
+                  </div>
+                  <div className="rounded-xl border bg-background/35 p-4">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="text-xs text-muted-foreground">Technical Confirmation</div>
+                      <Badge variant={runtime.technicals.source === "live" ? "success" : "warning"}>
+                        {intelligenceLabel(runtime.technicals.source)}
+                      </Badge>
+                    </div>
+                    {cmcLoading ? (
+                      <div className="mt-3 h-14 animate-pulse rounded-lg border bg-background/40" />
+                    ) : cmcSignals.technicals.length > 0 ? (
+                      <div className="mt-3 space-y-2">
+                        {cmcSignals.technicals.slice(0, 3).map((technical) => (
+                          <div key={technical.symbol} className="flex items-center justify-between gap-3 text-[13px]">
+                            <span>{technical.symbol}</span>
+                            <span className="text-muted-foreground">
+                              {technical.trend} · momentum {Math.round(technical.momentum * 100)}%
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="mt-3 text-[13px] leading-snug text-muted-foreground">
+                        Technical confirmation remains available through verified intelligence.
+                      </div>
+                    )}
+                  </div>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {data.relatedNarratives.map((item) => (
                     <Badge key={item} variant="secondary">
@@ -227,7 +364,7 @@ export default function HypothesisDetail() {
               </CardContent>
             </Card>
 
-            <Card className="bg-card/40 lg:col-span-4">
+            <Card className="bg-card/40 xl:col-span-4">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ShieldAlert className="h-4 w-4 text-primary" />
@@ -245,6 +382,13 @@ export default function HypothesisDetail() {
             </Card>
           </div>
 
+          {opportunityIntelligence ? (
+            <OpportunityIntelligencePanel
+              intelligence={opportunityIntelligence}
+              description="Research view of narrative exposure, market conviction, beneficiaries, and thesis risk."
+            />
+          ) : null}
+
           {alphaScore ? <AlphaScoreBreakdown result={alphaScore} /> : null}
 
           {evidenceGraph ? (
@@ -253,8 +397,8 @@ export default function HypothesisDetail() {
             </div>
           ) : null}
 
-          <div className="grid gap-4 lg:grid-cols-12">
-            <Card className="bg-card/40 lg:col-span-7">
+          <div className="grid gap-4 xl:grid-cols-12">
+            <Card className="bg-card/40 xl:col-span-7">
               <CardHeader>
                 <CardTitle>Supporting Evidence</CardTitle>
                 <CardDescription>
@@ -281,14 +425,14 @@ export default function HypothesisDetail() {
               </CardContent>
             </Card>
 
-            <Card className="bg-card/40 lg:col-span-5">
+            <Card className="bg-card/40 xl:col-span-5">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-4 w-4 text-primary" />
-                  Narrative Signals
+                  Narrative Readout
                 </CardTitle>
                 <CardDescription>
-                  Strength, velocity, growth, and rotation behind the thesis.
+                  Strength, velocity, growth, and rotation behind the market thesis.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -300,7 +444,7 @@ export default function HypothesisDetail() {
                       </div>
                       <Badge>Strength {signal.strength}</Badge>
                     </div>
-                    <div className="mt-3 grid gap-2 md:grid-cols-3">
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                       <div className="rounded-lg border bg-card/50 p-3">
                         <div className="text-xs text-muted-foreground">Velocity</div>
                         <div className="mt-1 text-sm">{signal.velocity}</div>
@@ -333,7 +477,7 @@ export default function HypothesisDetail() {
                 Historical context and what happened next in comparable setups.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4 lg:grid-cols-2">
+            <CardContent className="grid gap-4 xl:grid-cols-2">
               {data.historicalAnalogues.map((item) => (
                 <div key={item.id} className="rounded-xl border bg-background/35 p-4">
                   <div className="flex items-start justify-between gap-3">

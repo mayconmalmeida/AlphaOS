@@ -1,3 +1,5 @@
+import type { OpportunityIntelligence } from "@/services/opportunityIntelligence"
+
 export type ResearchReportType =
   | "Narrative Rotation"
   | "Regime"
@@ -23,5 +25,6 @@ export type ResearchReport = {
   tags: string[]
   executiveSummary: string
   sections: ResearchSection[]
+  opportunityIntelligence?: OpportunityIntelligence
 }
 

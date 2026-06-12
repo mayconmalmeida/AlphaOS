@@ -58,7 +58,7 @@ export function EvidenceGraph({
         </div>
 
         <div
-          className="hidden overflow-hidden rounded-xl border bg-background/35 md:block"
+          className="hidden overflow-x-auto rounded-xl border bg-background/35 md:block"
           onWheel={(event) => {
             event.preventDefault()
             setZoom((current) => Math.max(0.7, Math.min(1.8, current + (event.deltaY > 0 ? -0.08 : 0.08))))
@@ -71,7 +71,10 @@ export function EvidenceGraph({
           onMouseUp={() => setDragStart(null)}
           onMouseLeave={() => setDragStart(null)}
         >
-          <svg viewBox="0 0 1100 560" className="h-[460px] w-full cursor-grab active:cursor-grabbing">
+          <svg
+            viewBox="0 0 1100 560"
+            className="h-[360px] min-w-[760px] w-full cursor-grab active:cursor-grabbing lg:h-[460px]"
+          >
             <g transform={`translate(${offset.x} ${offset.y}) scale(${zoom})`}>
               {edges.map((edge) => {
                 const from = nodes.find((node) => node.id === edge.from)
