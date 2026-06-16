@@ -1,4 +1,4 @@
-export { createHypothesesService, hypothesesService } from "@/services/hypotheses/hypothesesservice"
+export { createHypothesesService, hypothesesService } from "@/services/hypotheses/HypothesesService"
 export type {
   EvidenceItem,
   HistoricalAnalogue,
