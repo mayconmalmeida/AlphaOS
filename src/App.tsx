@@ -35,6 +35,7 @@ export default function App() {
             <Route path="/strategy-lab" element={<StrategyLab />} />
             <Route path="/research" element={<Research />} />
             <Route path="/cmc-coverage" element={<CmcCoverage />} />
+            <Route path="/cmc-intelligence" element={<CmcCoverage />} />
             <Route path="/system-health" element={<SystemHealth />} />
             <Route path="/settings" element={<Settings />} />
           </Route>

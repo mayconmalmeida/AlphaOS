@@ -18,6 +18,7 @@ const TITLES: Record<string, { titleKey: string; title: string; kickerKey?: stri
   "/strategy-lab": { titleKey: "nav.strategyLab", title: "Strategy Lab", kickerKey: "topbar.kickers.strategyLab", kicker: "Evolution pipeline" },
   "/research": { titleKey: "nav.research", title: "Research", kickerKey: "topbar.kickers.research", kicker: "Institutional reports" },
   "/cmc-coverage": { titleKey: "nav.cmcCoverage", title: "CMC Intelligence", kickerKey: "topbar.kickers.cmcCoverage", kicker: "Intelligence layer" },
+  "/cmc-intelligence": { titleKey: "nav.cmcCoverage", title: "CMC Intelligence", kickerKey: "topbar.kickers.cmcCoverage", kicker: "Intelligence layer" },
   "/system-health": { titleKey: "nav.systemHealth", title: "System Health", kickerKey: "topbar.kickers.systemHealth", kicker: "Infrastructure readiness" },
   "/settings": { titleKey: "nav.settings", title: "Settings", kickerKey: "topbar.kickers.settings", kicker: "Preferences" },
 }

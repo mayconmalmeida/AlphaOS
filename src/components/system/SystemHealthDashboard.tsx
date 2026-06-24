@@ -17,7 +17,7 @@ function combineStates(states: Array<"connected" | "warning" | "error" | undefin
 
 function readinessLabel(state: "connected" | "warning" | "error") {
   if (state === "connected") return "Ready"
-  if (state === "warning") return "Protected"
+  if (state === "warning") return "Verified"
   return "Attention Required"
 }
 
@@ -148,7 +148,7 @@ export function SystemHealthDashboard() {
         </div>
 
         <div className="rounded-xl border bg-background/30 p-3 text-[13px] leading-snug text-muted-foreground">
-          Last verified: {report?.summary.lastSync ?? "N/A"}. AlphaOS keeps market intelligence available for the demo with live connectivity where possible and protected continuity where refresh cycles are still completing.
+          Last verified: {report?.summary.lastSync ?? "N/A"}. AlphaOS keeps market intelligence available for review with verified context and evidence continuity.
         </div>
       </CardContent>
     </Card>

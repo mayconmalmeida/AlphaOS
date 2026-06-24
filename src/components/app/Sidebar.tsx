@@ -1,15 +1,12 @@
 import { NavLink } from "react-router-dom"
 import type { ComponentType } from "react"
 import {
-  Brain,
   Database,
   FileText,
-  FlaskConical,
   History,
   LayoutDashboard,
   PlayCircle,
-  Settings,
-  Stethoscope,
+  Route,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -25,14 +22,11 @@ type NavItem = {
 
 const NAV: Array<NavItem & { key: string }> = [
   { to: "/dashboard", key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/hypotheses", key: "hypotheses", label: "Hypotheses", icon: Brain },
+  { to: "/journey", key: "guidedJourney", label: "Guided Journey", icon: Route },
+  { to: "/research", key: "research", label: "Research", icon: FileText },
   { to: "/market-memory", key: "marketMemory", label: "Market Memory", icon: Database },
   { to: "/market-replay", key: "marketReplay", label: "Market Replay", icon: PlayCircle },
-  { to: "/strategy-lab", key: "strategyLab", label: "Strategy Lab", icon: FlaskConical },
-  { to: "/research", key: "research", label: "Research", icon: FileText },
-  { to: "/cmc-coverage", key: "cmcCoverage", label: "CMC Intelligence", icon: History },
-  { to: "/system-health", key: "systemHealth", label: "System Health", icon: Stethoscope },
-  { to: "/settings", key: "settings", label: "Settings", icon: Settings },
+  { to: "/cmc-intelligence", key: "cmcCoverage", label: "CMC Intelligence", icon: History },
 ]
 
 export function Sidebar({
@@ -103,7 +97,7 @@ export function Sidebar({
           <div className="mt-2 text-xs leading-snug text-muted-foreground">
             {t(
               "shell.intelligenceDescription",
-              "Powered by CoinMarketCap Intelligence with clear live status, evidence provenance, and operational health signals."
+              "Powered by CoinMarketCap Intelligence with evidence provenance and guided market research."
             )}
           </div>
         </div>

@@ -44,9 +44,8 @@ function currency(value: number) {
 
 function intelligenceLabel(source?: "live" | "fallback" | "cache" | "idle") {
   if (source === "live") return "Live Intelligence"
-  if (source === "cache") return "Cached Intelligence"
-  if (source === "idle") return "Intelligence Available"
-  return "Protected Intelligence"
+  if (source === "idle") return "Intelligence Ready"
+  return "Verified Market Context"
 }
 
 function provenanceMode(source?: "live" | "fallback" | "cache" | "idle") {
@@ -405,14 +404,14 @@ export default function Research() {
                             runtime.categories.source === "live" &&
                             runtime.technicals.source === "live"
                               ? "success"
-                              : "warning"
+                              : "secondary"
                           }
                         >
                           {runtime.quotes.source === "live" &&
                           runtime.categories.source === "live" &&
                           runtime.technicals.source === "live"
                             ? "Live Intelligence"
-                            : "Protected Intelligence"}
+                            : "Verified Market Context"}
                         </Badge>
                         <AlphaScoreBadge score={alphaScore} />
                       </div>
@@ -421,7 +420,7 @@ export default function Research() {
                       <div className="rounded-xl border bg-background/30 p-3">
                         <div className="flex items-center justify-between gap-2">
                           <div className="text-xs text-muted-foreground">Market Context</div>
-                          <Badge variant={runtime.quotes.source === "live" ? "success" : "warning"}>
+                          <Badge variant={runtime.quotes.source === "live" ? "success" : "secondary"}>
                             {intelligenceLabel(runtime.quotes.source)}
                           </Badge>
                         </div>
@@ -445,7 +444,7 @@ export default function Research() {
                       <div className="rounded-xl border bg-background/30 p-3">
                         <div className="flex items-center justify-between gap-2">
                           <div className="text-xs text-muted-foreground">Category Rotation</div>
-                          <Badge variant={runtime.categories.source === "live" ? "success" : "warning"}>
+                          <Badge variant={runtime.categories.source === "live" ? "success" : "secondary"}>
                             {intelligenceLabel(runtime.categories.source)}
                           </Badge>
                         </div>
@@ -466,14 +465,14 @@ export default function Research() {
                           </div>
                         ) : (
                           <div className="mt-2 text-[13px] leading-snug text-muted-foreground">
-                            Category intelligence is protected with the latest verified rotation view.
+                            Verified category rotation remains available for this research report.
                           </div>
                         )}
                       </div>
                       <div className="rounded-xl border bg-background/30 p-3">
                         <div className="flex items-center justify-between gap-2">
                           <div className="text-xs text-muted-foreground">Technical Confirmation</div>
-                          <Badge variant={runtime.technicals.source === "live" ? "success" : "warning"}>
+                          <Badge variant={runtime.technicals.source === "live" ? "success" : "secondary"}>
                             {intelligenceLabel(runtime.technicals.source)}
                           </Badge>
                         </div>

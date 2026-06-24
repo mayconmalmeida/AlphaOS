@@ -92,7 +92,7 @@ export default function MarketMemory() {
         </h2>
         <p className="mt-2 max-w-2xl text-[13px] leading-snug text-muted-foreground">
           Review daily snapshots, compare regimes, and surface the closest historical setups with
-          clear market context and verified intelligence states.
+          clear market context and verified historical matches.
         </p>
       </div>
 
@@ -321,7 +321,7 @@ export default function MarketMemory() {
         <Card className="bg-card/40 xl:col-span-3">
           <CardHeader>
             <CardTitle>Similar Markets</CardTitle>
-            <CardDescription>Similarity method, context, and what happened next.</CardDescription>
+            <CardDescription>Historical similarity, context, and what happened next.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {!selected ? (
@@ -333,10 +333,10 @@ export default function MarketMemory() {
                 {similar.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     <Badge variant={similar[0].method === "vector" ? "default" : "secondary"}>
-                      {similar[0].method === "vector" ? "Vector Search" : "Heuristic Matching"}
+                      {similar[0].method === "vector" ? "Market Similarity" : "Historical Similarity"}
                     </Badge>
                     <Badge variant="outline">
-                      {selected.sourceMode === "live" ? "Live Intelligence" : "Protected Intelligence"}
+                      {selected.sourceMode === "live" ? "Live Intelligence" : "Verified Market Context"}
                     </Badge>
                   </div>
                 ) : (
@@ -360,7 +360,7 @@ export default function MarketMemory() {
                         <div className="mt-2 flex flex-wrap gap-2">
                           <Badge variant="outline">{getSnapshotMarketRegime(row.snapshot)}</Badge>
                           <Badge variant="outline">
-                            {row.snapshot.sourceMode === "live" ? "Live Intelligence" : "Protected Intelligence"}
+                            {row.snapshot.sourceMode === "live" ? "Live Intelligence" : "Verified Market Context"}
                           </Badge>
                         </div>
                       </div>
@@ -370,7 +370,7 @@ export default function MarketMemory() {
                     </div>
                     <div className="mt-2 flex flex-wrap gap-2">
                       <Badge variant={row.method === "vector" ? "default" : "secondary"}>
-                        {row.method === "vector" ? "Vector" : "Heuristic"}
+                        {row.method === "vector" ? "Market Similarity" : "Historical Similarity"}
                       </Badge>
                       {row.snapshot.narratives.slice(0, 2).map((n) => (
                         <Badge key={n.name} variant="outline">

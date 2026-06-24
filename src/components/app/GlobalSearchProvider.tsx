@@ -21,6 +21,11 @@ type SearchItem = {
   payload?: { snapshotId?: string }
 }
 
+function sourceModeLabel(sourceMode?: string) {
+  if (sourceMode === "live") return "Live Intelligence"
+  return "Verified Market Context"
+}
+
 type GlobalSearchContextValue = {
   open: () => void
   close: () => void
@@ -122,7 +127,7 @@ export function GlobalSearchProvider({ children }: { children: React.ReactNode }
             id: s.id,
             type: "snapshot" as const,
             title: s.title,
-            subtitle: `${s.date} · ${s.sourceMode ?? "fallback"}`,
+            subtitle: `${s.date} · ${sourceModeLabel(s.sourceMode)}`,
             route: "/market-memory",
             payload: { snapshotId: s.id },
           })),

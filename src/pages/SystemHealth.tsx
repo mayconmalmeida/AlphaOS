@@ -157,11 +157,11 @@ export default function SystemHealth() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Badge variant={semanticSearch.embeddingSource === "live" ? "success" : "warning"}>
+              <Badge variant={semanticSearch.embeddingSource === "live" ? "success" : "secondary"}>
                 {semanticSearch.embeddingSource === "live"
                   ? "Research Context Ready"
                   : semanticSearch.embeddingSource === "fallback"
-                    ? "Research Context Protected"
+                    ? "Verified Research Context"
                     : "Context Review Available"}
               </Badge>
             </div>

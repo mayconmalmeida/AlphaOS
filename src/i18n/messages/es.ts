@@ -8,7 +8,7 @@ const es: TranslationTree = {
     export: "Exportar",
     searchSoon: "Buscar",
     themeToggle: "Cambiar tema",
-    demoMode: "Protected Intelligence",
+    demoMode: "Verified Market Context",
     liveReady: "Live Intelligence",
     on: "Activado",
     off: "Desactivado",
@@ -41,7 +41,7 @@ const es: TranslationTree = {
   },
   shell: {
     demoDescription:
-      "UI orientada a producción con fallback resiliente, procedencia y flujo guiado para demo.",
+      "UI orientada a producción con procedencia de evidencia y flujo guiado de investigación.",
   },
   languageSwitcher: {
     en: "Inglés",
@@ -86,7 +86,7 @@ const es: TranslationTree = {
     title: "Capa de Inteligencia CoinMarketCap",
     subtitle: "Profundidad operativa en vivo, cobertura de ingestión y uso downstream en todos los flujos de inteligencia de AlphaOS.",
     live: "En vivo",
-    fallback: "Fallback",
+    fallback: "Contexto verificado",
     readiness: "Preparación",
     documentsProcessed: "Documentos procesados",
     narrativesTracked: "Narrativas monitoreadas",

@@ -27,7 +27,7 @@ function fmtPct(value: number) {
 }
 
 function displayPipelineStatus(value: string) {
-  if (value === "mock") return "Protected Intelligence"
+  if (value === "mock") return "Verified Market Context"
   return value
 }
 

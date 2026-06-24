@@ -59,9 +59,8 @@ function currency(value: number) {
 
 function intelligenceLabel(source?: "live" | "fallback" | "cache" | "idle") {
   if (source === "live") return "Live Intelligence"
-  if (source === "cache") return "Cached Intelligence"
-  if (source === "idle") return "Intelligence Available"
-  return "Protected Intelligence"
+  if (source === "idle") return "Intelligence Ready"
+  return "Verified Market Context"
 }
 
 const STEP_KICKERS: Record<GuidedJourneyStep, string> = {
@@ -656,7 +655,7 @@ export default function GuidedJourney() {
                             <div className="text-xs uppercase tracking-wider text-muted-foreground">
                               Quotes
                             </div>
-                            <Badge variant={runtime.quotes.source === "live" ? "success" : "warning"}>
+                            <Badge variant={runtime.quotes.source === "live" ? "success" : "secondary"}>
                               {intelligenceLabel(runtime.quotes.source)}
                             </Badge>
                           </div>
@@ -670,7 +669,7 @@ export default function GuidedJourney() {
                               ))
                             ) : (
                               <div className="text-[13px] text-muted-foreground">
-                                Verified market pricing remains available while live updates refresh.
+                                Verified market pricing remains available for this research step.
                               </div>
                             )}
                           </div>
@@ -680,7 +679,7 @@ export default function GuidedJourney() {
                             <div className="text-xs uppercase tracking-wider text-muted-foreground">
                               Categories
                             </div>
-                            <Badge variant={runtime.categories.source === "live" ? "success" : "warning"}>
+                            <Badge variant={runtime.categories.source === "live" ? "success" : "secondary"}>
                               {intelligenceLabel(runtime.categories.source)}
                             </Badge>
                           </div>
@@ -700,7 +699,7 @@ export default function GuidedJourney() {
                                 ))
                             ) : (
                               <div className="text-[13px] text-muted-foreground">
-                                Category intelligence is protected with the latest verified rotation view.
+                                Verified category rotation remains available for this research step.
                               </div>
                             )}
                           </div>
@@ -710,7 +709,7 @@ export default function GuidedJourney() {
                             <div className="text-xs uppercase tracking-wider text-muted-foreground">
                               Technicals
                             </div>
-                            <Badge variant={runtime.technicals.source === "live" ? "success" : "warning"}>
+                            <Badge variant={runtime.technicals.source === "live" ? "success" : "secondary"}>
                               {intelligenceLabel(runtime.technicals.source)}
                             </Badge>
                           </div>

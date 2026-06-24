@@ -9,9 +9,8 @@ type ProvenancePanelProps = {
 
 function availabilityLabel(mode?: string) {
   if (mode === "live") return "Live Intelligence"
-  if (mode === "cache") return "Cached Intelligence"
-  if (mode === "fallback") return "Protected Intelligence"
-  if (mode === "idle") return "Intelligence Available"
+  if (mode === "idle") return "Intelligence Ready"
+  if (mode === "cache" || mode === "fallback") return "Verified Market Context"
   return mode ?? "Verified Intelligence"
 }
 

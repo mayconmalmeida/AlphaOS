@@ -1,13 +1,12 @@
 import type { ComponentType } from "react"
 import { NavLink } from "react-router-dom"
 import {
-  Brain,
   Database,
   FileText,
-  FlaskConical,
+  History,
   LayoutDashboard,
   PlayCircle,
-  Settings,
+  Route,
 } from "lucide-react"
 
 import { useI18n } from "@/i18n/I18nProvider"
@@ -21,12 +20,11 @@ type NavItem = {
 
 const NAV: Array<NavItem & { key: string }> = [
   { to: "/dashboard", key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/hypotheses", key: "hypotheses", label: "Hypotheses", icon: Brain },
+  { to: "/journey", key: "guidedJourney", label: "Journey", icon: Route },
+  { to: "/research", key: "research", label: "Research", icon: FileText },
   { to: "/market-memory", key: "marketMemory", label: "Memory", icon: Database },
   { to: "/market-replay", key: "marketReplay", label: "Replay", icon: PlayCircle },
-  { to: "/strategy-lab", key: "strategyLab", label: "Strategy", icon: FlaskConical },
-  { to: "/research", key: "research", label: "Research", icon: FileText },
-  { to: "/settings", key: "settings", label: "Settings", icon: Settings },
+  { to: "/cmc-intelligence", key: "cmcCoverage", label: "CMC", icon: History },
 ]
 
 export function MobileNav() {
@@ -34,7 +32,7 @@ export function MobileNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-20 border-t bg-background/90 px-2 py-2 backdrop-blur-xl md:hidden">
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-6 gap-1">
         {NAV.map((item) => (
           <NavLink
             key={item.to}

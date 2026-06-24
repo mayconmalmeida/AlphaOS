@@ -99,19 +99,13 @@ export default function CmcCoverage() {
                   <div className="text-[13px] font-medium">{item.label}</div>
                   <Badge
                     variant={
-                      runtime?.source === "live"
-                        ? "success"
-                        : runtime?.source === "idle"
-                          ? "outline"
-                          : item.live
-                          ? "warning"
-                          : "outline"
+                      runtime?.source === "live" ? "success" : "secondary"
                     }
                   >
                     {runtime?.source === "live"
                       ? "Live Intelligence"
                       : item.live
-                        ? "Protected Intelligence"
+                        ? "Verified Market Context"
                         : t("cmcCoverage.readiness", "Readiness")}
                   </Badge>
                 </div>
@@ -161,18 +155,14 @@ export default function CmcCoverage() {
             variant={
               cmcHealth?.state === "connected"
                 ? "success"
-                : cmcHealth?.state === "warning"
-                  ? "warning"
-                  : cmcHealth?.state === "error"
-                    ? "danger"
-                    : "outline"
+                  : "secondary"
             }
           >
-            {cmcHealth?.state === "connected" ? "CoinMarketCap Intelligence Connected" : "CoinMarketCap Intelligence Protected"}
+            {cmcHealth?.state === "connected" ? "CoinMarketCap Intelligence Connected" : "Verified CoinMarketCap Context"}
           </Badge>
           <Badge variant="outline">Last verified {systemHealth.report?.summary.lastSync ?? "N/A"}</Badge>
           <Badge variant="outline">
-            {cmcIntegration.runtimeStatus.sentiment.source === "live" ? "Intelligence Active" : "Protected Intelligence"}
+            {cmcIntegration.runtimeStatus.sentiment.source === "live" ? "Intelligence Active" : "Verified Market Context"}
           </Badge>
           <Badge variant="outline">Market data ready</Badge>
           <Badge variant="outline">Research ready</Badge>

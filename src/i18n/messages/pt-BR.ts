@@ -8,7 +8,7 @@ const ptBR: TranslationTree = {
     export: "Exportar",
     searchSoon: "Pesquisar",
     themeToggle: "Alternar tema",
-    demoMode: "Protected Intelligence",
+    demoMode: "Verified Market Context",
     liveReady: "Live Intelligence",
     on: "Ligado",
     off: "Desligado",
@@ -41,7 +41,7 @@ const ptBR: TranslationTree = {
   },
   shell: {
     demoDescription:
-      "UI orientada a produção com fallback resiliente, proveniência e fluxo guiado de demo.",
+      "UI orientada a produção com proveniência de evidências e fluxo guiado de pesquisa.",
   },
   languageSwitcher: {
     en: "Inglês",
@@ -86,7 +86,7 @@ const ptBR: TranslationTree = {
     title: "Camada de Inteligência CoinMarketCap",
     subtitle: "Profundidade operacional ao vivo, cobertura de ingestão e uso downstream em todos os fluxos de inteligência do AlphaOS.",
     live: "Ao vivo",
-    fallback: "Fallback",
+    fallback: "Contexto verificado",
     readiness: "Prontidão",
     documentsProcessed: "Documentos processados",
     narrativesTracked: "Narrativas monitoradas",

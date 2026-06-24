@@ -22,8 +22,8 @@ function intelligenceLabel(source?: string) {
   return source === "live" || source === "edge"
     ? "Live Intelligence"
     : source === "cache"
-      ? "Cached Intelligence"
-      : "Protected Intelligence"
+      ? "Verified Market Context"
+      : "Verified Market Context"
 }
 
 function capabilityLabel(capability: string) {
@@ -107,8 +107,8 @@ export default function Settings() {
                 <div className="text-sm font-medium">Current state</div>
                 <div className="mt-1 text-xs text-muted-foreground">
                   {demoMode.enabled
-                    ? "Protected continuity is prioritized for the current session."
-                    : "Live intelligence is preferred whenever the workspace is fully connected."}
+                    ? "Verified context is prioritized for the current session."
+                    : "Live intelligence is preferred whenever the workspace is ready."}
                 </div>
               </div>
               <Button variant="outline" onClick={demoMode.toggle}>
@@ -152,7 +152,7 @@ export default function Settings() {
               Market Intelligence Gateway {cmcIntegration.status.edgeProxyReady ? "ready" : "not configured"}
             </Badge>
             <Badge variant="outline">
-              {cmcIntegration.status.mode === "edge-proxy" ? "Live Intelligence" : "Protected Intelligence"}
+              {cmcIntegration.status.mode === "edge-proxy" ? "Live Intelligence" : "Verified Market Context"}
             </Badge>
             <Badge variant="outline">
               Sentiment {intelligenceLabel(cmcIntegration.runtimeStatus.sentiment.source)}

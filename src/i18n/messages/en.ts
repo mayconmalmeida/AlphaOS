@@ -8,7 +8,7 @@ const en: TranslationTree = {
     export: "Export",
     searchSoon: "Search",
     themeToggle: "Toggle theme",
-    demoMode: "Protected Intelligence",
+    demoMode: "Verified Market Context",
     liveReady: "Live Intelligence",
     on: "On",
     off: "Off",
@@ -41,7 +41,7 @@ const en: TranslationTree = {
   },
   shell: {
     demoDescription:
-      "Production-minded UI with resilient fallback, provenance, and guided demo flow.",
+      "Production-minded UI with evidence provenance and guided research flow.",
   },
   languageSwitcher: {
     en: "English",
@@ -86,7 +86,7 @@ const en: TranslationTree = {
     title: "CoinMarketCap Intelligence Layer",
     subtitle: "Live operational depth, ingestion coverage, and downstream usage across AlphaOS intelligence workflows.",
     live: "Live",
-    fallback: "Fallback",
+    fallback: "Verified Context",
     readiness: "Readiness",
     documentsProcessed: "Documents processed",
     narrativesTracked: "Narratives tracked",
